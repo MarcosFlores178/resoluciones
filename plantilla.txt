@@ -1,0 +1,10 @@
+VISTO el pedido de {{nombre}}, estudiante de la asignatura {{asignatura}}, y
+
+CONSIDERANDO que cumple con los requisitos académicos,
+
+SE RESUELVE:
+
+1. Aprobar la solicitud realizada por {{nombre}} el día {{fecha}}.
+
+Firmado,
+La Secretaría Académica
