@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Listado de Resoluciones</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+  <h1>Resoluciones guardadas</h1>
+  <a href="/resoluciones">Crear nueva</a>
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Asignatura</th>
+        <th>Fecha</th>
+        <th>N° Resolución</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (resoluciones.length === 0) { %>
+        <tr><td colspan="6">No hay resoluciones guardadas</td></tr>
+      <% } else { %>
+        <% resoluciones.forEach(res => { %>
+          <tr>
+            <td><%= res.id %></td>
+            <td><%= res.nombre %></td>
+            <td><%= res.asignatura %></td>
+            <td><%= res.fecha %></td>
+            <td><%= res.numero_resolucion || '—' %></td>
+            <td>
+              <a href="/resoluciones/<%= res.id %>">Editar</a>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</body>
+</html>

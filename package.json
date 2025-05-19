@@ -12,6 +12,9 @@
     "express": "^4.21.2",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "pdfkit": "^0.17.1"
+    "mysql2": "^3.14.1",
+    "pdfkit": "^0.17.1",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3"
   }
 }
