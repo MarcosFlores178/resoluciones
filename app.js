@@ -7,6 +7,7 @@ let logger = require('morgan');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 const resolucionesRouter = require('./routes/resoluciones');
+const methodOverride = require('method-override');
 
 let app = express();
 
@@ -19,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'));
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

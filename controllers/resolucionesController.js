@@ -15,7 +15,7 @@ function renderTemplate(templateText, campos) {
 module.exports = {
   // Mostrar formulario inicial
   formulario: (req, res) => {
-    res.render('resolucion-form', { datos: null });
+    res.render('form', { datos: null });
   },
 
   // Procesar POST del formulario
@@ -119,10 +119,20 @@ module.exports = {
 listarResoluciones: async (req, res) => {
   try {
     const resoluciones = await Resolucion.findAll({ order: [['id', 'DESC']] });
-    res.render('resoluciones/lista', { resoluciones });
+    res.render('lista', { resoluciones });
   } catch (error) {
     res.status(500).send('Error al obtener las resoluciones');
   }
+},
+eliminarResolucion: async (req, res) => {
+  try {
+    const id = req.params.id;
+    await Resolucion.destroy({ where: { id } });
+    res.redirect('lista');
+  } catch (error) {
+    res.status(500).send('Error al eliminar la resolución');
+  }
 }
+
 
 };

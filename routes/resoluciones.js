@@ -16,5 +16,8 @@ router.post('/:id', resolucionesController.actualizarResolucion);
 
 router.get('/lista', resolucionesController.listarResoluciones);
 
+router.delete('/:id', resolucionesController.eliminarResolucion);
+
+
 
 module.exports = router;
