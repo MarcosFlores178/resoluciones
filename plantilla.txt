@@ -1,3 +1,4 @@
+RESOLUCIÓN {{numero_resolucion}}
 VISTO el pedido de {{nombre}}, estudiante de la asignatura {{asignatura}}, y
 
 CONSIDERANDO que cumple con los requisitos académicos,

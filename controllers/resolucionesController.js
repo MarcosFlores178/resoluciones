@@ -1,4 +1,4 @@
-const { Resolucion } = require('../models');
+// const { Resolucion } = require('../models');
 const path = require('path');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
@@ -61,6 +61,32 @@ module.exports = {
     });
   },
 
+  generarPDF: async (req, res) => {
+    const plantillaPath = path.join(__dirname, '../plantilla.txt');
+    const plantilla = fs.readFileSync(plantillaPath, 'utf8');
+    const textoFinal = renderTemplate(plantilla, {
+      nombre,
+      asignatura,
+      fecha,
+      numero_resolucion: numero_resolucion || '',
+    });
+
+    // Crear PDF
+    const doc = new PDFDocument({ margin: 80 });
+    const fileName = `resolucion-${nueva.id}.pdf`;
+    const filePath = path.join(__dirname, `../pdfs/${fileName}`);
+    const stream = fs.createWriteStream(filePath);
+
+    doc.pipe(stream);
+    doc.text(textoFinal);
+    doc.end();
+
+    doc.on('finish', () => {
+      res.download(filePath, () => {
+        fs.unlinkSync(filePath); // Borrar luego de enviar
+      });
+    });
+  },
   // Mostrar datos ya guardados (para edición o generación posterior)
   mostrarResolucion: async (req, res) => {
     const resolucion = await Resolucion.findByPk(req.params.id);

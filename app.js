@@ -4,8 +4,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 
-let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
+
 const resolucionesRouter = require('./routes/resoluciones');
 const methodOverride = require('method-override');
 
@@ -23,9 +22,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/resoluciones', resolucionesRouter);
+
+app.use('/', resolucionesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -41,6 +39,17 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+const http = require('http');
+
+const port = process.env.PORT || 3000;
+app.set('port', port);
+
+const server = http.createServer(app);
+
+server.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
 });
 
 module.exports = app;

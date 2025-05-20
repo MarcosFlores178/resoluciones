@@ -18,6 +18,7 @@ router.get('/lista', resolucionesController.listarResoluciones);
 
 router.delete('/:id', resolucionesController.eliminarResolucion);
 
+router.get('/:id/pdf', resolucionesController.generarPDF);
 
 
 module.exports = router;
