@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -20,4 +20,37 @@
 </form>
 
 </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Resolución</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  
+</head>
+<body>
+  <h1>Formulario de Resolución</h1>
+
+  <form action="/resoluciones" method="POST">
+    <label for="nombre">Nombre completo</label>
+    <input type="text" id="nombre" name="nombre" required value="<%= datos?.nombre || '' %>">
+
+    <label for="asignatura">Asignatura</label>
+    <input type="text" id="asignatura" name="asignatura" required value="<%= datos?.asignatura || '' %>">
+
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha" name="fecha" required value="<%= datos?.fecha || '' %>">
+
+    <label for="numero_resolucion">Número de resolución (opcional)</label>
+    <input type="text" id="numero_resolucion" name="numero_resolucion" value="<%= datos?.numero_resolucion || '' %>">
+
+    <div class="actions">
+      <button type="submit" name="accion" value="guardar">Guardar plantilla</button>
+      <button type="submit" name="accion" value="generar_pdf">Generar PDF</button>
+    </div>
+  </form>
+</body>
 </html>
+

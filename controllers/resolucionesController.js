@@ -1,4 +1,4 @@
-// const { Resolucion } = require('../models');
+const { Resolucion } = require('../db/models');
 const path = require('path');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
@@ -6,10 +6,10 @@ const PDFDocument = require('pdfkit');
 // Reemplaza los {{campos}} de la plantilla
 function renderTemplate(templateText, campos) {
   return templateText
-    .replace('{{nombre}}', campos.nombre)
-    .replace('{{asignatura}}', campos.asignatura)
-    .replace('{{fecha}}', campos.fecha)
-    .replace('{{numero_resolucion}}', campos.numero_resolucion || '');
+    .replace(/{{nombre}}/g, campos.nombre)
+    .replace(/{{asignatura}}/g, campos.asignatura)
+    .replace(/{{fecha}}/g, campos.fecha)
+    .replace(/{{numero_resolucion}}/g, campos.numero_resolucion || '');
 }
 
 module.exports = {
@@ -48,6 +48,7 @@ module.exports = {
     const doc = new PDFDocument({ margin: 80 });
     const fileName = `resolucion-${nueva.id}.pdf`;
     const filePath = path.join(__dirname, `../pdfs/${fileName}`);
+
     const stream = fs.createWriteStream(filePath);
 
     doc.pipe(stream);
@@ -59,6 +60,9 @@ module.exports = {
         fs.unlinkSync(filePath); // Borrar luego de enviar
       });
     });
+    // Después de guardar los datos en la base
+    res.redirect('/resoluciones/lista');
+
   },
 
   generarPDF: async (req, res) => {
