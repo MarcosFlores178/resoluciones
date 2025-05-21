@@ -8,13 +8,13 @@ router.get('/', resolucionesController.formulario);
 // Procesar formulario
 router.post('/', resolucionesController.procesarFormulario);
 
+router.get('/lista', resolucionesController.listarResoluciones);
 // Ver PDF o editar más adelante (opcional)
 router.get('/:id', resolucionesController.mostrarResolucion);
 
 //Editar resolucion
 router.post('/:id', resolucionesController.actualizarResolucion);
 
-router.get('/lista', resolucionesController.listarResoluciones);
 
 router.delete('/:id', resolucionesController.eliminarResolucion);
 

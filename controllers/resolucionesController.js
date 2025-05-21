@@ -61,36 +61,53 @@ module.exports = {
       });
     });
     // Después de guardar los datos en la base
+    // res.redirect('/resoluciones/');
     res.redirect('/resoluciones/lista');
 
   },
 
   generarPDF: async (req, res) => {
-    const plantillaPath = path.join(__dirname, '../plantilla.txt');
-    const plantilla = fs.readFileSync(plantillaPath, 'utf8');
-    const textoFinal = renderTemplate(plantilla, {
-      nombre,
-      asignatura,
-      fecha,
-      numero_resolucion: numero_resolucion || '',
-    });
+  try {
+    const id = req.params.id;
+    const resolucion = await Resolucion.findByPk(id);
+    if (!resolucion) return res.status(404).send('Resolución no encontrada');
 
-    // Crear PDF
+    const plantillaPath = path.join(__dirname, '../plantilla.txt');
+    let contenido = fs.readFileSync(plantillaPath, 'utf-8').replace(/\r/g, '');
+
+    // Reemplazo múltiple
+    const campos = {
+      nombre: resolucion.nombre,
+      asignatura: resolucion.asignatura,
+      fecha: resolucion.fecha,
+      numero_resolucion: resolucion.numero_resolucion || '',
+    };
+    for (const key in campos) {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      contenido = contenido.replace(regex, campos[key]);
+    }
+
+    // Crear PDF temporal
     const doc = new PDFDocument({ margin: 80 });
-    const fileName = `resolucion-${nueva.id}.pdf`;
+    const fileName = `resolucion-${id}.pdf`;
     const filePath = path.join(__dirname, `../pdfs/${fileName}`);
     const stream = fs.createWriteStream(filePath);
 
     doc.pipe(stream);
-    doc.text(textoFinal);
+    doc.text(contenido, { align: 'justify' });
     doc.end();
 
-    doc.on('finish', () => {
+    stream.on('finish', () => {
       res.download(filePath, () => {
-        fs.unlinkSync(filePath); // Borrar luego de enviar
+        fs.unlinkSync(filePath);
       });
     });
-  },
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al generar el PDF');
+  }
+},
+
   // Mostrar datos ya guardados (para edición o generación posterior)
   mostrarResolucion: async (req, res) => {
     const resolucion = await Resolucion.findByPk(req.params.id);
@@ -150,6 +167,7 @@ listarResoluciones: async (req, res) => {
   try {
     const resoluciones = await Resolucion.findAll({ order: [['id', 'DESC']] });
     res.render('lista', { resoluciones });
+    // res.redirect('/resoluciones/lista');
   } catch (error) {
     res.status(500).send('Error al obtener las resoluciones');
   }
