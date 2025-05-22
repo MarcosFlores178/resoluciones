@@ -5,7 +5,7 @@
     <title>Listado de Resoluciones</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
-
+<!-- TODO Agregar botón para ver PDF -->
 <body>
     <h1>Resoluciones guardadas</h1>
     <a href="/resoluciones">Crear nueva</a>
@@ -45,22 +45,23 @@
                             </td>
                             <td>
                                 <a href="/resoluciones/<%= res.id %>">Editar</a>
-
+                                
                                 <% if (res.numero_resolucion) { %>
                                     <a href="/resoluciones/<%= res.id %>/pdf" target="_blank">Generar PDF</a>
                                     <% } %>
-
-                                        <form action="/resoluciones/<%= res.id %>?_method=DELETE" method="POST"
-                                            style="display:inline;">
-                                            <button type="submit"
-                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
-                                        </form>
-                            </td>
-                        </tr>
-                        <% }) %>
+                                    
+                                    <form action="/resoluciones/<%= res.id %>?_method=DELETE" method="POST"
+                                        style="display:inline;">
+                                        <button type="submit"
+                                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }) %>
                             <% } %>
-        </tbody>
-    </table>
-</body>
-
+                        </tbody>
+                    </table>
+                </body>
+                
+                
 </html>

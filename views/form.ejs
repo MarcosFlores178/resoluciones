@@ -36,15 +36,49 @@
   <h1>Formulario de Resolución</h1>
 
   <form action="/resoluciones" method="POST">
-    <label for="nombre">Nombre completo</label>
-    <input type="text" id="nombre" name="nombre" required value="<%= datos?.nombre || '' %>">
+    
+    <label for="expediente">Número de expediente:</label>
+    <input type="text" id="expediente" name="expediente" value="<%= datos?.expediente || '' %>">
 
-    <label for="asignatura">Asignatura</label>
-    <input type="text" id="asignatura" name="asignatura" required value="<%= datos?.asignatura || '' %>">
+    <label for="curso">Nombre del curso:</label>
+    <input type="text" id="curso" name="curso" required value="<%= datos?.curso || '' %>">
 
-    <label for="fecha">Fecha</label>
+    <label for="cohorte">Número de cohorte:</label>
+    <input type="text" id="cohorte" name="cohorte" required value="<%= datos?.cohorte || '' %>">
+
+    <label for="docente">Nombre del docente:</label>
+    <input type="text" id="docente" name="docente" required value="<%= datos?.docente || '' %>">
+
+    <label for="alumnos">Público específico:</label>
+    <input type="text" id="alumnos" name="alumnos" required value="<%= datos?.alumnos || '' %>">
+
+    <label for="objetivos">Objetivo del curso:</label>
+    <input type="text" id="objetivos" name="objetivos" required value="<%= datos?.objetivos || '' %>">
+
+    <label for="segundo_objetivos">Objetivos generales:</label>
+    <input type="text" id="segundo_objetivos" name="segundo_objetivos" required value="<%= datos?.segundo_objetivos || '' %>">
+
+    <label for="horas_totales">Horas totales del curso:</label>
+    <input type="text" id="horas_totales" name="horas_totales" required value="<%= datos?.horas_totales || '' %>">
+
+    <label for="clases">Cantidad de clases:</label>
+    <input type="text" id="clases" name="clases" required value="<%= datos?.clases || '' %>">
+
+    <label for="horas_clase">Horas de cada clase:</label>
+    <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos?.horas_clase || '' %>">
+
+    <label for="minimo">Cantidad mínima de inscriptos:</label>
+    <input type="text" id="minimo" name="minimo" required value="<%= datos?.minimo || '' %>">
+
+    <label for="maximo">Cantidad maxima de inscriptos:</label>
+    <input type="text" id="maximo" name="maximo" required value="<%= datos?.maximo || '' %>">
+
+    <label for="mes_curso">Mes de dictado del curso:</label>
+    <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos?.mes_curso || '' %>">
+
+    <label for="fecha">Fecha de la resolución:</label>
     <input type="date" id="fecha" name="fecha" required value="<%= datos?.fecha || '' %>">
-
+    
     <label for="numero_resolucion">Número de resolución (opcional)</label>
     <input type="text" id="numero_resolucion" name="numero_resolucion" value="<%= datos?.numero_resolucion || '' %>">
 
