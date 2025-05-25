@@ -1,11 +1,41 @@
-RESOLUCIÓN {{numero_resolucion}}
-VISTO el pedido de {{nombre}}, estudiante de la asignatura {{asignatura}}, y
+<!-- membrete -->
+[IMAGEN_MEMBRETE_IZQUIERDA]
 
-CONSIDERANDO que cumple con los requisitos académicos,
+<bold>DEPARTAMENTO ACADÉMICO DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES</bold>
 
-SE RESUELVE:
+“Año 2025 Con Orden y Unidos por una Nueva UNLaR”
 
-1. Aprobar la solicitud realizada por {{nombre}} el día {{fecha}}.
+<bold>LA RIOJA, {{fecha}}</bold>
 
-Firmado,
-La Secretaría Académica
+<bold>RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº {{resolucion}}</bold>
+
+<!-- cuerpo principal -->
+<bold>Visto:</bold> El expediente Nº {{expediente}} del registro de la Universidad Nacional de La Rioja, mediante el cual la Lic. Maricel Almada Arias conjuntamente con el Instituto de Formación Continua del Departamento de Ciencias Exactas, Físicas y Naturales, solicitan la apertura de la {{cohorte}} Cohorte del curso de capacitación denominado <bold>{{curso}}</bold> y,
+<bold>CONSIDERANDO:</bold>
+<bold>Que</bold>, el Curso de {{curso}}, fue aprobado y declarado de interés departamental, mediante Resolución del Consejo Departamental DACEFyN Nº {{resolucion}}.
+
+<bold>Que</bold>, la propuesta mencionada estará a cargo de la/el docente {{docente}} y está dirigida a Estudiantes, Docentes, No Docentes, Graduados, Contadores, {{alumnos}} y público en general.
+
+<bold>Que</bold>, el {{curso}} tiene como objetivo: {{objetivos}}.
+
+<bold>Que</bold>, la presente capacitación se desarrollará en modalidad virtual asíncrona remota, mediante plataforma meet o zoom de la Escuela de Informática y el campus virtual de la UNLaR. Tendrá una duración total de {{horas_totales}} horas divididas en {{clases}} clases virtuales de {{horas_clase}} horas cada una en aula virtual con asistencia de la/el docente en evaluaciones y otras tareas en el campus de la Universidad Nacional de La Rioja.
+
+<bold>Que</bold>, el mismo tiene un cupo de {{minimo}} a {{maximo}} asistentes.
+
+<bold>Que</bold>, asimismo, {{segundo_objetivos}}.
+
+<bold>Que</bold>, al final de cada unidad se generará una actividad práctica en función a la unidad temática desarrollada, esta actividad deberá ser llevada a cabo por el estudiante y el/la docente realizará la evaluación de la misma. Estas actividades tienen fechas y modalidades particulares para cada tema desarrollado.
+
+<bold>Por ello</bold>, y en uso de las atribuciones que le son propias:
+
+<!-- encabezado de resolución -->
+<bold>EL DECANO DEL DEPARTAMENTO ACADÉMICO DE CIENCIAS EXACTAS FÍSICAS Y NATURALES DE LA UNIVERSIDAD NACIONAL DE LA RIOJA</bold>
+
+<bold>RESUELVE:</bold>
+
+<!-- parte resolutiva -->
+<bold>Artículo 1º.- AUTORIZAR</bold> la apertura de la <bold>{{cohorte}}</bold> del curso de capacitación denominado <bold>{{curso}}</bold>, a llevarse a cabo durante el mes de {{mes_curso}}, el que forma parte como anexo de la presente.
+
+<bold>Artículo 2º.- REMITIR</bold> copia del presente acto administrativo a la Dirección de la Escuela de Informática como así también al Instituto de Formación Continua, dependientes del Departamento de Ciencias Exactas, Físicas y Naturales.
+
+<bold>Artículo 3º.-</bold> Comuníquese, protocolícese y archívese.

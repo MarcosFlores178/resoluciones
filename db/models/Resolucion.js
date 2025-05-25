@@ -11,10 +11,6 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING,
       allowNull: false
     },
-    asignatura: {
-      type: dataTypes.STRING,
-      allowNull: false
-    },
     fecha: {
       type: dataTypes.DATE,
       allowNull: false
@@ -22,7 +18,59 @@ module.exports = (sequelize, dataTypes) => {
     numero_resolucion: {
       type: dataTypes.STRING,
       allowNull: true
-    }
+    },
+    expediente: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    cohorte: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    curso: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    docente: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    alumnos: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    objetivos: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    segundo_objetivos: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    horas_totales: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    clases: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    horas_clase: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    minimo: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    maximo: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    mes_curso: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
   };
 
   let config = {
