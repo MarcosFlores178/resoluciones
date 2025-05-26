@@ -7,10 +7,6 @@ module.exports = (sequelize, dataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    nombre: {
-      type: dataTypes.STRING,
-      allowNull: false
-    },
     fecha: {
       type: dataTypes.DATE,
       allowNull: false
@@ -43,7 +39,7 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING,
       allowNull: false
     },
-    segundo_objetivos: {
+    segundos_objetivos: {
       type: dataTypes.STRING,
       allowNull: false
     },

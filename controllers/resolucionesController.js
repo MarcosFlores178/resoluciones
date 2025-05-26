@@ -6,9 +6,19 @@ const PDFDocument = require('pdfkit');
 // Reemplaza los {{campos}} de la plantilla
 function renderTemplate(templateText, campos) {
   return templateText
-    .replace(/{{nombre}}/g, campos.nombre)
-    .replace(/{{asignatura}}/g, campos.asignatura)
-    .replace(/{{fecha}}/g, campos.fecha)
+    .replace(/{{expediente}}/g, campos.expediente)
+    .replace(/{{curso}}/g, campos.curso)
+    .replace(/{{cohorte}}/g, campos.cohorte)
+    .replace(/{{docente}}/g, campos.docente)
+    .replace(/{{alumnos}}/g, campos.alumnos)
+    .replace(/{{objetivos}}/g, campos.objetivos)
+    .replace(/{{segundos_objetivos}}/g, campos.segundos_objetivos)
+    .replace(/{{horas_totales}}/g, campos.horas_totales)
+    .replace(/{{clases}}/g, campos.clases)
+    .replace(/{{horas_clase}}/g, campos.horas_clase)
+    .replace(/{{minimo}}/g, campos.minimo)
+    .replace(/{{maximo}}/g, campos.maximo)
+    .replace(/{{mes_curso}}/g, campos.mes_curso)
     .replace(/{{numero_resolucion}}/g, campos.numero_resolucion || '');
 }
 function renderTemplate(template, variables) {
@@ -16,39 +26,70 @@ function renderTemplate(template, variables) {
 }
 
 function processTemplateLine(doc, line, options = {}) {
-  const sangria = '    ';
+  const sangria = '                            ';
   const imageMarker = '[IMAGEN_MEMBRETE_IZQUIERDA]';
 
+  // 1. Verificar si es una línea con imagen
   if (line.includes(imageMarker)) {
-    const imagePath = path.join(__dirname, '../public/img/membrete.png');
+    const imagePath = path.join(__dirname, '../public/images/images.jpg');
     if (fs.existsSync(imagePath)) {
-      doc.image(imagePath, doc.x, doc.y, { width: 100 });
+      doc.image(imagePath, doc.x, doc.y, { width: 150 });
       doc.moveDown();
     }
     return;
   }
 
-  const isCentered = line.startsWith('[[') && line.endsWith(']]');
-  const content = isCentered ? line.slice(2, -2).trim() : line;
+  // 2. Verificar si la línea debe centrarse (quita espacios y chequea [[...]])
+  const trimmedLine = line.trim();
+  const centerMatch = trimmedLine.match(/^\[\[(.*?)\]\]$/);
+  const isCentered = !!centerMatch;
+  const content = isCentered ? centerMatch[1].trim() : line;
 
-  const matches = content.match(/<bold>(.*?)<\/bold>/g);
-  if (matches) {
-    const parts = content.split(/(<bold>.*?<\/bold>)/g).filter(Boolean);
-    const x = isCentered ? (doc.page.width / 2) : doc.x;
-    const align = isCentered ? 'center' : 'left';
+  // 3. Procesar negritas <bold>...</bold>
+  const boldPattern = /<bold>(.*?)<\/bold>/g;
+  let match;
+  const parts = [];
+  let lastIndex = 0;
 
-    let lineText = parts.map(part => part.replace(/<bold>|<\/bold>/g, '')).join('');
-    doc.font('Times-Roman').fontSize(12).text((isCentered ? '' : sangria) + lineText, {
-      align,
-      continued: false
+  while ((match = boldPattern.exec(content)) !== null) {
+    // Texto antes de la negrita
+    if (match.index > lastIndex) {
+      parts.push({ text: content.slice(lastIndex, match.index), bold: false });
+    }
+    // Texto en negrita
+    parts.push({ text: match[1], bold: true });
+    lastIndex = boldPattern.lastIndex;
+  }
+
+  // Texto restante después de la última etiqueta <bold>
+  if (lastIndex < content.length) {
+    parts.push({ text: content.slice(lastIndex), bold: false });
+  }
+
+  // 4. Dibujar en PDF con alineación y estilo adecuado
+  const align = isCentered ? 'center' : 'justify';
+  if (parts.length > 0) {
+    parts.forEach((part, index) => {
+      const isFirst = index === 0;
+      doc
+        .font(part.bold ? 'Times-Bold' : 'Times-Roman')
+        .fontSize(12)
+        .text((isFirst && !isCentered ? sangria : '') + part.text, {
+          continued: index < parts.length - 1,
+          align,
+        });
     });
+    doc.text('', { continued: false }); // Finaliza la línea
   } else {
-    doc.font('Times-Roman').fontSize(12).text((isCentered ? '' : sangria) + content, {
-      align: isCentered ? 'center' : 'left',
-      continued: false
-    });
+    // Línea sin negritas
+    doc
+      .font('Times-Roman')
+      .fontSize(12)
+      .text((isCentered ? '' : sangria) + content, { align });
   }
 }
+
+
 module.exports = {
   // Mostrar formulario inicial
   formulario: (req, res) => {
@@ -58,12 +99,23 @@ module.exports = {
   procesarFormulario: 
   
   async (req, res) => {
-  const { nombre, asignatura, fecha, numero_resolucion, accion } = req.body;
+  const { fecha, expediente, curso, cohorte, docente, alumnos, objetivos, segundos_objetivos, horas_totales, clases, horas_clase, minimo, maximo, mes_curso, numero_resolucion, accion } = req.body;
 
   const nueva = await Resolucion.create({
-    nombre,
-    asignatura,
     fecha,
+    expediente,
+    curso,
+    cohorte,
+    docente,
+    alumnos,
+    objetivos,
+    segundos_objetivos,
+    horas_totales,
+    clases,
+    horas_clase,
+    minimo,
+    maximo,
+    mes_curso,
     numero_resolucion: numero_resolucion || null,
   });
 
@@ -74,7 +126,6 @@ module.exports = {
   const plantillaPath = path.join(__dirname, '../plantilla.txt');
   const plantilla = fs.readFileSync(plantillaPath, 'utf8');
   const textoFinal = renderTemplate(plantilla, {
-    nombre,
     fecha,
     resolucion: numero_resolucion || '',
     expediente,
@@ -83,7 +134,7 @@ module.exports = {
     docente,
     alumnos,
     objetivos,
-    segundo_objetivos,
+    segundos_objetivos,
     horas_totales,
     clases,
     horas_clase,
@@ -92,17 +143,23 @@ module.exports = {
     mes_curso,
   });
 
-  const doc = new PDFDocument({ margin: 80 });
+  const doc = new PDFDocument({ margin: 85 });
   const fileName = `resolucion-${nueva.id}.pdf`;
   const filePath = path.join(__dirname, `../pdfs/${fileName}`);
   const stream = fs.createWriteStream(filePath);
 
   doc.pipe(stream);
 
-  textoFinal.split('\n').forEach(line => {
-    processTemplateLine(doc, line);
-    doc.moveDown(0.5);
-  });
+  // textoFinal.split('\n').forEach(line => {
+  //   processTemplateLine(doc, line);
+  //   doc.moveDown(0.5);
+  // });
+
+textoFinal.split('\n').forEach(line => {
+  line = line.replace(/\r/g, '').trimEnd(); // Limpia cualquier basura invisible //TODO importante para que no salgan caracteres extraños en saltos de linea
+  processTemplateLine(doc, line);
+  doc.moveDown(0.5);
+});
 
   doc.end();
 
@@ -127,8 +184,19 @@ module.exports = {
 
       // Reemplazo múltiple
       const campos = {
-        nombre: resolucion.nombre,
-        asignatura: resolucion.asignatura,
+        expediente: resolucion.expediente,
+        curso: resolucion.curso,
+        cohorte: resolucion.cohorte,
+        docente: resolucion.docente,
+        alumnos: resolucion.alumnos,
+        objetivos: resolucion.objetivos,
+        segundos_objetivos: resolucion.segundos_objetivos,
+        horas_totales: resolucion.horas_totales,
+        clases: resolucion.clases,
+        horas_clase: resolucion.horas_clase,
+        minimo: resolucion.minimo,
+        maximo: resolucion.maximo,
+        mes_curso: resolucion.mes_curso,
         fecha: resolucion.fecha,
         numero_resolucion: resolucion.numero_resolucion || '',
       };
@@ -167,15 +235,26 @@ module.exports = {
   },
 
   actualizarResolucion: async (req, res) => {
-    const { nombre, asignatura, fecha, numero_resolucion, accion } = req.body;
+    const { expediente, curso, cohorte, docente, alumnos, objetivos, segundos_objetivos, horas_totales, clases, horas_clase, minimo, maximo, mes_curso, fecha, numero_resolucion, accion } = req.body;
     const id = req.params.id;
 
     const resolucion = await Resolucion.findByPk(id);
     if (!resolucion) return res.status(404).send('Resolución no encontrada');
 
     // Actualizar los datos
-    resolucion.nombre = nombre;
-    resolucion.asignatura = asignatura;
+    resolucion.expediente = expediente;
+    resolucion.curso = curso;
+    resolucion.cohorte = cohorte;
+    resolucion.docente = docente;
+    resolucion.alumnos = alumnos;
+    resolucion.objetivos = objetivos;
+    resolucion.segundos_objetivos = segundos_objetivos;
+    resolucion.horas_totales = horas_totales;
+    resolucion.clases = clases;
+    resolucion.horas_clase = horas_clase;
+    resolucion.minimo = minimo;
+    resolucion.maximo = maximo;
+    resolucion.mes_curso = mes_curso;
     resolucion.fecha = fecha;
     resolucion.numero_resolucion = numero_resolucion || null;
     await resolucion.save();
@@ -193,8 +272,19 @@ module.exports = {
     const plantillaPath = path.join(__dirname, '../plantilla.txt');
     const plantilla = fs.readFileSync(plantillaPath, 'utf8');
     const textoFinal = renderTemplate(plantilla, {
-      nombre,
-      asignatura,
+      expediente,
+      curso,
+      cohorte,
+      docente,
+      alumnos,
+      objetivos,
+      segundos_objetivos,
+      horas_totales,
+      clases,
+      horas_clase,
+      minimo,
+      maximo,
+      mes_curso,
       fecha,
       numero_resolucion: numero_resolucion || '',
     });
