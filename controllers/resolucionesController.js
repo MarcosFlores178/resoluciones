@@ -54,21 +54,7 @@ function dibujarEncabezado(doc) {
     })
     .moveDown(1);
     
-    // doc
-    //   .font('Times-Bold')
-    //   .fontSize(11)
-    //   .text('RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº', {
-    //     align: 'center',
-    //     baseline: 'top'
-    //   });
-    // doc
-    //   .font('Times-Bold')
-    //   .fontSize(11)
-    //   .text('LA RIOJA,', {
-    //     align: 'center',
-    //     baseline: 'top'
-    //   });
-   
+      
 // Ajustá la fuente antes de calcular el ancho
 doc.font('Times-Bold').fontSize(11);
 
@@ -110,16 +96,6 @@ function processTemplateLine(doc, line, options = {}) {
   const sangria = '                            ';
  
 
-  // 1. Verificar si es una línea con imagen
-  // if (line.includes(imageMarker)) {
-  //   const imagePath = path.join(__dirname, '../public/images/logo.png');
-  //   if (fs.existsSync(imagePath)) {
-  //     doc.image(imagePath, doc.x, doc.y, { width: 150 });
-  //     doc.moveDown();
-  //   }
-  //   return;
-  // }
-
   // 2. Verificar si la línea debe centrarse (quita espacios y chequea [[...]])
   const trimmedLine = line.trim();
   const centerMatch = trimmedLine.match(/^\[\[(.*?)\]\]$/);
@@ -149,25 +125,39 @@ function processTemplateLine(doc, line, options = {}) {
 
   // 4. Dibujar en PDF con alineación y estilo adecuado
   const align = isCentered ? 'center' : 'justify';
+
+   const textOptions = {
+    align,
+    lineGap: align === 'justify' ? 5 : 0 // 👈 Aplica solo si justificado
+  };
+
   if (parts.length > 0) {
     parts.forEach((part, index) => {
       const isFirst = index === 0;
+      const isLast = index === parts.length - 1;
+      let textToPrint = part.text;
+
+ if (!isLast && !part.text.endsWith(' ')) {
+    textToPrint += ' ';
+  }
+
       doc
         .font(part.bold ? 'Times-Bold' : 'Times-Roman')
         .fontSize(12)
-        .text((isFirst && !isCentered ? sangria : '') + part.text, {
+        .text((isFirst && !isCentered ? sangria : '') + textToPrint, {
           continued: index < parts.length - 1,
-          align,
+          // align,
+          ...textOptions,
         });
     });
     doc.text('', { continued: false }); // Finaliza la línea
+    doc.font('Times-Roman').fontSize(12);
   } else {
     // Línea sin negritas
     doc
       .font('Times-Roman')
       .fontSize(12)
-      .lineGap(6)
-      .text((isCentered ? '' : sangria) + content, { align });
+      .text((isCentered ? '' : sangria) + content, { ...textOptions });
   }
 }
 
@@ -249,6 +239,8 @@ dibujarEncabezado(doc);
 
 doc.on('pageAdded', () => {
   dibujarEncabezado(doc);
+  doc.text('', { continued: false }); //Es para evitar que el inicio de la nueva página se comporte raro
+  doc.font('Times-Roman').fontSize(12);
 });
 
 textoFinal.split('\n').forEach(line => {
