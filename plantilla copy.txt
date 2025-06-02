@@ -1,3 +1,11 @@
+[IMAGEN_MEMBRETE_IZQUIERDA]
+
+
+[[<bold>DEPARTAMENTO ACADÉMICO DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES</bold>]]
+[[“Año 2025 Con Orden y Unidos por una Nueva UNLaR”]]
+[[<bold>LA RIOJA, {{fecha}}</bold>]]
+[[<bold>RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº {{numero_resolucion}}</bold>]]
+
 <bold>Visto:</bold> El expediente Nº {{expediente}} del registro de la Universidad Nacional de La Rioja, mediante el cual la Lic. Maricel Almada Arias conjuntamente con el Instituto de Formación Continua del Departamento de Ciencias Exactas, Físicas y Naturales, solicitan la apertura de la <bold>{{cohorte}} COHORTE </bold> del curso de capacitación denominado <bold>{{curso}}</bold> y,
 <bold>CONSIDERANDO:</bold>
 <bold>Que</bold>, el Curso de {{curso}}, fue aprobado y declarado de interés departamental, mediante Resolución del Consejo Departamental DACEFyN Nº {{resolucion_interes_departamental}}.
@@ -9,12 +17,8 @@
 <bold>Que</bold>, al final de cada unidad se generará una actividad práctica en función a la unidad temática desarrollada, esta actividad deberá ser llevada a cabo por el estudiante y el/la docente realizará la evaluación de la misma. Estas actividades tienen fechas y modalidades particulares para cada tema desarrollado.
 <bold>Por ello</bold>, y en uso de las atribuciones que le son propias:
 
-[[<bold>EL DECANO</bold>]]
-[[<bold>DEL DEPARTAMENTO ACADÉMICO</bold>]] 
-[[<bold>DE CIENCIAS EXACTAS FÍSICAS Y NATURALES</bold>]] 
-[[<bold>DE LA UNIVERSIDAD NACIONAL DE LA RIOJA</bold>]]
-[[<bold>RESUELVE:</bold>]]
+[[<bold>EL DECANO DEL DEPARTAMENTO ACADÉMICO DE CIENCIAS EXACTAS FÍSICAS Y NATURALES DE LA UNIVERSIDAD NACIONAL DE LA RIOJA RESUELVE:</bold>]]
 
-<bold>Artículo 1º.- AUTORIZAR</bold> la apertura de la <bold>{{cohorte}}</bold> <bold>COHORTE</bold> del curso de capacitación denominado <bold>{{curso}}</bold>, a llevarse a cabo durante el mes de {{mes_curso}}, el que forma parte como anexo de la presente.
+<bold>Artículo 1º.- AUTORIZAR</bold> la apertura de la <bold>{{cohorte}} COHORTE</bold> del curso de capacitación denominado <bold>{{curso}}</bold>, a llevarse a cabo durante el mes de {{mes_curso}}, el que forma parte como anexo de la presente.
 <bold>Artículo 2º.- REMITIR</bold> copia del presente acto administrativo a la Dirección de la Escuela de Informática como así también al Instituto de Formación Continua, dependientes del Departamento de Ciencias Exactas, Físicas y Naturales.
 <bold>Artículo 3º.-</bold> Comuníquese, protocolícese y archívese.

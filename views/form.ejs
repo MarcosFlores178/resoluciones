@@ -35,10 +35,15 @@
 <body>
   <h1>Formulario de Resolución</h1>
 
-  <form action="/resoluciones" method="POST">
+  <!-- <form action="/resoluciones" method="POST"> -->
+    <form action="/resoluciones<%= datos?.id ? '/' + datos.id + '?_method=PUT' : '' %>" method="POST">
+
     
     <label for="expediente">Número de expediente:</label>
     <input type="text" id="expediente" name="expediente" value="<%= datos?.expediente || '' %>">
+    
+    <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
+    <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental" value="<%= datos?.resolucion_interes_departamental || '' %>">
 
     <label for="curso">Nombre del curso:</label>
     <input type="text" id="curso" name="curso" required value="<%= datos?.curso || '' %>">

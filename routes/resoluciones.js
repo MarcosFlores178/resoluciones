@@ -13,7 +13,7 @@ router.get('/lista', resolucionesController.listarResoluciones);
 router.get('/:id', resolucionesController.mostrarResolucion);
 
 //Editar resolucion
-router.post('/:id', resolucionesController.actualizarResolucion);
+router.put('/:id', resolucionesController.actualizarResolucion);
 
 
 router.delete('/:id', resolucionesController.eliminarResolucion);

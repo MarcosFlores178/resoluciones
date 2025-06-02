@@ -11,6 +11,10 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.DATE,
       allowNull: false
     },
+    resolucion_interes_departamental: {
+      type: dataTypes.STRING,
+      allowNull: true
+    },
     numero_resolucion: {
       type: dataTypes.STRING,
       allowNull: true
