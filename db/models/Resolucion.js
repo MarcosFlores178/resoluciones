@@ -31,6 +31,10 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING,
       allowNull: false
     },
+    denominacion_docente:{
+      type: dataTypes.STRING,
+      allowNull: false
+    },
     docente: {
       type: dataTypes.STRING,
       allowNull: false
@@ -79,7 +83,7 @@ module.exports = (sequelize, dataTypes) => {
   };
 
   const Resolucion = sequelize.define(alias, cols, config);
-
+// TODO sacar de la base de datos la fecha de la resolucion y el número de resolución, por ahora. O sacar el allowNull false de la fecha.
   // Si más adelante querés relaciones, podés agregarlas acá
   Resolucion.associate = function(models) {
     // Ejemplo:

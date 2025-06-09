@@ -9,6 +9,7 @@ function renderTemplate(templateText, campos) {
     .replace(/{{expediente}}/g, campos.expediente)
     .replace(/{{curso}}/g, campos.curso)
     .replace(/{{cohorte}}/g, campos.cohorte)
+    .replace(/{{denominacion_docente}}/g, campos.denominacion_docente)
     .replace(/{{docente}}/g, campos.docente)
     .replace(/{{alumnos}}/g, campos.alumnos)
     .replace(/{{objetivos}}/g, campos.objetivos)
@@ -173,6 +174,7 @@ module.exports = {
       expediente,
       curso,
       cohorte,
+      denominacion_docente,
       docente,
       alumnos,
       objetivos,
@@ -195,6 +197,7 @@ module.exports = {
         expediente,
         curso,
         cohorte,
+        denominacion_docente,
         docente,
         alumnos,
         objetivos,
@@ -227,6 +230,7 @@ module.exports = {
         expediente,
         cohorte,
         curso,
+        denominacion_docente,
         docente,
         alumnos,
         objetivos,
@@ -308,6 +312,7 @@ module.exports = {
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
+        denominacion_docente: resolucion.denominacion_docente,
         docente: resolucion.docente,
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,
@@ -390,6 +395,7 @@ module.exports = {
       expediente,
       curso,
       cohorte,
+      denominacion_docente,
       docente,
       alumnos,
       objetivos,
@@ -413,6 +419,7 @@ module.exports = {
     resolucion.expediente = expediente;
     resolucion.curso = curso;
     resolucion.cohorte = cohorte;
+    resolucion.denominacion_docente = denominacion_docente;
     resolucion.docente = docente;
     resolucion.alumnos = alumnos;
     resolucion.objetivos = objetivos;
@@ -447,6 +454,7 @@ module.exports = {
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
+        denominacion_docente: resolucion.denominacion_docente,
         docente: resolucion.docente,
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,

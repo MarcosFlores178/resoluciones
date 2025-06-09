@@ -1,7 +1,7 @@
 <bold>Visto:</bold> El expediente Nº {{expediente}} del registro de la Universidad Nacional de La Rioja, mediante el cual la Lic. Maricel Almada Arias conjuntamente con el Instituto de Formación Continua del Departamento de Ciencias Exactas, Físicas y Naturales, solicitan la apertura de la <bold>{{cohorte}} COHORTE</bold> del curso de capacitación denominado <bold>"{{curso}}"</bold> y,
 <bold>CONSIDERANDO:</bold>
 <bold>Que,</bold> el Curso de {{curso}}, fue aprobado y declarado de interés departamental, mediante Resolución del Consejo Departamental DACEFyN Nº {{resolucion_interes_departamental}}.
-<bold>Que,</bold> la propuesta mencionada estará a cargo de {{docente}} y está dirigida a Estudiantes, Docentes, No Docentes, Graduados, {{alumnos}} y público en general.
+<bold>Que,</bold> la propuesta mencionada estará a cargo de {{denominacion_docente}} {{docente}} y está dirigida a Estudiantes, Docentes, No Docentes, Graduados, {{alumnos}} y público en general.
 <bold>Que,</bold> el curso {{curso}} tiene como objetivo: {{objetivos}}.
 <bold>Que,</bold> la presente capacitación se desarrollará en modalidad virtual asíncrona remota, mediante plataforma meet o zoom de la Escuela de Informática y el campus virtual de la UNLaR. Tendrá una duración total de {{horas_totales}} horas divididas en {{clases}} clases virtuales de {{horas_clase}} horas cada una en aula virtual con asistencia de la/el docente en evaluaciones y otras tareas en el campus de la Universidad Nacional de La Rioja.
 <bold>Que,</bold> el mismo tiene un cupo de {{minimo}} a {{maximo}} asistentes.

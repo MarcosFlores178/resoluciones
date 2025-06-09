@@ -42,7 +42,12 @@
             <label for="cohorte">Número de cohorte:</label>
             <input type="text" id="cohorte" name="cohorte" required value="<%= datos?.cohorte || '' %>">
           </div>
-          <!-- TODO separar nombre del docente de la denominación del docente para que en la base de datos quede prolijo. -->
+
+          <div class="form-group">
+            <label for="denominacion_docente">Denominación docente:</label>
+            <input type="text" id="denominacion_docente" name="denominacion_docente" required value="<%= datos?.denominacion_docente || '' %>">
+          </div>
+
           <div class="form-group">
             <label for="docente">Nombre del docente:</label>
             <input type="text" id="docente" name="docente" required value="<%= datos?.docente || '' %>">
