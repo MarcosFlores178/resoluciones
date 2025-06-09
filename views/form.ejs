@@ -1,193 +1,122 @@
-<!-- <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Generar Resolución</title>
-</head>
-<body>
-  <h1>Formulario de Resolución</h1>
-  <form action="/generar-pdf" method="POST">
-  <label for="nombre">Nombre:</label><br>
-  <input type="text" id="nombre" name="nombre" required><br><br>
-
-  <label for="asignatura">Asignatura:</label><br>
-  <input type="text" id="asignatura" name="asignatura" required><br><br>
-
-  <label for="fecha">Fecha:</label><br>
-  <input type="date" id="fecha" name="fecha" required><br><br>
-
-  <button type="submit">Crear PDF</button>
-</form>
-
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
   <meta charset="UTF-8">
   <title>Formulario de Resolución</title>
-  <link rel="stylesheet" href="/stylesheets/form.css">
+  <link rel="stylesheet" href="/styles/form.css">
+  <link rel="stylesheet" href="/node_modules/toastr/build/toastr.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 </head>
 
 <body>
-  <!-- <h1>Formulario de Resolución</h1>
 
-  
-    <form action="/resoluciones<%= datos?.id ? '/' + datos.id + '?_method=PUT' : '' %>" method="POST">
-
-    
-    <label for="expediente">Número de expediente:</label>
-    <input type="text" id="expediente" name="expediente" value="<%= datos?.expediente || '' %>">
-    
-    <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
-    <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental" value="<%= datos?.resolucion_interes_departamental || '' %>">
-
-    <label for="curso">Nombre del curso:</label>
-    <input type="text" id="curso" name="curso" required value="<%= datos?.curso || '' %>">
-
-    <label for="cohorte">Número de cohorte:</label>
-    <input type="text" id="cohorte" name="cohorte" required value="<%= datos?.cohorte || '' %>">
-
-    <label for="docente">Nombre del docente:</label>
-    <input type="text" id="docente" name="docente" required value="<%= datos?.docente || '' %>">
-
-    <label for="alumnos">Público específico:</label>
-    <input type="text" id="alumnos" name="alumnos" required value="<%= datos?.alumnos || '' %>">
-
-    <label for="objetivos">Objetivo del curso:</label>
-    <input type="text" id="objetivos" name="objetivos" required value="<%= datos?.objetivos || '' %>">
-
-    <label for="segundos_objetivos">Objetivos generales:</label>
-    <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="8" cols="50"><%= datos?.segundos_objetivos || '' %></textarea>
-
-    <label for="horas_totales">Horas totales del curso:</label>
-    <input type="text" id="horas_totales" name="horas_totales" required value="<%= datos?.horas_totales || '' %>">
-
-    <label for="clases">Cantidad de clases:</label>
-    <input type="text" id="clases" name="clases" required value="<%= datos?.clases || '' %>">
-
-    <label for="horas_clase">Horas de cada clase:</label>
-    <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos?.horas_clase || '' %>">
-
-    <label for="minimo">Cantidad mínima de inscriptos:</label>
-    <input type="text" id="minimo" name="minimo" required value="<%= datos?.minimo || '' %>">
-
-    <label for="maximo">Cantidad maxima de inscriptos:</label>
-    <input type="text" id="maximo" name="maximo" required value="<%= datos?.maximo || '' %>">
-
-    <label for="mes_curso">Mes de dictado del curso:</label>
-    <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos?.mes_curso || '' %>">
-
-    <label for="fecha">Fecha de la resolución:</label>
-    <input type="date" id="fecha" name="fecha" required value="<%= datos?.fecha || '' %>">
-    
-    <label for="numero_resolucion">Número de resolución (opcional)</label>
-    <input type="text" id="numero_resolucion" name="numero_resolucion" value="<%= datos?.numero_resolucion || '' %>">
-
-    <div class="actions">
-      <button type="submit" name="accion" value="guardar">Guardar plantilla</button>
-      <button type="submit" name="accion" value="generar_pdf">Generar PDF</button>
-      
-        <a class="boton" href="/resoluciones/lista">Resoluciones</a>
-      
-    </div>
-  </form> -->
   <h1>Formulario de Resolución</h1>
 
-  <form action="/resoluciones<%= datos?.id ? '/' + datos.id + '?_method=PUT' : '' %>" method="POST" class="formulario">
+  <form id="formularioResolucion" method="POST" class="formulario">
+    <% if (datos?.id) { %>
+      <input type="hidden" name="id" value="<%= datos.id %>">
+      <% } %>
 
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="expediente">Número de expediente:</label>
-        <input type="text" id="expediente" name="expediente" value="<%= datos?.expediente || '' %>">
-      </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="expediente">Número de expediente:</label>
+            <input type="text" id="expediente" name="expediente" value="<%= datos?.expediente || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
-        <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental" value="<%= datos?.resolucion_interes_departamental || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
+            <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
+              value="<%= datos?.resolucion_interes_departamental || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="curso">Nombre del curso:</label>
-        <input type="text" id="curso" name="curso" required value="<%= datos?.curso || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="curso">Nombre del curso:</label>
+            <input type="text" id="curso" name="curso" required value="<%= datos?.curso || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="cohorte">Número de cohorte:</label>
-        <input type="text" id="cohorte" name="cohorte" required value="<%= datos?.cohorte || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="cohorte">Número de cohorte:</label>
+            <input type="text" id="cohorte" name="cohorte" required value="<%= datos?.cohorte || '' %>">
+          </div>
+          <!-- TODO separar nombre del docente de la denominación del docente para que en la base de datos quede prolijo. -->
+          <div class="form-group">
+            <label for="docente">Nombre del docente:</label>
+            <input type="text" id="docente" name="docente" required value="<%= datos?.docente || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="docente">Nombre del docente:</label>
-        <input type="text" id="docente" name="docente" required value="<%= datos?.docente || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="alumnos">Público específico:</label>
+            <input type="text" id="alumnos" name="alumnos" required value="<%= datos?.alumnos || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="alumnos">Público específico:</label>
-        <input type="text" id="alumnos" name="alumnos" required value="<%= datos?.alumnos || '' %>">
-      </div>
+          <div class="form-group full-width">
+            <label for="objetivos">Objetivo del curso:</label>
+            <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6"
+              cols="50"><%= datos?.objetivos || '' %></textarea>
+          </div>
 
-      <div class="form-group full-width">
-        <label for="objetivos">Objetivo del curso:</label>
-        <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6" cols="50"><%= datos?.objetivos || '' %></textarea>
-      </div>
+          <div class="form-group full-width">
+            <label for="segundos_objetivos">Objetivos generales:</label>
+            <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6"
+              cols="50"><%= datos?.segundos_objetivos || '' %></textarea>
+          </div>
 
-      <div class="form-group full-width">
-        <label for="segundos_objetivos">Objetivos generales:</label>
-        <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6" cols="50"><%= datos?.segundos_objetivos || '' %></textarea>
-      </div>
+          <div class="form-group">
+            <label for="horas_totales">Horas totales del curso:</label>
+            <input type="text" id="horas_totales" name="horas_totales" required
+              value="<%= datos?.horas_totales || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="horas_totales">Horas totales del curso:</label>
-        <input type="text" id="horas_totales" name="horas_totales" required value="<%= datos?.horas_totales || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="clases">Cantidad de clases:</label>
+            <input type="text" id="clases" name="clases" required value="<%= datos?.clases || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="clases">Cantidad de clases:</label>
-        <input type="text" id="clases" name="clases" required value="<%= datos?.clases || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="horas_clase">Horas de cada clase:</label>
+            <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos?.horas_clase || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="horas_clase">Horas de cada clase:</label>
-        <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos?.horas_clase || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="minimo">Cantidad mínima de inscriptos:</label>
+            <input type="text" id="minimo" name="minimo" required value="<%= datos?.minimo || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="minimo">Cantidad mínima de inscriptos:</label>
-        <input type="text" id="minimo" name="minimo" required value="<%= datos?.minimo || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="maximo">Cantidad máxima de inscriptos:</label>
+            <input type="text" id="maximo" name="maximo" required value="<%= datos?.maximo || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="maximo">Cantidad máxima de inscriptos:</label>
-        <input type="text" id="maximo" name="maximo" required value="<%= datos?.maximo || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="mes_curso">Mes de dictado del curso:</label>
+            <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos?.mes_curso || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="mes_curso">Mes de dictado del curso:</label>
-        <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos?.mes_curso || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="fecha">Fecha de la resolución:</label>
+            <input type="date" id="fecha" name="fecha" required value="<%= datos?.fecha || '' %>">
+          </div>
 
-      <div class="form-group">
-        <label for="fecha">Fecha de la resolución:</label>
-        <input type="date" id="fecha" name="fecha" required value="<%= datos?.fecha || '' %>">
-      </div>
+          <div class="form-group">
+            <label for="numero_resolucion">Número de resolución (opcional)</label>
+            <input type="text" id="numero_resolucion" name="numero_resolucion"
+              value="<%= datos?.numero_resolucion || '' %>">
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label for="numero_resolucion">Número de resolución (opcional)</label>
-        <input type="text" id="numero_resolucion" name="numero_resolucion" value="<%= datos?.numero_resolucion || '' %>">
-      </div>
-    </div>
-
-    <div class="actions">
-      <button type="submit" name="accion" value="guardar">Guardar plantilla</button>
-      <button type="submit" name="accion" value="generar_pdf">Generar PDF</button>
-      <a class="boton" href="/resoluciones/lista">Resoluciones</a>
-    </div>
+        <div class="actions">
+          <button type="submit" name="accion" value="guardar">Guardar</button>
+          <button type="submit" name="accion" value="generar_pdf">Guardar y crear PDF</button>
+          <a class="boton" href="/resoluciones/lista">Resoluciones</a>
+        </div>
 
   </form>
+  <!-- <script src="/toastr/build/toastr.min.js"></script> -->
+  <script src="/js/resolucionForm.js"></script>
 </body>
 
 </html>

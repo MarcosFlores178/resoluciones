@@ -3,65 +3,52 @@
 
 <head>
     <title>Listado de Resoluciones</title>
-    <link rel="stylesheet" href="/stylesheets/lista.css">
+    <link rel="stylesheet" class="btn" href="/styles/lista.css">
 </head>
 <!-- TODO Agregar botón para ver PDF -->
 <body>
-    <h1>Resoluciones guardadas</h1>
-    <a href="/resoluciones">Crear nueva</a>
-    <table border="1" cellpadding="8" cellspacing="0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Curso</th>
-                <th>Docente</th>
-                <th>Fecha</th>
-                <th>N° Resolución</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% if (resoluciones.length===0) { %>
-                <tr>
-                    <td colspan="6">No hay resoluciones guardadas</td>
-                </tr>
-                <% } else { %>
-                    <% resoluciones.forEach(res=> { %>
-                        <tr>
-                            <td>
-                                <%= res.id %>
-                            </td>
-                            <td>
-                                <%= res.curso %>
-                            </td>
-                            <td>
-                                <%= res.docente %>
-                            </td>
-                            <td>
-                                <%= res.fecha %>
-                            </td>
-                            <td>
-                                <%= res.numero_resolucion || '—' %>
-                            </td>
-                            <td>
-                                <a href="/resoluciones/<%= res.id %>">Editar</a>
-                                
-                                <% if (res.numero_resolucion) { %>
-                                    <a href="/resoluciones/<%= res.id %>/pdf" target="_blank">Generar PDF</a>
-                                    <% } %>
-                                    
-                                    <form action="/resoluciones/<%= res.id %>?_method=DELETE" method="POST"
-                                        style="display:inline;">
-                                        <button type="submit"
-                                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </body>
+  <h1>Resoluciones guardadas</h1>
+  <a href="/resoluciones" class="btn-crear">Crear nueva</a>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Curso</th>
+        <th>Docente</th>
+        <th>Fecha</th>
+        <th>N° Resolución</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (resoluciones.length === 0) { %>
+        <tr>
+          <td colspan="6">No hay resoluciones guardadas</td>
+        </tr>
+      <% } else { %>
+        <% resoluciones.forEach(res => { %>
+          <tr>
+            <td><%= res.id %></td>
+            <td><%= res.curso %></td>
+            <td><%= res.docente %></td>
+            <td><%= res.fecha %></td>
+            <td><%= res.numero_resolucion || '—' %></td>
+            <td>
+              <a href="/resoluciones/<%= res.id %>" class="btn">Editar</a>
+              <% if (res.numero_resolucion) { %>
+                <a href="/resoluciones/<%= res.id %>/pdf" target="_blank" class="btn">Crear PDF</a>
+              <% } %>
+              <form action="/resoluciones/<%= res.id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</body>
+
                 
                 
 </html>

@@ -67,6 +67,7 @@ td a.btn:hover, td button.btn:hover {
 
 td button.btn-delete {
   background-color: #f44336;
+  margin-top: 0.5rem;
 }
 
 td button.btn-delete:hover {

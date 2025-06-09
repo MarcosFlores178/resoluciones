@@ -3,6 +3,12 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+// import toastr from 'toastr';
+// import 'toastr/build/toastr.min.css';
+const toastr = require('toastr');
+// No puedes requerir CSS directamente aquí
+
+
 
 
 const resolucionesRouter = require('./routes/resoluciones');
@@ -14,6 +20,9 @@ let app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+app.use('/toastr', express.static(path.join(__dirname, 'node_modules', 'toastr', 'build')));
+app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
