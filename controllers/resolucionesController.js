@@ -294,7 +294,7 @@ module.exports = {
     }
   },
 
-  //FIXME : al apretar en generar pdf en el home, se duplica el registro en la base de datos y no se crea el pdf
+  
 
   generarPDF: async (req, res) => {
     try {
@@ -358,7 +358,7 @@ module.exports = {
       });
 
       textoFinal.split("\n").forEach((line) => {
-        line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible //TODO importante para que no salgan caracteres extraños en saltos de linea
+        line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible importante para que no salgan caracteres extraños en saltos de linea
         processTemplateLine(doc, line);
         doc.moveDown(0.5);
       });
@@ -500,7 +500,7 @@ module.exports = {
       });
 
       textoFinal.split("\n").forEach((line) => {
-        line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible //TODO importante para que no salgan caracteres extraños en saltos de linea
+        line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible importante para que no salgan caracteres extraños en saltos de linea
         processTemplateLine(doc, line);
         doc.moveDown(0.5);
       });
@@ -519,7 +519,7 @@ module.exports = {
       );
     }
 
-    //FIXME Al editar y actualizar una resolución, se guarda de nuevo en la base de datos en vez de hacer un update, debo ver dónde está el error
+  
   },
   listarResoluciones: async (req, res) => {
     try {
