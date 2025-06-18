@@ -164,7 +164,7 @@ function processTemplateLine(doc, line, options = {}) {
 module.exports = {
   // Mostrar formulario inicial
   formulario: (req, res) => {
-    res.render("form", { datos: null });
+    res.render("resolutions/form", { datos: null, cssFile:"styles/form.css" });
   },
 
   // Procesar formulario
@@ -387,7 +387,7 @@ module.exports = {
     const resolucion = await Resolucion.findByPk(req.params.id);
     if (!resolucion) return res.status(404).send("No encontrada");
 
-    res.render("form", { datos: resolucion });
+    res.render("resolutions/form", { datos: resolucion, cssFile:"styles/forms.css" });
   },
 
   actualizarResolucion: async (req, res) => {
@@ -526,7 +526,7 @@ module.exports = {
       const resoluciones = await Resolucion.findAll({
         order: [["id", "DESC"]],
       });
-      res.render("lista", { resoluciones });
+      res.render("resolutions/lista", { resoluciones, cssFile:"styles/lista.css" });
       // res.redirect('/resoluciones/lista');
     } catch (error) {
       res.status(500).send("Error al obtener las resoluciones");

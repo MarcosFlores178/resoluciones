@@ -1,3 +1,4 @@
+require('dotenv').config();
 let createError = require('http-errors');
 let express = require('express');
 let path = require('path');
@@ -10,6 +11,7 @@ let session = require('express-session');
 // No puedes requerir CSS directamente aquí
 const bcrypt = require('bcrypt');
 const expressLayouts = require('express-ejs-layouts');
+
 
 
 
