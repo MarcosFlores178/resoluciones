@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <% include ../partials/head %>
+    
+    <%- include('../partials/head', { cssFile }) %>
   </head>
   <body>
-    <% include ../partials/header %>
+    <%- include('../partials/header') %>
 
-    <main class="container">
-      <%- body %> <!-- Aquí se inyecta el contenido de cada vista -->
+    <main>
+      <%- body %>
     </main>
 
-    <% include ../partials/footer %>
+    <%- include('../partials/footer') %>
   </body>
 </html>
+

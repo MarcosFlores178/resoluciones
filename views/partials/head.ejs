@@ -1,12 +1,14 @@
-  <head>
+
   <meta charset="UTF-8">
   <title>Formulario de Resolución</title>
-  <link rel="stylesheet" href="/styles/form.css">
+ 
   <%if (cssFile) { %>
-    <link rel="stylesheet" href="/styles/<%= cssFile %>">
+    <link rel="stylesheet" href="/styles/<%=cssFile%>">
     <% } %>
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/footer.css">
   <link rel="stylesheet" href="/node_modules/toastr/build/toastr.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-  </head>
+
