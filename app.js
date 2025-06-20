@@ -12,20 +12,34 @@ let session = require('express-session');
 const bcrypt = require('bcrypt');
 const expressLayouts = require('express-ejs-layouts');
 
+//LIVERELOAD:
+const livereload = require("livereload");
+const connectLivereload = require("connect-livereload");
 
-
-
-
+// Rutas
 const resolucionesRouter = require('./routes/resoluciones');
 const methodOverride = require('method-override');
 
 let app = express();
 
+app.use(connectLivereload());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
 app.set('layout', 'layouts/main'); // ruta al layout principal
+
+// Configuración de LiveReload
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(path.join(__dirname, 'public'));
+liveReloadServer.watch(path.join(__dirname, 'views'));
+
+
+liveReloadServer.server.once("connection", () => {
+  setTimeout(() => {
+    liveReloadServer.refresh("/resoluciones");
+  }, 100);
+});
 
 app.use(session({
   secret: 'MH354G486H46G',

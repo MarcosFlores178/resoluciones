@@ -4,8 +4,37 @@ header {
   color: white;
   padding: 1rem 2rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
 }
+.title{
+  color: white;
+  text-decoration: none;
+  margin: 0.5rem 0.5rem;
+  font-weight: 500;
+  /* padding: 0.5rem 0.75rem; */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 5px;
+}
+.subtitle{
+  color: white;
+  text-decoration: none;
+  font-weight: 300;
+  /* padding: 0.5rem 0.75rem; */
+  /* transition: background-color 0.3s ease, color 0.3s ease; */
+  border-radius: 5px;
+  margin: 0 0.5rem;
+}
+.left {
 
+  /* flex-direction: column; */
+}
+.right {
+  /* display: flex; */
+  /* align-items: flex-end; */
+  /* justify-content: flex-end; */
+}
 /* Estilo del nav */
 header nav ul {
   list-style: none;

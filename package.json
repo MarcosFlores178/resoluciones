@@ -25,5 +25,9 @@
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.3",
     "toastr": "^2.1.4"
+  },
+  "devDependencies": {
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.9.3"
   }
 }

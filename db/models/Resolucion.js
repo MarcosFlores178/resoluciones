@@ -5,92 +5,99 @@ module.exports = (sequelize, dataTypes) => {
     id: {
       type: dataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     fecha: {
       type: dataTypes.DATE,
-      allowNull: false
+      allowNull: false,
     },
     resolucion_interes_departamental: {
       type: dataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     numero_resolucion: {
       type: dataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     expediente: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     cohorte: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     curso: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
-    denominacion_docente:{
+    denominacion_docente: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     docente: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     alumnos: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     objetivos: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     segundos_objetivos: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     horas_totales: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     clases: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     horas_clase: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     minimo: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     maximo: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     mes_curso: {
       type: dataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+    },
+    id_usuarios: {
+      type: dataTypes.INTEGER,
+      allowNull: false, // Opcional: si siempre debe tener un usuario
+      references: {
+        model: "usuarios", // Nombre de la tabla en la BD
+        key: "id_usuarios", // Campo referenciado
+      },
     },
   };
 
   let config = {
     tableName: "resoluciones",
-    timestamps: false
+    timestamps: false,
   };
 
   const Resolucion = sequelize.define(alias, cols, config);
-// TODO sacar de la base de datos la fecha de la resolucion y el número de resolución, por ahora. O sacar el allowNull false de la fecha.
+  // TODO sacar de la base de datos la fecha de la resolucion y el número de resolución, por ahora. O sacar el allowNull false de la fecha.
   // Si más adelante querés relaciones, podés agregarlas acá
-  Resolucion.associate = function(models) {
-    // Ejemplo:
-    // Resolucion.belongsTo(models.Asignatura, {
-    //   as: 'asignatura_relacionada',
-    //   foreignKey: 'id_asignatura'
-    // });
+  Resolucion.associate = function (models) {
+    Resolucion.belongsTo(Usuario, {
+      as: "autor",
+      foreignKey: "id_usuarios", // Campo en Resolucion que referencia a Usuario
+    });
   };
 
   return Resolucion;
