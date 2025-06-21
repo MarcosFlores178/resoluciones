@@ -37,7 +37,7 @@ liveReloadServer.watch(path.join(__dirname, 'views'));
 
 liveReloadServer.server.once("connection", () => {
   setTimeout(() => {
-    liveReloadServer.refresh("/resoluciones");
+    liveReloadServer.refresh("/");
   }, 100);
 });
 
@@ -62,7 +62,7 @@ app.use(methodOverride('_method'));
 
 
 
-app.use('/resoluciones', resolucionesRouter);
+app.use('/', resolucionesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
