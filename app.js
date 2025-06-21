@@ -4,6 +4,10 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+// const autMiddleware = require('./middlewares/autMiddleware');
+const { isAuthenticated } = require('./middlewares/autMiddleware');
+const { checkRole } = require('./middlewares/roleMiddleware');
+// const roleMiddleware = require('./middlewares/roleMiddleware');
 // import toastr from 'toastr';
 // import 'toastr/build/toastr.min.css';
 const toastr = require('toastr');
@@ -21,6 +25,8 @@ const resolucionesRouter = require('./routes/resoluciones');
 const methodOverride = require('method-override');
 
 let app = express();
+
+const authRouter = require('./routes/auth');
 
 app.use(connectLivereload());
 // view engine setup
@@ -60,9 +66,26 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+app.use('/', authRouter);
 
+// app.use('/', isAuthenticated, checkRole(['superadmin', 'organizador', 'administrativo']), resolucionesRouter);
 
-app.use('/', resolucionesRouter);
+app.get('/', (req, res) => {
+    if (req.session.user) { // Si hay una sesión activa (cookie válida)
+        switch (req.session.user.role) {
+            case 'superadmin':
+                return res.redirect('/superadmin/dashboard');
+            case 'organizador':
+                return res.redirect('/resolutions/form');
+            case 'administrativo':
+                return res.redirect('/resolutions/list');
+            default:
+                return res.redirect('/auth/login'); // Rol no reconocido
+        }
+    } else {
+        res.redirect('/auth/login'); // Si no hay sesión, va al login
+    }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
