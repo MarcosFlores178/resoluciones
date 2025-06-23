@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const resolucionesController = require('../controllers/resolucionesController');
+const {checkRole} = require('../middlewares/rolMiddleware');
+
+router.use(checkRole(['superadmin', 'organizador']));
 
 // Mostrar el formulario vacío
 router.get('/', resolucionesController.formulario);
