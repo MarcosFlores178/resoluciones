@@ -11,11 +11,11 @@ router.get("/", (req, res) => {
   // Redirige según el rol (usando el guardado en sesión)
   switch (req.session.user.rol) {
     case "superadmin":
-      return res.redirect("/dashboard");
+      return res.redirect("/superadmin");
     case "organizador":
-      return res.redirect("/resoluciones");
+      return res.redirect("resoluciones/form-resolucion");
     case "administrativo":
-      return res.redirect("/lista");
+      return res.redirect("resoluciones/lista-resoluciones");
     default:
       return res.redirect("/auth/login"); //TODO poner mensaje de que el rol no está permitido
   }

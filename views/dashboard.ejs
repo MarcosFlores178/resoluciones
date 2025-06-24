@@ -1,0 +1,18 @@
+<h2>Crear nuevo usuario</h2>
+
+<form action="/admin/usuarios" method="POST">
+  <label>Email:</label>
+  <input type="email" name="email" required>
+
+  <label>Rol:</label>
+  <select name="rol" required>
+    <option value="organizador">Organizador</option>
+    <option value="administrativo">Administrativo</option>
+  </select>
+
+  <button type="submit">Crear y enviar acceso</button>
+</form>
+
+<% if (mensaje) { %>
+  <p><%= mensaje %></p>
+<% } %>

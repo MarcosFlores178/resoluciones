@@ -6,12 +6,12 @@ const {checkRole} = require('../middlewares/rolMiddleware');
 router.use(checkRole(['superadmin', 'organizador']));
 
 // Mostrar el formulario vacío
-router.get('/', resolucionesController.formulario);
+router.get('/form-resolucion', resolucionesController.formulario);
 
 // Procesar formulario
-router.post('/', resolucionesController.procesarFormulario);
+router.post('/form-resolucion', resolucionesController.procesarFormulario);
 
-router.get('/lista', resolucionesController.listarResoluciones);
+router.get('/lista-resoluciones', resolucionesController.listarResoluciones);
 // Ver PDF o editar más adelante (opcional)
 router.get('/:id', resolucionesController.mostrarResolucion);
 

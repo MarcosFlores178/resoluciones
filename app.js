@@ -19,16 +19,16 @@ const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
 
 // Rutas
-const resolucionesRouter = require('./routes/resolutions');
+const resolucionesRouter = require('./routes/resoluciones');
 const methodOverride = require('method-override');
 
 let app = express();
 
 const authRouter = require('./routes/auth');
 const indexRouter = require('./routes/index');
-const usuariosRouter = require('./routes/users');
-const resolucionesRouter = require('./routes/resolutions');
-const dashboardRouter = require('./routes/dashboard');
+const usuariosRouter = require('./routes/usuarios');
+const resolucionesRouter = require('./routes/resoluciones');
+const superadminRouter = require('./routes/superadmin');
 
 
 app.use(connectLivereload());
@@ -75,9 +75,10 @@ app.use('/auth', authRouter);
 
 //rutas protegidas
 app.use(isAuthenticated); // Middleware para verificar autenticación
-app.use('/usuarios', usuariosRouter);
+
 app.use('/resoluciones', resolucionesRouter);
-app.use('/dashboard', dashboardRouter);
+app.use('/superadmin', superadminRouter);
+app.use('/usuarios', usuariosRouter)
 // app.use('/', isAuthenticated, checkRole(['superadmin', 'organizador', 'administrativo']), resolucionesRouter);
 
 

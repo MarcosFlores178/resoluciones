@@ -4,11 +4,11 @@ module.exports = (sequelize, dataTypes) => {
   let cols = {
     nombre: {
       type: dataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
     apellido: {
       type: dataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
     rol: {
       type: dataTypes.ENUM("superadmin", "organizador", "administrativo"),
@@ -28,6 +28,10 @@ module.exports = (sequelize, dataTypes) => {
       allowNull: false,
       unique: true, // Equivalente a UNIQUE KEY en MySQL
     },
+     primerIngreso: {
+      type: dataTypes.BOOLEAN,
+      defaultValue: true
+    }
   };
 
   let config = {

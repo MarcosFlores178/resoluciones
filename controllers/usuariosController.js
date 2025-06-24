@@ -3,8 +3,8 @@ const { Usuario } = db;
 
 
 const usuariosController = {
-    showLogin: (req, res) => {
-        res.render('login');
+    showUsers: (req, res) => {
+        res.render('/users/userList');
     },
     login: async (req, res) => {
         const { email, password } = req.body;
