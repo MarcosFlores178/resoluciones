@@ -6,7 +6,7 @@ const { isAuthenticated } = require('../middlewares/authMiddleware');
 const { checkRole } = require('../middlewares/roleMiddleware');
 
 // router.get('/', isAuthenticated, checkRole('superadmin'), superadminController.index);
-router.get('/superadmin', isAuthenticated, checkRole('superadmin'), superadminController.formCrearUsuario);
-router.post('/superadmin', isAuthenticated, checkRole('superadmin'), superadminController.crearUsuario);
+router.get('/', isAuthenticated, checkRole(['superadmin']), superadminController.formCrearUsuario);
+router.post('/', isAuthenticated, checkRole(['superadmin']), superadminController.crearUsuario);
 
 module.exports = router;

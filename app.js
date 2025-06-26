@@ -60,6 +60,8 @@ app.use((req, res, next) => {
   res.locals.rol = req.session.user?.rol || null;
   next();
 });
+app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+
 app.use('/toastr', express.static(path.join(__dirname, 'node_modules', 'toastr', 'build')));
 app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
 app.use(logger('dev'));

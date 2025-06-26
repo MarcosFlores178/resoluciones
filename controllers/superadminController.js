@@ -24,10 +24,14 @@ exports.crearUsuario = async (req, res) => {
     await enviarEmailTemporal(email, passwordTemporal);
 
     res.render('admin/crearUsuario', {
-      mensaje: `Usuario creado y correo enviado a ${email}`
+      mensaje: `Usuario creado y correo enviado a ${email}`,
+      cssFile: null,
+      error: null,
     });
   } catch (err) {
     console.error(err);
-    res.render('admin/crearUsuario', { mensaje: 'Error al crear usuario' });
+    res.render('admin/crearUsuario', { mensaje: 'Error al crear usuario', 
+      cssFile: null, 
+      error: err.message  });
   }
 };

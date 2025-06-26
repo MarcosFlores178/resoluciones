@@ -524,13 +524,14 @@ module.exports = {
   listarResoluciones: async (req, res) => {
     try {
       const resoluciones = await Resolucion.findAll({
-        order: [["id", "DESC"]],
+        order: [["id_resoluciones", "DESC"]],
       });
-      res.render("resolutions/lista", { resoluciones, cssFile:"lista.css" });
+      res.render("resolutions/lista", { resoluciones, cssFile: "lista.css", mensaje: null, error: null, usuario: req.session.user }); //cssFile debe ser igual a lista.css
       // res.redirect('/resoluciones/lista');
     } catch (error) {
-      res.status(500).send("Error al obtener las resoluciones");
-    }
+  console.error('Error al obtener las resoluciones:', error);
+  res.status(500).send("Error al obtener las resoluciones");
+}
   },
   eliminarResolucion: async (req, res) => {
     try {

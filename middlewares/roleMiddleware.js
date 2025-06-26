@@ -2,7 +2,7 @@
 const checkRole = (allowedRoles) => {
   // Ej: ['superadmin', 'organizador']
   return (req, res, next) => {
-    const userRole = req.session.user?.role;
+    const userRole = req.session.user?.rol;
 
     if (!allowedRoles.includes(userRole)) {
       //Verifica si el rol del usuario está en la lista de roles permitidos

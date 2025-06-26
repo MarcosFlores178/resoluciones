@@ -471,7 +471,7 @@ textoFinal.split('\n').forEach(line => {
   listarResoluciones: async (req, res) => {
     try {
       const resoluciones = await Resolucion.findAll({ order: [['id', 'DESC']] });
-      res.render('lista', { resoluciones });
+      res.render('resolutions/lista', { resoluciones , cssFile: null, mensaje: null, error: null, usuario: req.session.user });
       // res.redirect('/resoluciones/lista');
     } catch (error) {
       res.status(500).send('Error al obtener las resoluciones');

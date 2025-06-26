@@ -7,13 +7,13 @@
     <nav>
       <ul>
         <% if (user) { %>
-          <li><a href="/resoluciones">Resoluciones</a></li>
-          <li><a href="/resoluciones/crear">Nueva resolución</a></li>
-          <li><a href="/logout">Cerrar sesión</a></li>
+          <li><a href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
+          <li><a href="/resoluciones/form-resolucion">Nueva resolución</a></li>
+          <li><a href="/auth/logout">Cerrar sesión</a></li>
           <li><span>👤 <%= user.nombre %></span></li>
           <% } else { %>
-            <li><a href="/login">Iniciar sesión</a></li>
-            <li><a href="/register">Registrarse</a></li>
+            <li><a href="/auth/login">Iniciar sesión</a></li>
+            <li><a href="/auth/register">Registrarse</a></li>
             <% } %>
       </ul>
     </nav>

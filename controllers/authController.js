@@ -1,4 +1,5 @@
 const db = require('../db/models');
+const bcrypt = require('bcrypt');
 const { Usuario } = db;
 
 module.exports = {
@@ -9,9 +10,15 @@ module.exports = {
     },
     login: async (req, res) => {
         const { email, password } = req.body;
+        console.log(email, password);
         try {
             const usuario = await Usuario.findOne({ where: { email } });
             if (!usuario) {
+                return res.status(401).json({ error: 'Credenciales inválidas' });
+            }
+            // Verifica la contraseña
+            const passwordMatch = await bcrypt.compare(password, usuario.password);
+            if (!passwordMatch) {
                 return res.status(401).json({ error: 'Credenciales inválidas' });
             }
 
@@ -21,7 +28,9 @@ module.exports = {
                 email: usuario.email,
                 rol: usuario.rol // Asegúrate de que el modelo tenga este campo
             };
-
+            const rol = req.session.user.rol; // Obtiene el rol del usuario desde la sesión
+            console.log("Rol del usuario:", rol);
+            
             res.redirect('/'); // Redirige a la ruta principal (que manejará el rol)
 
         } catch (error) {

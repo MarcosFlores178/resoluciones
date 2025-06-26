@@ -28,7 +28,7 @@ module.exports = (sequelize, dataTypes) => {
       allowNull: false,
       unique: true, // Equivalente a UNIQUE KEY en MySQL
     },
-     primerIngreso: {
+     primer_ingreso: {
       type: dataTypes.BOOLEAN,
       defaultValue: true
     }
