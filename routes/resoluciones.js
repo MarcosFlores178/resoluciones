@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const resolucionesController = require('../controllers/resolucionesController');
-const {checkRole} = require('../middlewares/rolMiddleware');
+const {checkRole} = require('../middlewares/roleMiddleware');
 
 router.use(checkRole(['superadmin', 'organizador']));
 

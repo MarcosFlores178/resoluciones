@@ -1,25 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const usuariosController = require('../controllers/usuariosController');
+const authController = require('../controllers/authController');
 
-router.get('/firstLogin', usuariosController.firstLogin);
-router.post('/firstLogin', usuariosController.firstLoginPost);
+// router.get('/firstLogin', usuariosController.firstLogin);
+// router.post('/firstLogin', usuariosController.firstLoginPost);
 
-router.get('/register', usuariosController.showRegister);
-router.post('/register', usuariosController.register);
+router.get('/register', authController.showRegister);
+router.post('/register', authController.register);
 
-router.get('/login', usuariosController.showLogin);
-router.post('/login', usuariosController.login);
+router.get('/login', authController.showLogin);
+router.post('/login', authController.login);
 
-router.post('/logout', usuariosController.logout);
+router.post('/logout', authController.logout);
 
 
-router.get('/listar', usuariosController.listar);
-router.get('/listar/:id', usuariosController.listarPorId);
+// router.get('/listar', usuariosController.listar);
+// router.get('/listar/:id', usuariosController.listarPorId);
 
-router.put('/actualizar/:id', usuariosController.actualizar);
+// router.put('/actualizar/:id', usuariosController.actualizar);
 
-router.delete('/eliminar/:id', usuariosController.eliminar);
+// router.delete('/eliminar/:id', usuariosController.eliminar);
 
 
 module.exports = router;

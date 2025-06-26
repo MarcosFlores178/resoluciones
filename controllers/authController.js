@@ -3,7 +3,9 @@ const { Usuario } = db;
 
 module.exports = {
     showLogin: (req, res) => {
-        res.render('login');
+        res.render('auth/login', {
+            error: null // Puedes pasar un mensaje de error si es necesario
+        , cssFile: null });
     },
     login: async (req, res) => {
         const { email, password } = req.body;
@@ -37,7 +39,9 @@ module.exports = {
         });
     },
     showRegister: (req, res) => {
-        res.render('register');
+        res.render('auth/register', {
+            error: null // Puedes pasar un mensaje de error si es necesario
+        , cssFile:null });
     },
     register: async (req, res) => {
         const { nombre, apellido, rol, email, password } = req.body;

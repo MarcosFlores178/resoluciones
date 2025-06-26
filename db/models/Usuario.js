@@ -43,7 +43,7 @@ module.exports = (sequelize, dataTypes) => {
   // TODO sacar de la base de datos la fecha de la resolucion y el número de resolución, por ahora. O sacar el allowNull false de la fecha.
   // Si más adelante querés relaciones, podés agregarlas acá
   Usuario.associate = function (models) {
-    Usuario.hasMany(Resolucion, {
+    Usuario.hasMany(models.Resolucion, {
       as: "resoluciones",
       foreignKey: "id_usuarios", // Campo en Resolucion que referencia a Usuario
     });

@@ -4,7 +4,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
-const { isAuthenticated } = require('./middlewares/autMiddleware');
+const { isAuthenticated } = require('./middlewares/authMiddleware');
 const { checkRole } = require('./middlewares/roleMiddleware');
 
 // import toastr from 'toastr';
@@ -19,7 +19,7 @@ const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
 
 // Rutas
-const resolucionesRouter = require('./routes/resoluciones');
+
 const methodOverride = require('method-override');
 
 let app = express();

@@ -1,10 +1,10 @@
-const { Usuario } = require('../models');
+const { Usuario } = require('../db/models');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const enviarEmailTemporal = require('../utils/email'); // tu función para enviar email
 
 exports.formCrearUsuario = (req, res) => {
-  res.render('admin/crearUsuario');
+  res.render('dashboard', {cssFile:null, mensaje: null, error: null, usuario: req.session.user});
 };
 
 exports.crearUsuario = async (req, res) => {

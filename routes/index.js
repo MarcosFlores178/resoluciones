@@ -20,3 +20,5 @@ router.get("/", (req, res) => {
       return res.redirect("/auth/login"); //TODO poner mensaje de que el rol no está permitido
   }
 });
+
+module.exports = router
