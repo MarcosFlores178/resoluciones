@@ -5,8 +5,8 @@ router.get("/", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/auth/login");
   }
-  if (req.session.user.primerIngreso) {
-    return res.redirect("/auth/primer-ingreso");
+  if (req.session.user.primer_ingreso) {
+    return res.redirect("/auth/register");
   }
   // Redirige según el rol (usando el guardado en sesión)
   switch (req.session.user.rol) {

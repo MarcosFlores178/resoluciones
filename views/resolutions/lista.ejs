@@ -1,13 +1,14 @@
       
   <h1>Resoluciones guardadas</h1>
-  <a href="/resoluciones" class="btn-crear">Crear nueva</a>
   <table>
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Curso</th>
-        <th>Docente</th>
         <th>Fecha</th>
+        <th>Curso</th>
+        <th>Organizador</th>
+        <th>Fecha Resolución</th> 
+        <!-- TODO definir si la fecha es de la carga o de la resolución -->
+        <th>Estado</th>
         <th>N° Resolución</th>
         <th>Acciones</th>
       </tr>
@@ -20,17 +21,17 @@
       <% } else { %>
         <% resoluciones.forEach(res => { %>
           <tr>
-            <td><%= res.id %></td>
+            <td><%= res.id_resoluciones%></td>
             <td><%= res.curso %></td>
-            <td><%= res.docente %></td>
+            <td><%= res.autor.nombre%> <%= res.autor.apellido%></td>
             <td><%= res.fecha %></td>
             <td><%= res.numero_resolucion || '—' %></td>
             <td>
-              <a href="/resoluciones/<%= res.id %>" class="btn">Editar</a>
+              <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Editar</a>
               <% if (res.numero_resolucion) { %>
-                <a href="/resoluciones/<%= res.id %>/pdf" target="_blank" class="btn">Crear PDF</a>
+                <a href="/resoluciones/<%= res.id_resoluciones %>/pdf" target="_blank" class="btn">Crear PDF</a>
               <% } %>
-              <form action="/resoluciones/<%= res.id %>?_method=DELETE" method="POST" style="display:inline;">
+              <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
               </form>
             </td>

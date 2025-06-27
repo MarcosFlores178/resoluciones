@@ -26,12 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
     toastr.info('Generando PDF...');
   }
 
-    let url = '/resoluciones';
+    let url = '/resoluciones/form-resolucion';
     let method = 'POST';
 
     // Si existe ID, es edición
-    if (data.id) {
-      url = `/resoluciones/${data.id}`;
+    if (data.id_resoluciones) {
+      url = `/resoluciones/${data.id_resoluciones}`;
       method = 'PUT';
     }
 

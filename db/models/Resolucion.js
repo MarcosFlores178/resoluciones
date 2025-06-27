@@ -83,6 +83,10 @@ module.exports = (sequelize, dataTypes) => {
         key: "id_usuarios", // Campo referenciado
       },
     },
+    estado: {
+      type: dataTypes.ENUM("Borrador","Pendiente","Emitida"),
+      allowNull: false,
+    },
   };
 
   let config = {

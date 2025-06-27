@@ -10,10 +10,10 @@
           <li><a href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
           <li><a href="/resoluciones/form-resolucion">Nueva resolución</a></li>
           <li><a href="/auth/logout">Cerrar sesión</a></li>
-          <li><span>👤 <%= user.nombre %></span></li>
+          <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
           <% } else { %>
             <li><a href="/auth/login">Iniciar sesión</a></li>
-            <li><a href="/auth/register">Registrarse</a></li>
+            <!-- <li><a href="/auth/register">Registrarse</a></li> -->
             <% } %>
       </ul>
     </nav>

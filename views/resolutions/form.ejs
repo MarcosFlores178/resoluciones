@@ -1,8 +1,8 @@
 <h1>Formulario de Resolución</h1>
 
 <form id="formularioResolucion" method="POST" class="formulario">
-  <% if (datos && datos.id) { %>
-    <input type="hidden" name="id" value="<%= datos.id %>">
+  <% if (datos && datos.id_resoluciones) { %>
+    <input type="hidden" name="id_resoluciones" value="<%= datos.id_resoluciones %>">
   <% } %>
 
   <div class="form-grid">
@@ -87,20 +87,25 @@
 
     <div class="form-group">
       <label for="fecha">Fecha de la resolución:</label>
-      <input type="date" id="fecha" name="fecha" required value="<%= datos ? datos.fecha : '' %>">
+      <input type="date" id="fecha" name="fecha" <% if (usuario.rol === "administrativo") { %> required <% } %> value="<%= datos ? datos.fecha : '' %>">
     </div>
 
     <div class="form-group">
-      <label for="numero_resolucion">Número de resolución (opcional)</label>
+      <label for="numero_resolucion">Número de resolución</label>
       <input type="text" id="numero_resolucion" name="numero_resolucion"
         value="<%= datos ? datos.numero_resolucion : '' %>">
     </div>
   </div>
 
   <div class="actions">
-    <button type="submit" name="accion" value="guardar">Guardar</button>
-    <button type="submit" name="accion" value="generar_pdf">Guardar y crear PDF</button>
-    <a class="boton" href="/resoluciones/lista">Resoluciones</a>
+    <% if (usuario.rol === "organizador") { %>
+    <button type="submit" name="accion" value="guardar">Guardar borrador</button>
+    <button type="submit" name="accion" value="ver">Ver borrador</button>
+    <button type="submit" name="accion" value="enviar">Guardar y Enviar</button>
+    <% } else if (usuario.rol === "administrativo") { %>
+    <button type="submit" name="accion" value="generar_pdf">Guardar y Crear PDF</button>
+    <% } %>
+    <!-- <a class="boton" href="/resoluciones/lista">Resoluciones</a> -->
   </div>
 
 </form>

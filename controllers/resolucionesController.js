@@ -1,4 +1,5 @@
 const { Resolucion } = require("../db/models");
+const {Usuario} = require("../db/models");
 const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
@@ -6,6 +7,8 @@ const PDFDocument = require("pdfkit");
 // Reemplaza los {{campos}} de la plantilla
 function renderTemplate(templateText, campos) {
   return templateText
+    .replace(/{{nombre_organizador}}/g, campos.nombre_organizador)
+    .replace(/{{apellido_organizador}}/g, campos.apellido_organizador)
     .replace(/{{expediente}}/g, campos.expediente)
     .replace(/{{curso}}/g, campos.curso)
     .replace(/{{cohorte}}/g, campos.cohorte)
@@ -164,7 +167,8 @@ function processTemplateLine(doc, line, options = {}) {
 module.exports = {
   // Mostrar formulario inicial
   formulario: (req, res) => {
-    res.render("resolutions/form", { datos: null, cssFile:"form.css" });
+    const usuario = req.session.user;
+    res.render("resolutions/form", { datos: null, cssFile:"form.css", usuario });
   },
 
   // Procesar formulario
@@ -193,6 +197,7 @@ module.exports = {
     try {
       // Crear la resolución en la base de datos
       const nueva = await Resolucion.create({
+        id_usuarios: req.session.user.id_usuarios, // Asegúrate de que el ID del usuario esté en la sesión
         fecha,
         expediente,
         curso,
@@ -225,6 +230,8 @@ module.exports = {
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       const plantilla = fs.readFileSync(plantillaPath, "utf8");
       const textoFinal = renderTemplate(plantilla, {
+        nombre_organizador: req.session.user.nombre,
+        apellido_organizador: req.session.user.apellido,
         fecha,
         resolucion: numero_resolucion || "",
         expediente,
@@ -309,6 +316,8 @@ module.exports = {
 
       // Reemplazo múltiple
       const campos = {
+        nombre_organizador: req.session.user.nombre,
+        apellido_organizador: req.session.user.apellido,
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
@@ -382,7 +391,7 @@ module.exports = {
     }
   },
 
-  // Mostrar datos ya guardados (para edición o generación posterior)
+  // Mostrar + ya guardados (para edición o generación posterior)
   mostrarResolucion: async (req, res) => {
     const resolucion = await Resolucion.findByPk(req.params.id);
     if (!resolucion) return res.status(404).send("No encontrada");
@@ -410,7 +419,7 @@ module.exports = {
       numero_resolucion,
       accion,
     } = req.body;
-    const id = req.params.id;
+    const id_resoluciones = req.params.id_resoluciones;
 
     const resolucion = await Resolucion.findByPk(id);
     if (!resolucion) return res.status(404).send("Resolución no encontrada");
@@ -441,7 +450,7 @@ module.exports = {
       return res.json({
         success: true,
         message: "Plantilla actualizada correctamente.",
-        id: resolucion.id,
+        id: resolucion.id_resoluciones,
       });
     } else if (accion === "generar_pdf") {
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
@@ -524,9 +533,19 @@ module.exports = {
   listarResoluciones: async (req, res) => {
     try {
       const resoluciones = await Resolucion.findAll({
+        include: [
+          {
+            model: Usuario,
+            as: "autor", // Asegúrate de que el alias coincida con tu modelo
+            attributes: ["nombre", "apellido"],
+          },
+        ],
         order: [["id_resoluciones", "DESC"]],
       });
+      console.log("esto sale despues del try y antes del res render");
       res.render("resolutions/lista", { resoluciones, cssFile: "lista.css", mensaje: null, error: null, usuario: req.session.user }); //cssFile debe ser igual a lista.css
+      console.log("esto sale despues del res render");
+
       // res.redirect('/resoluciones/lista');
     } catch (error) {
   console.error('Error al obtener las resoluciones:', error);
