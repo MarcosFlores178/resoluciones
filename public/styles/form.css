@@ -64,3 +64,12 @@ h1 {
 .actions a.boton:hover {
   background-color: #1565c0;
 }
+
+button:disabled {
+  background-color: #ccc !important; /* gris más oscuro */
+  color: #666 !important;            /* texto más tenue */
+  border: 1px solid #999 !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important; /* elimina el efecto de opacidad por defecto si te molesta */
+}
+

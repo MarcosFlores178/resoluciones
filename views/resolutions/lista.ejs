@@ -25,15 +25,32 @@
             <td><%= res.curso %></td>
             <td><%= res.autor.nombre%> <%= res.autor.apellido%></td>
             <td><%= res.fecha %></td>
+            <td>
+              <% if (res.estado === 'guardado') { %>
+                <span class="badge badge-warning">Guardada sin enviar</span>
+              <% } else if (res.estado === 'pendiente') { %>
+                <span class="badge badge-warning">Pendiente</span>
+              <% } else if (res.estado === 'emitida') { %>
+                <span class="badge badge-success">Emitida</span>
+              <% } else if (res.estado === 'modificado') { %>
+                <span class="badge badge-success">Modificado</span>
+
+              <% } else { %>
+                <span class="badge badge-secondary">Desconocido</span>
+              <% } %>
             <td><%= res.numero_resolucion || '—' %></td>
             <td>
               <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Editar</a>
+              
               <% if (res.numero_resolucion) { %>
                 <a href="/resoluciones/<%= res.id_resoluciones %>/pdf" target="_blank" class="btn">Crear PDF</a>
               <% } %>
               <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-delete" onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
               </form>
+              
+
+
             </td>
           </tr>
         <% }) %>

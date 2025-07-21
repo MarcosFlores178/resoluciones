@@ -1,9 +1,10 @@
 <h1>Formulario de Resolución</h1>
 
-<form id="formularioResolucion" method="POST" class="formulario">
-  <% if (datos && datos.id_resoluciones) { %>
-    <input type="hidden" name="id_resoluciones" value="<%= datos.id_resoluciones %>">
-  <% } %>
+<form id="formularioResolucion"
+      method="POST"
+      class="formulario"
+      data-id-resolucion="<%= datos && datos.id_resoluciones ? datos.id_resoluciones : '' %>">
+
 
   <div class="form-grid">
     <div class="form-group">
@@ -84,10 +85,10 @@
       <label for="mes_curso">Mes de dictado del curso:</label>
       <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos ? datos.mes_curso : '' %>">
     </div>
-
+<% if (!rellenaFormulario) { %>
     <div class="form-group">
       <label for="fecha">Fecha de la resolución:</label>
-      <input type="date" id="fecha" name="fecha" <% if (usuario.rol === "administrativo") { %> required <% } %> value="<%= datos ? datos.fecha : '' %>">
+      <input type="date" id="fecha" name="fecha" required value="<%= datos ? datos.fecha : '' %>">
     </div>
 
     <div class="form-group">
@@ -95,21 +96,30 @@
       <input type="text" id="numero_resolucion" name="numero_resolucion"
         value="<%= datos ? datos.numero_resolucion : '' %>">
     </div>
+<% } %>
+    
   </div>
 
   <div class="actions">
-    <% if (usuario.rol === "organizador") { %>
-    <button type="submit" name="accion" value="guardar">Guardar borrador</button>
-    <button type="submit" name="accion" value="ver">Ver borrador</button>
-    <button type="submit" name="accion" value="enviar">Guardar y Enviar</button>
+    <% if (rellenaFormulario) { %>
+
+    <button id="guardar-btn" type="submit" name="accion" value="guardar">Guardar</button>
+
+
+    <button id="ver-borrador-btn" type="submit" name="accion" value="ver_borrador">Ver pdf</button>
+
+
+    <button id="enviar-btn" type="submit" name="accion" value="enviar">Guardar y Enviar</button>
+
     <% } else if (usuario.rol === "administrativo") { %>
     <button type="submit" name="accion" value="generar_pdf">Guardar y Crear PDF</button>
     <% } %>
-    <!-- <a class="boton" href="/resoluciones/lista">Resoluciones</a> -->
+   
   </div>
 
 </form>
 
 <!-- <script src="/toastr/build/toastr.min.js"></script> -->
 <script src="/js/resolucionForm.js"></script>
+
   

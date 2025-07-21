@@ -9,7 +9,7 @@ module.exports = (sequelize, dataTypes) => {
     },
     fecha: {
       type: dataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
     },
     resolucion_interes_departamental: {
       type: dataTypes.STRING,
@@ -84,8 +84,13 @@ module.exports = (sequelize, dataTypes) => {
       },
     },
     estado: {
-      type: dataTypes.ENUM("Borrador","Pendiente","Emitida"),
+      type: dataTypes.ENUM("nuevo","guardado","modificado","pendiente","emitido"),
+      defaultValue: "nuevo", // Valor por defecto
       allowNull: false,
+    },
+    visto_pdf: {
+      type: dataTypes.BOOLEAN,
+      defaultValue: false, // Por defecto, no visto
     },
   };
 

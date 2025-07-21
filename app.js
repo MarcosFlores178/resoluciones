@@ -31,7 +31,7 @@ const resolucionesRouter = require('./routes/resoluciones');
 const superadminRouter = require('./routes/superadmin');
 
 
-app.use(connectLivereload());
+// app.use(connectLivereload());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -39,16 +39,16 @@ app.use(expressLayouts);
 app.set('layout', 'layouts/main'); // ruta al layout principal
 
 // Configuración de LiveReload
-const liveReloadServer = livereload.createServer();
-liveReloadServer.watch(path.join(__dirname, 'public'));
-liveReloadServer.watch(path.join(__dirname, 'views'));
+// const liveReloadServer = livereload.createServer();
+// liveReloadServer.watch(path.join(__dirname, 'public'));
+// liveReloadServer.watch(path.join(__dirname, 'views'));
 
 
-liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
-});
+// liveReloadServer.server.once("connection", () => {
+//   setTimeout(() => {
+//     liveReloadServer.refresh("/");
+//   }, 100);
+// });
 
 app.use(session({
   secret: 'MH354G486H46G',
@@ -66,7 +66,7 @@ app.use('/toastr', express.static(path.join(__dirname, 'node_modules', 'toastr',
 app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));

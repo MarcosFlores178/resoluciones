@@ -2,7 +2,9 @@
 <html lang="es">
   <head>
     
-    <%- include('../partials/head', { cssFile: cssFile || ''  }) %>
+   
+     <%- include('../partials/head', { cssFile: typeof cssFile !== 'undefined' ? cssFile : '' }) %>
+
   </head>
   <body>
     <%- include('../partials/header') %>

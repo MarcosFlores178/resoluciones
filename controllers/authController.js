@@ -7,6 +7,7 @@ module.exports = {
     res.render("auth/login", {
       error: null, // Puedes pasar un mensaje de error si es necesario
       cssFile: null,
+      
     });
   },
   login: async (req, res) => {
@@ -74,7 +75,7 @@ module.exports = {
       if (actualizados === 0) {
         return res.status(404).send("Usuario no encontrado");
       }
-      res.redirect("/resoluciones/form-resolucion"); // Redirige a la ruta de formulario de resolución
+      res.redirect("/"); // Redirige a la ruta de formulario de resolución
     } catch (error) {
       console.error("Error al registrar usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });

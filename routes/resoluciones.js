@@ -13,6 +13,9 @@ router.post('/form-resolucion', checkRole(['superadmin', 'organizador']), resolu
 
 router.get('/lista-resoluciones', checkRole(['superadmin', 'organizador', 'administrativo']), resolucionesController.listarResoluciones);
 // Ver PDF o editar más adelante (opcional)
+
+router.patch('/estado-formulario/:id', resolucionesController.actualizarEstadoFormulario);  
+
 router.get('/:id', resolucionesController.mostrarResolucion);
 
 //Editar resolucion
@@ -23,5 +26,11 @@ router.delete('/:id', resolucionesController.eliminarResolucion);
 
 router.get('/:id/pdf', resolucionesController.generarPDF);
 
+router.get('/:id/ver-borrador', resolucionesController.verBorrador);
+
+router.get('/:id/enviar', resolucionesController.enviarResolucion);
+
+// router.get('/estado-formulario/:id', resolucionesController.estadoFormulario);
+router.get('/estado-formulario/:id', resolucionesController.obtenerEstadoFormulario);
 
 module.exports = router;
