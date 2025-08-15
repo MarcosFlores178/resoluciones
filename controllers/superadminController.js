@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const enviarEmailTemporal = require('../utils/email'); // tu función para enviar email
 
 exports.formCrearUsuario = (req, res) => {
-  res.render('dashboard', {cssFile:null, mensaje: null, error: null, usuario: req.session.user});
+  res.render('dashboard', {cssFile: "dashboard.css", mensaje: null, error: null, usuario: req.session.user});
 };
 
 exports.crearUsuario = async (req, res) => {
@@ -25,7 +25,7 @@ exports.crearUsuario = async (req, res) => {
 
     res.render('dashboard', {
       mensaje: `Usuario creado y correo enviado a ${email}`,
-      cssFile: null,
+      cssFile: "dashboard.css",
       error: null,
     });
   } catch (err) {

@@ -1,10 +1,17 @@
 const { Resolucion } = require("../db/models");
-const {Usuario} = require("../db/models");
+const { Usuario } = require("../db/models");
 const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
-const { PassThrough } = require('stream');
+const { PassThrough } = require("stream");
+const { format } = require("date-fns");
+const { es } = require("date-fns/locale");
 
+function formatearConDateFns(fechaOriginal) {
+  return format(new Date(fechaOriginal), "dd-MMM-yyyy", {
+    locale: es,
+  }).toUpperCase();
+}
 // Reemplaza los {{campos}} de la plantilla
 function renderTemplate(templateText, campos) {
   return templateText
@@ -29,14 +36,15 @@ function renderTemplate(templateText, campos) {
     .replace(
       /{{resolucion_interes_departamental}}/g,
       campos.resolucion_interes_departamental
-    );
+    )
+    .replace(/{{titulo_organizador}}/g, campos.titulo_organizador || "titulo");
 }
 
 // function renderTemplate(template, variables) {
 //   return template.replace(/{{(\w+)}}/g, (_, key) => variables[key] || '');
 // }
 
-function dibujarEncabezado(doc) {
+function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
   const imagePath = path.join(__dirname, "../public/images/logo.png");
 
   if (fs.existsSync(imagePath)) {
@@ -65,8 +73,8 @@ function dibujarEncabezado(doc) {
   doc.font("Times-Bold").fontSize(11);
 
   // Definí los textos
-  const texto2 = "RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº";
-  const texto1 = "LA RIOJA,";
+  const texto2 = `RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº ${numeroResolucion}`;
+  const texto1 = `LA RIOJA, ${fechaResolucion}`;
 
   // Calculá el ancho del texto más largo (para alinear ambos)
   const anchoTexto1 = doc.widthOfString(texto1);
@@ -172,8 +180,13 @@ module.exports = {
     let rellenaFormulario = false; // Inicialmente no se rellena el formulario
     if (usuario.rol === "organizador") {
       rellenaFormulario = true;
-    } 
-    res.render("resolutions/form", { datos: null, cssFile:"form.css", usuario, rellenaFormulario });
+    }
+    res.render("resolutions/form", {
+      datos: null,
+      cssFile: "form.css",
+      usuario,
+      rellenaFormulario,
+    });
   },
 
   // Procesar formulario
@@ -197,13 +210,14 @@ module.exports = {
       numero_resolucion,
       resolucion_interes_departamental,
       accion,
+      titulo_organizador
     } = req.body;
 
     try {
       // Crear la resolución en la base de datos
       const nueva = await Resolucion.create({
         id_usuarios: req.session.user.id_usuarios, // Asegúrate de que el ID del usuario esté en la sesión
-        fecha: fecha || null ,
+        fecha: fecha || null,
         expediente,
         curso,
         cohorte,
@@ -220,27 +234,38 @@ module.exports = {
         mes_curso,
         numero_resolucion: numero_resolucion || null,
         resolucion_interes_departamental,
-        estado: "guardado"
+        estado: "guardado",
+        fecha_creacion: new Date(), // Fecha de creación
+        visto_pdf: false, // Inicialmente no visto
+        fecha_cambio_estado: new Date(), // Se registra la fecha del guardado
+        titulo_organizador: titulo_organizador || "titulo", // Asegúrate de que este campo esté en el formulario
       });
+      console.log("procesarFormulario", nueva.fecha);
 
       // Si la acción es 'guardar', responde con JSON
-    if (accion === "guardar") {
-  console.log("dentro del guardar", nueva.id_resoluciones);
-  return res.json({
-    success: true,
-    message: "Resolución guardada con éxito",
-    id: nueva.id_resoluciones
-  });
-}
-
-
+      if (accion === "guardar") {
+        console.log("dentro del guardar", nueva.id_resoluciones);
+        return res.json({
+          success: true,
+          message: "Resolución guardada con éxito",
+          redirectTo: `/resoluciones/${nueva.id_resoluciones}`, // El cliente maneja la redirección
+          id: nueva.id_resoluciones,
+        });
+      }
+//BUG Nunca va a entrar acá abajo porque la acción generar-PDF entra por otro controlador
       // Si la acción es generar PDF, continúa:
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       const plantilla = fs.readFileSync(plantillaPath, "utf8");
       const textoFinal = renderTemplate(plantilla, {
         nombre_organizador: req.session.user.nombre,
         apellido_organizador: req.session.user.apellido,
-        fecha: fecha || "",
+
+        fecha:
+          fecha.toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }) || "",
         resolucion: numero_resolucion || "",
         expediente,
         cohorte,
@@ -275,11 +300,11 @@ module.exports = {
       doc.pipe(stream);
 
       // Encabezado
-      dibujarEncabezado(doc);
+      dibujarEncabezado(doc, numero_resolucion, fecha);
 
       // Nueva página
       doc.on("pageAdded", () => {
-        dibujarEncabezado(doc);
+        dibujarEncabezado(doc, numero_resolucion, fecha);
         doc.text("", { continued: false });
         doc.font("Times-Roman").fontSize(12);
       });
@@ -309,23 +334,21 @@ module.exports = {
     }
   },
 
-  
-
   generarPDF: async (req, res) => {
     try {
       console.log("dentro de generar pdf");
       const id = req.params.id;
       const resolucion = await Resolucion.findByPk(id);
-      if (!resolucion) return res.status(404).json({
-    success: false,
-    message: "Resolución no encontrada",
-  });
+      if (!resolucion)
+        return res.status(404).json({
+          success: false,
+          message: "Resolución no encontrada",
+        });
 
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      let plantilla = fs
-        .readFileSync(plantillaPath, "utf-8")
-        .replace(/\r/g, "");
-
+      let plantilla = fs.readFileSync(plantillaPath, "utf-8");
+      // .replace(/\r/g, "");
+      console.log("generarPDF", resolucion.fecha);
       // Reemplazo múltiple
       const campos = {
         nombre_organizador: req.session.user.nombre,
@@ -344,12 +367,20 @@ module.exports = {
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
-        fecha: resolucion.fecha || "Hola",
-        numero_resolucion: resolucion.numero_resolucion || "Hola2",
+        fecha: formatearConDateFns(resolucion.fecha) || "", // Usamos la función para formatear la fecha
+        //     fecha: resolucion.fecha
+        // ? new Date(resolucion.fecha).toLocaleDateString('es-ES', {
+        //     day: '2-digit',
+        //     month: '2-digit',
+        //     year: 'numeric'
+        //   })
+        // : "",
+        numero_resolucion: resolucion.numero_resolucion || "",
         resolucion_interes_departamental:
           resolucion.resolucion_interes_departamental,
+        titulo_organizador: resolucion.titulo_organizador || "titulo",
       };
-
+      console.log("campos: ", campos);
       const textoFinal = renderTemplate(plantilla, campos);
 
       const doc = new PDFDocument({
@@ -360,8 +391,23 @@ module.exports = {
           bottom: 70.88, // 2.5 cm
         },
       });
+
+
+
+      const filePath1 = path.join(__dirname, "..", "archivo-de-pruebas.txt");
+
+  fs.writeFile(filePath1, "Esto es una prueba", (err) => {
+    if (err) {
+      console.error("Error al crear el archivo:", err);
+      return res.status(500).json({ error: "Error al crear archivo" });
+    }
+      //  res.status(200).json({ mensaje: "Archivo creado correctamente" });
+  });
+      console.log("filePath1: ", filePath1);
+
+
       const fileName = `resolucion-${resolucion.id_resoluciones}.pdf`;
-      const filePath = path.join(__dirname, `../pdfs/${fileName}`);
+      const filePath = path.join(__dirname, `../public/pdfs/${fileName}`);
       const stream = fs.createWriteStream(filePath);
 
       doc.pipe(stream);
@@ -370,10 +416,10 @@ module.exports = {
       //   processTemplateLine(doc, line);
       //   doc.moveDown(0.5);
       // });
-      dibujarEncabezado(doc);
+      dibujarEncabezado(doc, resolucion.numero_resolucion, campos.fecha);
 
       doc.on("pageAdded", () => {
-        dibujarEncabezado(doc);
+        dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
         doc.text("", { continued: false }); //Es para evitar que el inicio de la nueva página se comporte raro
         doc.font("Times-Roman").fontSize(12);
       });
@@ -388,14 +434,15 @@ module.exports = {
 
       stream.on("finish", () => {
         console.log("PDF terminado, iniciando descarga...");
-        res.download(filePath, (err) => {
-          if (err) {
-            console.error("Error al enviar el archivo:", err);
-          } else {
-            console.log("Descarga enviada correctamente.");
-            fs.unlinkSync(filePath);
-          }
-        });
+        res.json({ pdfUrl: `../pdfs/${fileName}`, fileName });
+        // res.download(filePath, (err) => {
+        //   if (err) {
+        //     console.error("Error al enviar el archivo:", err);
+        //   } else {
+        //     console.log("Descarga enviada correctamente.");
+            // fs.unlinkSync(filePath);
+          // }
+        // });
       });
     } catch (error) {
       console.error(error);
@@ -409,15 +456,20 @@ module.exports = {
     let rellenaFormulario = false; // Inicialmente no se rellena el formulario
     if (usuario.rol === "organizador") {
       rellenaFormulario = true;
-    } 
+    }
     const resolucion = await Resolucion.findByPk(req.params.id);
-    if (!resolucion) return res.status(404).json({
-    success: false,
-    message: "Resolución no encontrada",
-  });
+    if (!resolucion)
+      return res.status(404).json({
+        success: false,
+        message: "Resolución no encontrada",
+      });
 
-
-    res.render("resolutions/form", { datos: resolucion, cssFile:"form.css", usuario, rellenaFormulario });
+    res.render("resolutions/form", {
+      datos: resolucion,
+      cssFile: "form.css",
+      usuario,
+      rellenaFormulario,
+    });
   },
 
   actualizarResolucion: async (req, res) => {
@@ -439,15 +491,17 @@ module.exports = {
       fecha,
       numero_resolucion,
       accion,
-      resolucion_interes_departamental
+      resolucion_interes_departamental,
+      titulo_organizador
     } = req.body;
-    const id= req.params.id;
+    const id = req.params.id;
 
     const resolucion = await Resolucion.findByPk(id);
-    if (!resolucion) return res.status(404).json({
-      success: false,
-      message: "Resolución no encontrada",
-    });
+    if (!resolucion)
+      return res.status(404).json({
+        success: false,
+        message: "Resolución no encontrada",
+      });
 
     // Actualizar los datos
     resolucion.expediente = expediente;
@@ -466,18 +520,21 @@ module.exports = {
     resolucion.mes_curso = mes_curso;
     resolucion.fecha = fecha || null;
     resolucion.numero_resolucion = numero_resolucion || null;
-    resolucion.resolucion_interes_departamental = resolucion_interes_departamental;
-    resolucion.estado = "guardado"  
-      if (resolucion.changed()) {
-        console.log("entró al changed");
-  await resolucion.save();
-}
+    resolucion.resolucion_interes_departamental =
+      resolucion_interes_departamental;
+    resolucion.estado = "guardado";
+    resolucion.fecha_cambio_estado = new Date(); // Se registra la fecha del guardado
+    resolucion.titulo_organizador = titulo_organizador || "titulo"; // Asegúrate de que este campo esté en el formulario
+
+    if (resolucion.changed()) {
+      console.log("entró al changed");
+      await resolucion.save();
+    }
     // await resolucion.save();
 
     if (accion === "guardar") {
       // return res.send("Plantilla actualizada correctamente.");
       //Acá se cambia el estado a guardado
-    
 
       return res.json({
         success: true,
@@ -485,11 +542,11 @@ module.exports = {
         id: resolucion.id_resoluciones,
       });
     } else if (accion === "generar_pdf") {
+      console.log("dentro de generar pdf (actualizarResolucion controller)");
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      let plantilla = fs
-        .readFileSync(plantillaPath, "utf-8")
-        .replace(/\r/g, "");
-
+      let plantilla = fs.readFileSync(plantillaPath, "utf-8");
+      // .replace(/\r/g, "");
+      console.log("Datos antes de const campos: ", numero_resolucion, fecha);
       // Reemplazo múltiple
       const campos = {
         expediente: resolucion.expediente,
@@ -509,9 +566,16 @@ module.exports = {
         fecha: resolucion.fecha || "",
         numero_resolucion: resolucion.numero_resolucion || "",
         resolucion_interes_departamental:
-          resolucion.resolucion_interes_departamental
+          resolucion.resolucion_interes_departamental,
+        titulo_organizador: resolucion.titulo_organizador || "titulo",
       };
-
+      console.log("Datos despues de const campos: ", numero_resolucion, fecha);
+      console.log(
+        "Datos resolucion despues de const campos: ",
+        resolucion.numero_resolucion,
+        resolucion.fecha
+      );
+      console.log("campos: ", campos);
       const textoFinal = renderTemplate(plantilla, campos);
 
       const doc = new PDFDocument({
@@ -532,10 +596,10 @@ module.exports = {
       //   processTemplateLine(doc, line);
       //   doc.moveDown(0.5);
       // });
-      dibujarEncabezado(doc);
+      dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
 
       doc.on("pageAdded", () => {
-        dibujarEncabezado(doc);
+        dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
         doc.text("", { continued: false }); //Es para evitar que el inicio de la nueva página se comporte raro
         doc.font("Times-Roman").fontSize(12);
       });
@@ -549,20 +613,22 @@ module.exports = {
       doc.end();
 
       stream.on("finish", () => {
-         console.log('PDF terminado');
-    // OPCIÓN 1: Devolver JSON con la URL del archivo
-    return res.json({
-      success: true,
-      message: 'PDF generado correctamente.',
-      pdfUrl: `/pdfs/${fileName}`, // Asegúrate de que esta ruta sea accesible desde el cliente
-    });
-          }
-      );
+        console.log("PDF terminado");
+        // OPCIÓN 1: Devolver JSON con la URL del archivo
+        return res.json({
+          success: true,
+          message: "PDF generado correctamente.",
+          pdfUrl: `/pdfs/${fileName}`, // Asegúrate de que esta ruta sea accesible desde el cliente
+        });
+      });
     }
-
-  
   },
   listarResoluciones: async (req, res) => {
+    const usuario = req.session.user;
+    let rellenaFormulario = false; // Inicialmente no se rellena el formulario
+    if (usuario.rol === "organizador") {
+      rellenaFormulario = true;
+    }
     try {
       const resoluciones = await Resolucion.findAll({
         include: [
@@ -572,17 +638,25 @@ module.exports = {
             attributes: ["nombre", "apellido"],
           },
         ],
-        order: [["id_resoluciones", "DESC"]],
+        order: [["fecha_creacion", "DESC"]],
       });
+
       console.log("esto sale despues del try y antes del res render");
-      res.render("resolutions/lista", { resoluciones, cssFile: "lista.css", mensaje: null, error: null, usuario: req.session.user }); //cssFile debe ser igual a lista.css
+      res.render("resolutions/lista", {
+        resoluciones,
+        cssFile: "lista.css",
+        mensaje: null,
+        error: null,
+        usuario: req.session.user,
+        rellenaFormulario,
+      }); //cssFile debe ser igual a lista.css
       console.log("esto sale despues del res render");
 
       // res.redirect('/resoluciones/lista');
     } catch (error) {
-  console.error('Error al obtener las resoluciones:', error);
-  res.status(500).send("Error al obtener las resoluciones");
-}
+      console.error("Error al obtener las resoluciones:", error);
+      res.status(500).send("Error al obtener las resoluciones");
+    }
   },
   eliminarResolucion: async (req, res) => {
     try {
@@ -591,33 +665,36 @@ module.exports = {
       res.redirect("lista-resoluciones");
     } catch (error) {
       console.error("Error completo:", error);
-    console.error("Nombre del error:", error.name);
-    console.error("Mensaje:", error.message);
-    console.error("SQL:", error.sql);
-    res.status(500).send("Error: " + error.message);
+      console.error("Nombre del error:", error.name);
+      console.error("Mensaje:", error.message);
+      console.error("SQL:", error.sql);
+      res.status(500).send("Error: " + error.message);
       res.status(500).send("Error al eliminar la resolución");
     }
   },
+  
   verBorrador: async (req, res) => {
     try {
       const id = req.params.id;
-      console.log("El id es:",id);
+      console.log("El id es:", id);
+
       const resolucion = await Resolucion.findByPk(id);
 
+      if (!resolucion) {
+        return res.status(404).json({
+          success: false,
+          message: "Resolución no encontrada",
+        });
+      }
 
-      if (!resolucion) return res.status(404).json({
-    success: false,
-    message: "Resolución no encontrada",
-
-  });
-
+      // Validar sesión
+      if (!req.session.user) {
+        return res.status(401).send("Sesión expirada o no autenticada");
+      }
 
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      let plantilla = fs
-        .readFileSync(plantillaPath, "utf-8");
-        // .replace(/\r/g, "");
+      const plantilla = fs.readFileSync(plantillaPath, "utf-8");
 
-      // Reemplazo múltiple
       const campos = {
         nombre_organizador: req.session.user.nombre,
         apellido_organizador: req.session.user.apellido,
@@ -638,108 +715,92 @@ module.exports = {
         fecha: resolucion.fecha || "N/A",
         numero_resolucion: resolucion.numero_resolucion || "N/A",
         resolucion_interes_departamental:
-          resolucion.resolucion_interes_departamental
+          resolucion.resolucion_interes_departamental,
+        titulo_organizador: resolucion.titulo_organizador || "titulo",
       };
-// console.log(object.keys(campos));
+
       const textoFinal = renderTemplate(plantilla, campos);
+
+      // Guardar antes de enviar el PDF
+      resolucion.visto_pdf = true;
+      await resolucion.save();
 
       const doc = new PDFDocument({
         margins: {
-          top: 42.52, // 1.5 cm
-          left: 113, // 3 cm
-          right: 42.52, // 1.5 cm
-          bottom: 70.88, // 2.5 cm
+          top: 42.52,
+          left: 113,
+          right: 42.52,
+          bottom: 70.88,
         },
       });
-     
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="resolucion-${resolucion.id_resoluciones}.pdf"`);
 
-        //Pipe directo a la respuesta
-        doc.pipe(res);
-       
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `inline; filename="resolucion-${resolucion.id}.pdf"`
+      );
 
-try {
-            dibujarEncabezado(doc);
-            
-            doc.on("pageAdded", () => {
-                dibujarEncabezado(doc);
-                doc.text("", { continued: false });
-                doc.font("Times-Roman").fontSize(12);
-            });
+      doc.pipe(res);
 
-            textoFinal.split("\n").forEach((line) => {
-                line = line.replace(/\r/g, "").trimEnd();
-                processTemplateLine(doc, line);
-                doc.moveDown(0.5);
-            });
-        } catch (drawError) {
-            console.error("Error al dibujar el PDF:", drawError);
-            if (!res.headersSent) {
-                return res.status(500).send("Error al generar el contenido del PDF");
-            }
-        }
-        resolucion.visto_pdf = true; // Marcar como visto
-        await resolucion.save(); // Guardar el cambio en la base de datos
-      
+      dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
+
+      doc.on("pageAdded", () => {
+        dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
+        doc.text("", { continued: false });
+        doc.font("Times-Roman").fontSize(12);
+      });
+
+      textoFinal.split("\n").forEach((line) => {
+        line = line.replace(/\r/g, "").trimEnd();
+        processTemplateLine(doc, line);
+        doc.moveDown(0.5);
+      });
+
       doc.end();
-
-      // stream.on("finish", () => {
-      //   console.log("PDF terminado, iniciando descarga...");
-      //   res.download(filePath, (err) => {
-      //     if (err) {
-      //       console.error("Error al enviar el archivo:", err);
-      //     } else {
-      //       console.log("Descarga enviada correctamente.");
-      //       fs.unlinkSync(filePath);
-      //     }
-      //   });
-      // });
     } catch (error) {
-      
       console.error("Error general:", error);
-        if (!res.headersSent) {
-            res.status(500).send("Error al procesar la solicitud");
+      if (!res.headersSent) {
+        res.status(500).send("Error al procesar la solicitud");
+      }
     }
-  }
   },
+
   enviarResolucion: async (req, res) => {
-    await this.actualizarResolucion(req, res);
+    // await this.actualizarResolucion(req, res);
+    console.log("en el controller enviarResolucion");
+    const { id } = req.params;
+    const { estado } = req.body;
+    console.log("id de parametros:id", id);
+    console.log("estado recibido:", estado);
+
     try {
-      const id_resoluciones = req.params.id;
-      const resolucion = await Resolucion.findByPk(id_resoluciones);
-      if (!resolucion) return res.status(404).json({
+      const resultado = await Resolucion.update(
+        { estado, fecha_cambio_estado: new Date() }, // Actualiza el estado y la fecha de cambio
+        { where: { id_resoluciones: id } }
+      );
+
+      if (resultado[0] === 0) {
+        return res.status(404).json({ message: "Resolución no encontrada" });
+      }
+      console.log("Resultado update:", resultado);
+
+      res.json({ success: true, message: `Resolución enviada con éxito` });
+    } catch (error) {
+      res.status(500).json({ error: "Error al actualizar el estado" });
+    }
+  },
+  estadoFormulario1: async (req, res) => {
+    const id = req.params.id;
+    const resolucion = await Resolucion.findByPk(id);
+    if (!resolucion)
+      return res.status(404).json({
         success: false,
         message: "Resolución no encontrada",
       });
 
-      // Cambiar el estado a "enviada"
-      resolucion.estado = "pendiente";
-      await resolucion.save();
-
-      res.json({
-        success: true,
-        message: "Resolución enviada correctamente",
-      });
-    } catch (error) {
-      console.error("Error al enviar la resolución:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error al enviar la resolución",
-      });
-    }
-  },  
-  estadoFormulario1: async (req, res) => {
-    const id = req.params.id;
-    const resolucion = await Resolucion.findByPk(id);
-    if (!resolucion) return res.status(404).json({
-      success: false,
-      message: "Resolución no encontrada",
-    });
-
     res.json({
       estado: resolucion.estado, // "nuevo", "guardado", "emitido"
-      visto_pdf: resolucion.visto_pdf  // un campo booleano que marcás cuando abren el PDF
+      visto_pdf: resolucion.visto_pdf, // un campo booleano que marcás cuando abren el PDF
     });
   },
   obtenerEstadoFormulario: async (req, res) => {
@@ -748,7 +809,7 @@ try {
 
       const resolucion = await Resolucion.findOne({
         where: { id_resoluciones: id }, // usás 'id_resoluciones', no 'id'
-        attributes: ['estado', 'visto_pdf']
+        attributes: ["estado", "visto_pdf"],
       });
 
       if (!resolucion) {
@@ -756,34 +817,63 @@ try {
       }
 
       // res.json(resolucion); // Devuelve { estado: "...", visto_pdf: true/false }
-    res.json({
-      estado: resolucion.estado, // "nuevo", "guardado", "emitido"
-      visto_pdf: resolucion.visto_pdf  // un campo booleano que marcás cuando abren el PDF
-    });
+      res.json({
+        estado: resolucion.estado, // "nuevo", "guardado", "emitido"
+        visto_pdf: resolucion.visto_pdf, // un campo booleano que marcás cuando abren el PDF
+      });
     } catch (error) {
       console.error("Error al obtener estado de la resolución:", error);
-      res.status(500).json({ error: "Error al obtener estado de la resolución" });
+      res
+        .status(500)
+        .json({ error: "Error al obtener estado de la resolución" });
     }
   },
   actualizarEstadoFormulario: async (req, res) => {
-  try {
-    const { id } = req.params;
+    try {
+      const { id } = req.params;
 
-    await Resolucion.update(
-      {
-        estado: 'modificado',
-        visto_pdf: false
-      },
-      {
-        where: { id_resoluciones: id }
-      }
-    );
+      await Resolucion.update(
+        {
+          estado: "modificado",
+          visto_pdf: false,
+          fecha_cambio_estado: new Date(), // Actualiza la fecha de cambio de estado
+        },
+        {
+          where: { id_resoluciones: id },
+        }
+      );
 
-    res.sendStatus(204); // OK, sin contenido
-  } catch (error) {
-    console.error("Error al marcar como modificado:", error);
-    res.status(500).json({ error: "Error al actualizar estado" });
-  }
-}
+      res.sendStatus(204); // OK, sin contenido
+    } catch (error) {
+      console.error("Error al marcar como modificado:", error);
+      res.status(500).json({ error: "Error al actualizar estado" });
+    }
+  },
+  emitirFormulario: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { fecha, numero_resolucion } = req.body;
 
-}
+      await Resolucion.update(
+        {
+          fecha,
+          numero_resolucion,
+          estado: "emitido",
+          fecha_cambio_estado: new Date(), // Actualiza la fecha de cambio de estado
+        },
+        {
+          where: { id_resoluciones: id },
+        }
+      );
+
+      res.json({
+        success: true,
+        message: "Resolución emitida con éxito",
+        id: id,
+      });
+    } catch (error) {
+      console.error("Error al marcar como modificado:", error);
+      res.status(500).json({ error: "Error al actualizar estado" });
+    }
+  },
+};

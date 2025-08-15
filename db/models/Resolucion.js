@@ -92,6 +92,19 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.BOOLEAN,
       defaultValue: false, // Por defecto, no visto
     },
+    fecha_creacion: {
+      type: dataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"), // Fecha de creación automática
+    },
+    fecha_cambio_estado: {
+      type: dataTypes.DATE,
+      allowNull: true,
+    },
+    titulo_organizador: {
+      type: dataTypes.STRING,
+      allowNull: false,
+    }
   };
 
   let config = {

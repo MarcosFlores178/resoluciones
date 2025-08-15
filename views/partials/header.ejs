@@ -7,7 +7,7 @@
     <nav>
       <ul>
         <% if (rol === "organizador") { %>
-          <li><a href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
+          <li><a href="/resoluciones/lista-resoluciones">Mis resoluciones</a></li>
           <li><a href="/resoluciones/form-resolucion">Nueva resolución</a></li>
           <li><a href="/auth/logout">Cerrar sesión</a></li>
           <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
@@ -15,7 +15,11 @@
             <li><a href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
             <li><a href="/auth/logout">Cerrar sesión</a></li>
             <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
-            <% } %>
+            <% } else if (rol==="superadmin") {%>
+              <li><a href="/auth/logout">Cerrar sesión</a></li>
+              <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
+              <% } %>
+               
       </ul>
     </nav>
   </div>

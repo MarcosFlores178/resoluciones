@@ -1,0 +1,87 @@
+
+/* ======================================
+   RESET CSS MODERNO CON COMENTARIOS
+   ====================================== */
+
+/* Aplica a todos los elementos y sus pseudoelementos (::before y ::after) */
+*,
+*::before,
+*::after {
+  /* Usa el modelo de caja moderno: el padding y el borde no agrandan el tamaño del elemento */
+  box-sizing: border-box;
+
+  /* Quita márgenes y rellenos que los navegadores aplican por defecto */
+  margin: 0;
+  padding: 0;
+}
+
+/* Elementos de formulario (inputs, botones, etc.) que no heredan por defecto ciertas propiedades */
+button,
+input,
+select {
+  /* Hereda fuente (tamaño, tipo, peso, etc.) del elemento padre */
+  font: inherit;
+
+  /* Hereda color del texto */
+  color: inherit;
+
+  /* Quita el fondo predeterminado (gris claro en la mayoría de los navegadores) */
+  background-color: transparent;
+
+  /* Elimina el borde por defecto */
+  border: none;
+
+  /* Elimina el contorno al hacer foco (opcional, podés personalizarlo después) */
+  outline: none;
+}
+
+/* Hereda alineación de texto también */
+button,
+select {
+  text-align: inherit;
+}
+
+input {
+    padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white; /* Asegura que el fondo sea blanco */
+}
+
+textarea {
+  /* Asegura que el textarea tenga un tamaño razonable por defecto */
+  min-height: 100px;
+  resize: vertical; /* Permite redimensionar solo verticalmente */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+input:focus, textarea:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+}
+
+/* Elimina estilos predeterminados en enlaces */
+a {
+  /* Hereda color del texto en vez del azul típico de los links */
+  color: inherit;
+
+  /* Quita el subrayado predeterminado */
+  text-decoration: none;
+}
+
+/* Estilos base del body, que serán heredados por el resto */
+body {
+  /* Usa una fuente del sistema operativo, que suele verse bien y cargar rápido */
+  font-family: system-ui, sans-serif;
+
+  /* Tamaño base de fuente */
+  font-size: 16px;
+
+  /* Color base del texto */
+  color: #333;
+
+  /* Altura de línea recomendada para legibilidad */
+  line-height: 1.5;
+}

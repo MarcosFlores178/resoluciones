@@ -3,87 +3,105 @@
 <form id="formularioResolucion"
       method="POST"
       class="formulario"
-      data-id-resolucion="<%= datos && datos.id_resoluciones ? datos.id_resoluciones : '' %>">
+      data-id-resolucion="<%= datos && datos.id_resoluciones ? datos.id_resoluciones : '' %>"
+      data-rol-usuario="<%= usuario.rol %>">
 
 
   <div class="form-grid">
     <div class="form-group">
       <label for="expediente">Número de expediente:</label>
-      <input type="text" id="expediente" name="expediente" value="<%= datos ? datos.expediente : '' %>">
+      <input type="text" id="expediente" name="expediente" value="<%= datos ? datos.expediente : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %> required>
     </div>
 
     <div class="form-group">
       <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
       <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
-        value="<%= datos ? datos.resolucion_interes_departamental : '' %>">
+        value="<%= datos ? datos.resolucion_interes_departamental : '' %>"
+        <%= usuario.rol === "administrativo" ? "readonly" : "" %> required>
+    </div>
+
+    <div class="form-group">
+      <label for="titulo_organizador">Título del organizador (ej. "el Lic.", "la Ing."):</label>
+      <input type="text" id="titulo_organizador" name="titulo_organizador" required value="<%= datos ? datos.titulo_organizador : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="curso">Nombre del curso:</label>
-      <input type="text" id="curso" name="curso" required value="<%= datos ? datos.curso : '' %>">
+      <input type="text" id="curso" name="curso" required value="<%= datos ? datos.curso : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="cohorte">Número de cohorte:</label>
-      <input type="text" id="cohorte" name="cohorte" required value="<%= datos ? datos.cohorte : '' %>">
+      <input type="text" id="cohorte" name="cohorte" required value="<%= datos ? datos.cohorte : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
-      <label for="denominacion_docente">Denominación docente:</label>
-      <input type="text" id="denominacion_docente" name="denominacion_docente" required value="<%= datos ? datos.denominacion_docente : '' %>">
+      <label for="denominacion_docente">Denominación del docente (ej. "el Lic.", "la Ing."):</label>
+      <input type="text" id="denominacion_docente" name="denominacion_docente" required value="<%= datos ? datos.denominacion_docente : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="docente">Nombre del docente:</label>
-      <input type="text" id="docente" name="docente" required value="<%= datos ? datos.docente : '' %>">
+      <input type="text" id="docente" name="docente" required value="<%= datos ? datos.docente : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="alumnos">Público específico:</label>
-      <input type="text" id="alumnos" name="alumnos" required value="<%= datos ? datos.alumnos : '' %>">
+      <input type="text" id="alumnos" name="alumnos" required value="<%= datos ? datos.alumnos : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group full-width">
       <label for="objetivos">Objetivo del curso:</label>
-      <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6"
-        cols="50"><%= datos ? datos.objetivos : '' %></textarea>
+      <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %>><%= datos ? datos.objetivos : ''%></textarea>
     </div>
 
     <div class="form-group full-width">
       <label for="segundos_objetivos">Objetivos generales:</label>
-      <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6"
-        cols="50"><%= datos ? datos.segundos_objetivos : '' %></textarea>
+      <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %>><%= datos ? datos.segundos_objetivos : '' %></textarea>
     </div>
 
     <div class="form-group">
       <label for="horas_totales">Horas totales del curso:</label>
       <input type="text" id="horas_totales" name="horas_totales" required
-        value="<%= datos ? datos.horas_totales : '' %>">
+        value="<%= datos ? datos.horas_totales : '' %>"
+        <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="clases">Cantidad de clases:</label>
-      <input type="text" id="clases" name="clases" required value="<%= datos ? datos.clases : '' %>">
+      <input type="text" id="clases" name="clases" required value="<%= datos ? datos.clases : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="horas_clase">Horas de cada clase:</label>
-      <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos ? datos.horas_clase : '' %>">
+      <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos ? datos.horas_clase : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="minimo">Cantidad mínima de inscriptos:</label>
-      <input type="text" id="minimo" name="minimo" required value="<%= datos ? datos.minimo : '' %>">
+      <input type="text" id="minimo" name="minimo" required value="<%= datos ? datos.minimo : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="maximo">Cantidad máxima de inscriptos:</label>
-      <input type="text" id="maximo" name="maximo" required value="<%= datos ? datos.maximo : '' %>">
+      <input type="text" id="maximo" name="maximo" required value="<%= datos ? datos.maximo : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 
     <div class="form-group">
       <label for="mes_curso">Mes de dictado del curso:</label>
-      <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos ? datos.mes_curso : '' %>">
+      <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos ? datos.mes_curso : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
     </div>
 <% if (!rellenaFormulario) { %>
     <div class="form-group">
@@ -94,7 +112,7 @@
     <div class="form-group">
       <label for="numero_resolucion">Número de resolución</label>
       <input type="text" id="numero_resolucion" name="numero_resolucion"
-        value="<%= datos ? datos.numero_resolucion : '' %>">
+        value="<%= datos ? datos.numero_resolucion : '' %>" required>
     </div>
 <% } %>
     
@@ -107,12 +125,15 @@
 
 
     <button id="ver-borrador-btn" type="submit" name="accion" value="ver_borrador">Ver pdf</button>
-
-
+    
+    
     <button id="enviar-btn" type="submit" name="accion" value="enviar">Guardar y Enviar</button>
-
+    
     <% } else if (usuario.rol === "administrativo") { %>
-    <button type="submit" name="accion" value="generar_pdf">Guardar y Crear PDF</button>
+      <!-- <button type="submit" name="accion" value="guardar">Guardar borrador</button> -->
+      <button  id="ver-borrador-btn-admin" type="button" name="accion" value="ver_borrador">Previsualizar pdf</button>
+      <button  id="guardar-pdf" type="submit" name="accion" value="generar_pdf">Generar resolución</button>
+      <!-- <a href="/resoluciones/<%= datos.id_resoluciones %>/pdf" target="_blank" class="imprimir-btn">Imprimir resolución</a> -->
     <% } %>
    
   </div>

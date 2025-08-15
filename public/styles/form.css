@@ -1,10 +1,11 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, sans-serif;
+  margin: 0.3rem;
 }
 
 h1 {
   text-align: center;
+  margin: 2rem 1rem 2rem;
 }
 
 .formulario {
@@ -32,12 +33,12 @@ h1 {
   margin-bottom: 5px;
 }
 
-.form-group input,
-.form-group textarea {
+
+/* .form-group textarea {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
-}
+} */
 
 .full-width {
   grid-column: 1 / -1;
@@ -72,4 +73,31 @@ button:disabled {
   cursor: not-allowed !important;
   opacity: 1 !important; /* elimina el efecto de opacidad por defecto si te molesta */
 }
+
+.imprimir-btn {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+/* input:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+} */
+
+input:read-only, 
+textarea:read-only {
+  background-color: #f8f9fa;
+}
+
+input:read-only:focus, 
+textarea:read-only:focus {
+  background-color: #f8f9fa;
+  outline: none;
+  border-color: #ccc;
+}
+
 
