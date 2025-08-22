@@ -1,182 +1,187 @@
-<h1>Resoluciones guardadas</h1>
-<button class="btn-actualizar" onclick="location.reload()">🔄 Actualizar listado</button>
-<% if (usuario.rol==="organizador" ) { %>
-  <table>
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Curso</th>
-        <th>Organizador</th>
-        <th>Fecha Res.</th>
-        <th>N° Res.</th>
-        <th>Estado</th>
-        <th>último cambio de estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-
-      <% if (resoluciones.length===0) { %>
+<main>
+  <h1>Resoluciones guardadas</h1>
+  <button class="btn-actualizar" onclick="location.reload()">🔄 Actualizar listado</button>
+  <% if (usuario.rol==="organizador" ) { %>
+    <table>
+      <thead>
         <tr>
-          <td colspan="6">No hay resoluciones guardadas</td>
+          <th>Fecha</th>
+          <th>Curso</th>
+          <th>Organizador</th>
+          <th>Fecha Res.</th>
+          <th>N° Res.</th>
+          <th>Estado</th>
+          <th>último cambio de estado</th>
+          <th>Acciones</th>
         </tr>
-        <% } else { %>
-          <% resoluciones.forEach(res=> { %>
-            <% if (res.id_usuarios===usuario.id_usuarios) { %>
-              <tr>
-                <td>
-                  <%= new Date(res.fecha_creacion).toLocaleDateString('es-AR') %>
-                </td>
-                <td>
-                  <%= res.curso %>
-                </td>
-                <td>
-                  <%= res.autor.nombre%>
-                    <%= res.autor.apellido%>
-                </td>
-                <td>
-                  <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
-                </td>
-                <td>
-                  <%= res.numero_resolucion || '—' %>
-                </td>
-                <td>
-                  <% if (res.estado==='guardado' ) { %>
-                    <span class="badge badge-warning">Guardada</span>
-                    <% } else if (res.estado==='pendiente' ) { %>
-                      <span class="badge badge-warning">Pendiente</span>
-                      <% } else if (res.estado==='emitido' ) { %>
-                        <span class="badge badge-success">Emitida</span>
-                        <% } else if (res.estado==='modificado' ) { %>
-                          <span class="badge badge-success">Con cambios sin guardar - Verificar</span>
+      </thead>
+      <tbody>
 
-                          <% } else { %>
-                            <span class="badge badge-secondary">Desconocido</span>
-                            <% } %>
-                </td>
-                <% if (res.fecha_cambio_estado) { %>
+        <% if (resoluciones.length===0) { %>
+          <tr>
+            <td colspan="6">No hay resoluciones guardadas</td>
+          </tr>
+
+          <% } else { %>
+            <% resoluciones.forEach(res=> { %>
+              <% if (res.id_usuarios===usuario.id_usuarios) { %>
+                <tr>
                   <td>
-                    <%= res.fecha_cambio_estado.toLocaleString('es-AR', { day: '2-digit' , month: '2-digit' ,
-                      year: 'numeric' , hour: '2-digit' , minute: '2-digit' , second: '2-digit' , hour12: false }) %>
+                    <%= new Date(res.fecha_creacion).toLocaleDateString('es-AR') %>
                   </td>
-                  <% } else { %>
-                    <td>—</td>
-                    <% } %>
-                      <td>
+                  <td>
+                    <%= res.curso %>
+                  </td>
+                  <td>
+                    <%= res.autor.nombre%>
+                      <%= res.autor.apellido%>
+                  </td>
+                  <td>
+                    <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
+                  </td>
+                  <td>
+                    <%= res.numero_resolucion || '—' %>
+                  </td>
+                  <td>
+                    <% if (res.estado==='guardado' ) { %>
+                      <span class="badge badge-warning">Guardada</span>
+                      <% } else if (res.estado==='pendiente' ) { %>
+                        <span class="badge badge-warning">Pendiente</span>
+                        <% } else if (res.estado==='emitido' ) { %>
+                          <span class="badge badge-success">Emitida</span>
+                          <% } else if (res.estado==='modificado' ) { %>
+                            <span class="badge badge-success">Con cambios sin guardar - Verificar</span>
 
-                        <% if (res.estado==='guardado' || res.estado==='modificado' || res.estado==='rechazado' ||
-                          res.estado==='nuevo' ) { %>
-                          <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Editar</a>
-                          <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST"
-                            style="display:inline;">
-                            <button type="submit" class="btn btn-delete"
-                              onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
+                            <% } else { %>
+                              <span class="badge badge-secondary">Desconocido</span>
                               <% } %>
-                             <% if (res.estado==='emitido' ) { %>
-                                      <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>" target="_blank"
-                                        class="btn">Reimprimir</a>
-                                      <% } %>
+                  </td>
+                  <% if (res.fecha_cambio_estado) { %>
+                    <td>
+                      <%= res.fecha_cambio_estado.toLocaleString('es-AR', { day: '2-digit' , month: '2-digit' ,
+                        year: 'numeric' , hour: '2-digit' , minute: '2-digit' , second: '2-digit' , hour12: false }) %>
+                    </td>
+                    <% } else { %>
+                      <td>—</td>
+                      <% } %>
+                        <td>
 
-                          </form>
+                          <% if (res.estado==='guardado' || res.estado==='modificado' || res.estado==='rechazado' ||
+                            res.estado==='nuevo' ) { %>
+                            <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Editar</a>
+                            <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST"
+                              style="display:inline;">
+                              <button type="submit" class="btn btn-delete"
+                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
+                              <% } %>
+                                <% if (res.estado==='emitido' ) { %>
+                                  <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>" target="_blank"
+                                    class="btn">Reimprimir</a>
+                                  <% } %>
+                            </form>
+                        </td>
+                </tr>
+                <% } %>
+                  <% }) %>
+      </tbody>
+    </table>
 
 
-
-
-                      </td>
-              </tr>
-              <% } %>
-                <% }) %>
-    </tbody>
-  </table>
-  <% } %>
     <% } %>
 
+      <% } %>
 
-      <% if (usuario.rol==="administrativo" ) { %>
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Curso</th>
-              <th>Organizador</th>
-              <th>Fecha Res.</th>
-              <th>N° Res.</th>
-              <th>Estado</th>
-              <th>último cambio de estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
 
-            <% if (resoluciones.length===0) { %>
+        <% if (usuario.rol==="administrativo" ) { %>
+          <table>
+            <thead>
               <tr>
-                <td colspan="6">No hay resoluciones guardadas</td>
+                <th>Fecha</th>
+                <th>Curso</th>
+                <th>Organizador</th>
+                <th>Fecha Res.</th>
+                <th>N° Res.</th>
+                <th>Estado</th>
+                <th>último cambio de estado</th>
+                <th>Acciones</th>
               </tr>
-              <% } else { %>
-                <% resoluciones.forEach(res=> { %>
-                  <% if (res.estado==='pendiente' || res.estado==='rechazado' || res.estado==='emitido') { %>
-                    <tr>
-                      <td>
-                        <%= new Date(res.fecha_creacion).toLocaleDateString('es-AR') %>
-                      </td>
-                      <td>
-                        <%= res.curso %>
-                      </td>
-                      <td>
-                        <%= res.autor.nombre%>
-                          <%= res.autor.apellido%>
-                      </td>
-                      <td>
-                        <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
-                      </td>
-                      <td>
-                        <%= res.numero_resolucion || '—' %>
-                      </td>
-                      <td>
+            </thead>
+            <tbody>
 
-                        <% if (res.estado==='pendiente' ) { %>
-                          <span class="badge badge-warning">Pendiente</span>
-                          <% } else if (res.estado==='rechazado' ) { %>
-                            <span class="badge badge-success">Rechazada</span>
-                            <% } else if (res.estado==='emitido' ) { %>
-                              <span class="badge badge-success">Emitida</span>
-
-                              <% } else { %>
-                                <span class="badge badge-secondary">Desconocido</span>
-                                <% } %>
-                      </td>
-                      <% if (res.fecha_cambio_estado) { %>
+              <% if (resoluciones.length===0) { %>
+                <tr>
+                  <td colspan="6">No hay resoluciones guardadas</td>
+                </tr>
+                <% } else { %>
+                  <% resoluciones.forEach(res=> { %>
+                    <% if (res.estado==='pendiente' || res.estado==='rechazado' || res.estado==='emitido' ) { %>
+                      <tr>
                         <td>
-                          <%= res.fecha_cambio_estado.toLocaleString('es-AR', { day: '2-digit' , month: '2-digit' ,
-                            year: 'numeric' , hour: '2-digit' , minute: '2-digit' , second: '2-digit' , hour12: false })
-                            %>
+                          <%= new Date(res.fecha_creacion).toLocaleDateString('es-AR') %>
                         </td>
-                        <% } else { %>
-                          <td>—</td>
-                          <% } %>
-                            <td>
+                        <td>
+                          <%= res.curso %>
+                        </td>
+                        <td>
+                          <%= res.autor.nombre%>
+                            <%= res.autor.apellido%>
+                        </td>
+                        <td>
+                          <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
+                        </td>
+                        <td>
+                          <%= res.numero_resolucion || '—' %>
+                        </td>
+                        <td>
 
-                              
+                          <% if (res.estado==='pendiente' ) { %>
+                            <span class="badge badge-warning">Pendiente</span>
+                            <% } else if (res.estado==='rechazado' ) { %>
+                              <span class="badge badge-success">Rechazada</span>
+                              <% } else if (res.estado==='emitido' ) { %>
+                                <span class="badge badge-success">Emitida</span>
+
+                                <% } else { %>
+                                  <span class="badge badge-secondary">Desconocido</span>
+                                  <% } %>
+                        </td>
+                        <% if (res.fecha_cambio_estado) { %>
+                          <td>
+                            <%= res.fecha_cambio_estado.toLocaleString('es-AR', { day: '2-digit' , month: '2-digit' ,
+                              year: 'numeric' , hour: '2-digit' , minute: '2-digit' , second: '2-digit' , hour12: false
+                              }) %>
+                          </td>
+                          <% } else { %>
+                            <td>—</td>
+                            <% } %>
+                              <td>
+
+
                                 <% if (res.estado==='pendiente' ) { %>
                                   <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Completar</a>
                                   <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn-reject">Rechazar</a>
-                              
-                                  <% } %>
-                               
 
-                                     <% if (res.estado==='emitido' ) { %>
-                                      <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>" target="_blank"
+                                  <% } %>
+
+
+                                    <% if (res.estado==='emitido' ) { %>
+                                      <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>"
+                                        target="_blank"
                                         class="btn">Reimprimir</a>
                                       <% } %>
 
-                                       
 
 
-                            </td>
-                    </tr>
-                    <% } %>
-                      <% }) %>
-          </tbody>
-        </table>
-        <% } %>
-        <% } %>
+
+                              </td>
+                      </tr>
+                      <% } %>
+                        <% }) %>
+            </tbody>
+          </table>
+
+          <% } %>
+
+
+            <% } %>
+</main>

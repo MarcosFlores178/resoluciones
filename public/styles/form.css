@@ -1,25 +1,24 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, sans-serif;
-  margin: 0.3rem;
-}
 
-h1 {
+
+/* h1 {
   text-align: center;
   margin: 2rem 1rem 2rem;
-}
+} */
 
 .formulario {
   max-width: 900px;
-  margin: auto;
   background: #f9f9f9;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px #ccc;
+
+  display: block;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
+   grid-template-columns: repeat(2, 1fr); /* 2 columnas fijas */
   gap: 15px;
 }
 
@@ -34,19 +33,24 @@ h1 {
 }
 
 
-/* .form-group textarea {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-} */
-
 .full-width {
-  grid-column: 1 / -1;
+  /* grid-column: 1 / -1; */
+    grid-column: span 2; /* Mejor que 1/-1 para compatibilidad */
+
 }
 
-.actions {
+/* .actions {
   margin-top: 20px;
   text-align: center;
+} */
+
+/* Botones alineados correctamente */
+.actions {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .actions button,
@@ -82,11 +86,6 @@ button:disabled {
   border-radius: 5px;
 }
 
-/* input:focus {
-  border-color: #007bff;
-  background-color: #fff;
-  outline: none;
-} */
 
 input:read-only, 
 textarea:read-only {
@@ -100,4 +99,10 @@ textarea:read-only:focus {
   border-color: #ccc;
 }
 
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr; /* 1 columna en móviles */
+  }
+}
 

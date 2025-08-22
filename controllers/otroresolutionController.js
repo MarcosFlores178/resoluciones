@@ -267,7 +267,7 @@ textoFinal.split('\n').forEach(line => {
   
 },
 
-  //FIXME : al apretar en generar pdf en el home, se duplica el registro en la base de datos y no se crea el pdf
+  
   
 
   generarPDF: async (req, res) => {
@@ -464,7 +464,6 @@ textoFinal.split('\n').forEach(line => {
   });
     }
 
-    //FIXME Al editar y actualizar una resolución, se guarda de nuevo en la base de datos en vez de hacer un update, debo ver dónde está el error
 
   
   },

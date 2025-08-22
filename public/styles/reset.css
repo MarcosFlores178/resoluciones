@@ -1,4 +1,3 @@
-
 /* ======================================
    RESET CSS MODERNO CON COMENTARIOS
    ====================================== */
@@ -42,21 +41,25 @@ select {
 }
 
 input {
-    padding: 8px;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: white; /* Asegura que el fondo sea blanco */
+  background-color: white;
+  /* Asegura que el fondo sea blanco */
 }
 
 textarea {
   /* Asegura que el textarea tenga un tamaño razonable por defecto */
   min-height: 100px;
-  resize: vertical; /* Permite redimensionar solo verticalmente */
+  resize: vertical;
+  /* Permite redimensionar solo verticalmente */
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-input:focus, textarea:focus {
+
+input:focus,
+textarea:focus {
   border-color: #007bff;
   background-color: #fff;
   outline: none;
@@ -73,15 +76,40 @@ a {
 
 /* Estilos base del body, que serán heredados por el resto */
 body {
+  display: flex;
+  flex-direction: column;
   /* Usa una fuente del sistema operativo, que suele verse bien y cargar rápido */
-  font-family: system-ui, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   /* Tamaño base de fuente */
   font-size: 16px;
 
   /* Color base del texto */
-  color: #333;
+  color: #2c3e50;
 
   /* Altura de línea recomendada para legibilidad */
   line-height: 1.5;
+
+  background-color: #f4f6f9;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  /* Ocupa el espacio restante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  flex-direction: column;
+}
+
+h1 {
+  text-align: center;
+
+  margin: 1rem 1rem 1rem;
+}
+
+form {
+  margin: 1rem
 }

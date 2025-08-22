@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return; // 👈 Cortamos acá para que no haga el fetch
     }
-
+//TODO crear ventan modal de advertencia de que se está por enviar y eso es sin posibilidad de deshacer
     if (data.accion === "enviar") {
       if (data.id_resoluciones) {
         try {
