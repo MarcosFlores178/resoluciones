@@ -84,15 +84,11 @@ module.exports = (sequelize, dataTypes) => {
       },
     },
     estado: {
-      type: dataTypes.ENUM("nuevo","guardado","modificado","pendiente","emitido"),
+      type: dataTypes.ENUM("nuevo","guardado","pendiente","emitido"),
       defaultValue: "nuevo", // Valor por defecto
       allowNull: false,
     },
-    visto_pdf: {
-      type: dataTypes.BOOLEAN,
-      defaultValue: false, // Por defecto, no visto
-    },
-    fecha_creacion: {
+      fecha_creacion: {
       type: dataTypes.DATE,
       allowNull: false,
       defaultValue: sequelize.literal("CURRENT_TIMESTAMP"), // Fecha de creación automática
@@ -113,7 +109,6 @@ module.exports = (sequelize, dataTypes) => {
   };
 
   const Resolucion = sequelize.define(alias, cols, config);
-  // TODO sacar de la base de datos la fecha de la resolucion y el número de resolución, por ahora. O sacar el allowNull false de la fecha.
   // Si más adelante querés relaciones, podés agregarlas acá
   Resolucion.associate = function (models) {
     Resolucion.belongsTo(models.Usuario, {

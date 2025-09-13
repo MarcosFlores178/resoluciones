@@ -68,17 +68,23 @@
 
                           <% if (res.estado==='guardado' || res.estado==='modificado' || res.estado==='rechazado' ||
                             res.estado==='nuevo' ) { %>
-                            <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Editar</a>
-                            <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST"
-                              style="display:inline;">
-                              <button type="submit" class="btn btn-delete"
-                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
-                              <% } %>
-                                <% if (res.estado==='emitido' ) { %>
-                                  <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>" target="_blank"
-                                    class="btn">Reimprimir</a>
+
+                            <div class="btn-group">
+                              <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Editar</a>
+                              <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST">
+                                <button type="submit" class="btn btn-delete"
+                                  onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
                                   <% } %>
-                            </form>
+                                  </form>
+                                  </div>
+
+                                <% if (res.estado==='emitido' ) { %>
+                                  <div class="reimprimir">
+                                      <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>"
+                                        target="_blank"
+                                        class="btn">Reimprimir</a>
+                                  </div>
+                                  <% } %>
                         </td>
                 </tr>
                 <% } %>
@@ -156,20 +162,22 @@
                             <% } %>
                               <td>
 
-
                                 <% if (res.estado==='pendiente' ) { %>
-                                  <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Completar</a>
-                                  <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn-reject">Rechazar</a>
+                                  <div class="btn-group">
+                                    <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Completar</a>
+                                    <a href="/resoluciones/<%= res.id_resoluciones %>"
+                                      class="btn btn-reject">Rechazar</a>
 
-                                  <% } %>
+                                    <% } %>
 
-
-                                    <% if (res.estado==='emitido' ) { %>
-                                      <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>"
-                                        target="_blank"
-                                        class="btn">Reimprimir</a>
-                                      <% } %>
-
+                                      <% if (res.estado==='emitido' ) { %>
+                                        <div class="reimprimir">
+                                          <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>"
+                                            target="_blank"
+                                            class="btn">Reimprimir</a>
+                                        </div>
+                                        <% } %>
+                                  </div>
 
 
 

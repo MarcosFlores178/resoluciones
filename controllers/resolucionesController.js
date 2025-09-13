@@ -236,7 +236,6 @@ module.exports = {
         resolucion_interes_departamental,
         estado: "guardado",
         fecha_creacion: new Date(), // Fecha de creación
-        visto_pdf: false, // Inicialmente no visto
         fecha_cambio_estado: new Date(), // Se registra la fecha del guardado
         titulo_organizador: titulo_organizador || "titulo", // Asegúrate de que este campo esté en el formulario
       });
@@ -722,7 +721,7 @@ module.exports = {
       const textoFinal = renderTemplate(plantilla, campos);
 
       // Guardar antes de enviar el PDF
-      resolucion.visto_pdf = true;
+      
       await resolucion.save();
 
       const doc = new PDFDocument({
@@ -800,7 +799,6 @@ module.exports = {
 
     res.json({
       estado: resolucion.estado, // "nuevo", "guardado", "emitido"
-      visto_pdf: resolucion.visto_pdf, // un campo booleano que marcás cuando abren el PDF
     });
   },
   obtenerEstadoFormulario: async (req, res) => {
@@ -809,7 +807,7 @@ module.exports = {
 
       const resolucion = await Resolucion.findOne({
         where: { id_resoluciones: id }, // usás 'id_resoluciones', no 'id'
-        attributes: ["estado", "visto_pdf"],
+        attributes: ["estado"],
       });
 
       if (!resolucion) {
@@ -819,7 +817,7 @@ module.exports = {
       // res.json(resolucion); // Devuelve { estado: "...", visto_pdf: true/false }
       res.json({
         estado: resolucion.estado, // "nuevo", "guardado", "emitido"
-        visto_pdf: resolucion.visto_pdf, // un campo booleano que marcás cuando abren el PDF
+        
       });
     } catch (error) {
       console.error("Error al obtener estado de la resolución:", error);
@@ -835,7 +833,7 @@ module.exports = {
       await Resolucion.update(
         {
           estado: "modificado",
-          visto_pdf: false,
+          
           fecha_cambio_estado: new Date(), // Actualiza la fecha de cambio de estado
         },
         {

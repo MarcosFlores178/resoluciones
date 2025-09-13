@@ -80,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       toastr.error("Error al comunicarse con el servidor.");
-      //BUG La resolucion se actualiza, el update anda bien pero se muestra este error que no debe salir porque el put funciona
       console.error(error);
     }
   });

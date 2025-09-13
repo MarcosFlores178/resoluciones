@@ -29,9 +29,11 @@ table {
 
 th, td {
   padding: 1rem;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #e0e0e0;
 }
+
+
 
 th {
   background-color: #003366;
@@ -39,43 +41,86 @@ th {
   text-transform: uppercase;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
+
 }
+
+
 
 tr:hover {
   background-color: #f5faff;
 }
 
 /* Botones de acción */
-td a.btn, td button.btn {
-  background-color: #007bff;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  text-decoration: none;
-  border-radius: 4px;
-  margin-right: 0.4rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  display: inline-block;
+
+.btn-group {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%; 
 }
 
-td a.btn:hover, td button.btn:hover {
+
+
+td a.btn,
+td button.btn,
+td button.btn-delete,
+ td a.btn-reject{
+  display: flex;          /* mismo comportamiento */
+  align-items: center;           /* centra vertical */
+  justify-content: center;       /* centra horizontal */
+  height: 38px;                  /* fuerza misma altura */
+  padding: 0 1rem;               /* solo padding lateral */
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  color: white;
+  box-sizing: border-box;
+}
+
+td a.btn,
+td button.btn {
+  background-color: #007bff;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+td a.btn:hover,
+td button.btn:hover {
   background-color: #005ecb;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 td button.btn-delete {
   background-color: #e74c3c;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
-
 td button.btn-delete:hover {
   background-color: #c0392b;
 }
 
-td form {
-  display: inline;
+td a.btn-reject {
+  background-color: #e74c3c;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
+td a.btn-reject:hover {
+  background-color: #c0392b;
+}
+
+.btn-group form {
+  display: inline-block;
+  margin: 0; /* evita saltos raros */
+}
+
+.reimprimir {
+  display: flex;
+  justify-content: center;
+  /* background-color: cadetblue; */
+}
+
+/* td form {
+  display: inline;
+} */
 
 .btn-actualizar {
   background-color: #284b6e;
@@ -93,23 +138,4 @@ td form {
   background-color: #003366;
 }
 
-.btn-reject {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  font-size: 16px;
-  /* border-radius: 8px; */
-  /* cursor: pointer; */
-  transition: background-color 0.3s ease;
-   padding: 0.5rem 1rem;
- 
-  text-decoration: none;
-  border-radius: 4px;
-  margin-right: 0.4rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-.btn-reject:hover {
-  background-color: #c0392b;
-}
+

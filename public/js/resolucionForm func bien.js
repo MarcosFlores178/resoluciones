@@ -3,15 +3,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const botonesAccion = form.querySelectorAll('button[type="submit"]');
   const campos = form.querySelectorAll("input, textarea"); //NUEVO
   //TODO Capturar estado de resolucion o rol de usuario para desactivar la funcion de cambio de estado
-
+  //TODO Sacar lo de detectar cambios para deshabilitar botones
   //TODO Hacer que el botón Ver pdf también implique guardar
- 
+  let cambioDetectado = false; // Flag para no enviar múltiples veces NUEVO
+  let visto_pdf; // Variable para almacenar el estado del PDF visto
   const idResolucion = form.dataset.idResolucion || null; // ✅ NECESARIO
   const rolUsuario = form.dataset.rolUsuario || null; // Capturamos el rol del usuario desde el dataset del formulario
 
- 
+  const consultarVistoPDF = async (idResolucion) => {
+    if (!idResolucion) return; // Si no hay ID, no hacemos nada
+    const res = await fetch(`/resoluciones/estado-formulario/${idResolucion}`);
+    const data = await res.json();
+    visto_pdf = data.visto_pdf;
+  };
 
- 
+  //Consultar el estado del PDF visto al cargar la página
+  consultarVistoPDF(idResolucion).then(() => {
+    console.log("visto_pdf después de consultar:", visto_pdf);
+  });
 
   // Detectar qué botón se clickeó
   botonesAccion.forEach((boton) => {
@@ -22,7 +31,75 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   //NUEVO ABAJO
-  
+  const notificarModificacion = async () => {
+    if (cambioDetectado || !idResolucion) return;
+
+    cambioDetectado = true;
+
+    try {
+      await fetch(`/resoluciones/estado-formulario/${idResolucion}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ estado: "modificado", visto_pdf: false }),
+      });
+      console.log("Estado actualizado a 'modificado'");
+      visto_pdf = false; // Reseteamos el estado del PDF visto
+      await actualizarBotonesPorEstado();
+      // cambioDetectado = false; // Reseteamos el flag para futuras modificaciones
+    } catch (error) {
+      console.error("Error al notificar modificación:", error);
+    }
+  };
+  const actualizarBotonesPorEstado = async () => {
+    if (!idResolucion || rolUsuario == "administrativo") return;
+
+    try {
+      const res = await fetch(
+        `/resoluciones/estado-formulario/${idResolucion}`
+      );
+      const data = await res.json();
+      //visto_pdf = data.visto_pdf;
+      const verBorradorBtn = document.getElementById("ver-borrador-btn");
+      const enviarBtn = document.getElementById("enviar-btn");
+
+      if (data.estado === "modificado") {
+        console.log("dentro del if de modificado");
+        verBorradorBtn.disabled = true;
+        // enviarBtn.disabled = true;
+        //verBorradorBtn.title = "Ya fue modificado, no se puede volver a ver el borrador";
+      } else if (data.estado === "guardado") {
+        console.log("dentro del if de guardado");
+        verBorradorBtn.disabled = false;
+        verBorradorBtn.title = "Ver borrador";
+      }
+      if (visto_pdf === true) {
+        console.log("El PDF ha sido visto", visto_pdf);
+        enviarBtn.disabled = false;
+      } else if (visto_pdf === false) {
+        console.log("El PDF no ha sido visto", visto_pdf);
+        enviarBtn.disabled = true;
+      }
+    } catch (err) {
+      console.error("Error al obtener estado:", err);
+    }
+
+    // actualizarBotonesPorEstado();// dispara solo la primera vez
+  };
+
+  // Al cargar la vista, deshabilitar botones según el estado
+  // (async () => {
+
+  // })();
+
+  actualizarBotonesPorEstado(); // Dispara solo la primera vez
+  // Escuchar cambios en cualquier campo del formulario
+  campos.forEach((campo) => {
+    campo.addEventListener("input", () => {
+      notificarModificacion();
+    });
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -45,14 +122,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.id_resoluciones) {
         // await actualizarBotonesPorEstado();
         // cambioDetectado = false;
-        // visto_pdf = true;
-        // console.log("visto_pdf antes de actualizarBotones", visto_pdf);
+        visto_pdf = true;
+        console.log("visto_pdf antes de actualizarBotones", visto_pdf);
         const urlBorrador = `/resoluciones/${data.id_resoluciones}/ver-borrador`;
         window.open(urlBorrador, "_blank");
 
-        // await actualizarBotonesPorEstado();
+        await actualizarBotonesPorEstado();
         // cambioDetectado = false;
-        // console.log("visto_pdf despues de actualizarBotones", visto_pdf);
+        console.log("visto_pdf despues de actualizarBotones", visto_pdf);
 
         //      setTimeout(() => {
         //   location.reload();
@@ -65,15 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return; // 👈 Cortamos acá para que no haga el fetch
     }
-
+//TODO crear ventan modal de advertencia de que se está por enviar y eso es sin posibilidad de deshacer
     if (data.accion === "enviar") {
-      //alert para confirmar si quiere enviar
-      if (confirm("¿Estás seguro de que deseas enviar esta resolución?")) {
-        if (data.id_resoluciones) {
-          try {
-            const response = await fetch(
-              `/resoluciones/${data.id_resoluciones}/enviar`,
-              {
+      if (data.id_resoluciones) {
+        try {
+          const response = await fetch(
+            `/resoluciones/${data.id_resoluciones}/enviar`,
+            {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
@@ -97,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
           console.error(err);
           toastr.error("Error al enviar la resolución.");
-        }}
+        }
       } else {
         toastr.warning("Primero debés guardar la resolución para enviarla.");
       }
@@ -107,10 +182,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-
-    // Esta acción sólo puede ser disparada por un administrativo que emite la resolución 
     if (data.accion === "generar_pdf") {
-    
+      // if (!data.id_resoluciones) {
+      //   toastr.warning("Primero debés guardar la resolución para generar el PDF.");
+      // } else {
+      //   toastr.info("Generando PDF...");
+      //   const urlPDF = `/resoluciones/${data.id_resoluciones}/pdf`;
+      //   window.open(urlPDF, "_blank");
+      // }
       toastr.info("Generando PDF...");
 
       console.log(idResolucion);
@@ -162,10 +241,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Esta acción es generada por el organizador para guardar borrador de formulario
-    if (data.accion === "guardar" && !data.id_resoluciones) {
+    // 🪧 Mensaje de estado según la acción
+    if ((data.accion === "guardar") && !data.id_resoluciones) {
       toastr.info("Guardando resolución...");
-      console.log("antes del try en guardar");
       try {
         const response = await fetch("/resoluciones/form-resolucion", {
           method: "POST",
@@ -189,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!form.dataset.idResolucion && result.id) {
             form.dataset.idResolucion = result.id;
           }
-          // await actualizarBotonesPorEstado();
+          await actualizarBotonesPorEstado();
           // cambioDetectado = false;
 
             if (result.id) {
@@ -198,15 +276,14 @@ document.addEventListener("DOMContentLoaded", () => {
               }, 1500);
           // window.location.href = result.redirectTo;
         }
-        return;
         }
       } catch (err) {
         console.error("Excepción en fetch:", err);
-        toastr.error("Ocurrió un error al enviar los datos en el POST.");
+        toastr.error("Ocurrió un error al enviar los datos.");
       }
     }
 
-    if ((data.accion === "guardar") || (data.accion === "ver_borrador") && data.id_resoluciones) {
+    if ((data.accion === "guardar") && data.id_resoluciones) {
       toastr.info("Guardando cambios...");
       try {
         const response = await fetch(`/resoluciones/${data.id_resoluciones}`, {
@@ -232,16 +309,77 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!form.dataset.idResolucion && result.id) {
             form.dataset.idResolucion = result.id;
           }
-          
-         
+          await actualizarBotonesPorEstado();
+          // cambioDetectado = false;
+          // ✅ Redirigir si querés que el usuario vaya al detalle de la resolución
+          // Por ejemplo: después de guardar, ir a la vista de edición
+          //   if (result.id) {
+          //     setTimeout(() => {
+          //       window.location.href = `/resoluciones/${result.id}`;
+          //     }, 1500);
+          //   }
+
+          // } else {
+          //   toastr.error(result.message || "Error desconocido al guardar");
+          // if (data.accion === "guardar"){
+          // window.location.href = result.redirectTo;
+          //  }}
         }
       } catch (err) {
         console.error("Excepción en fetch:", err);
-        toastr.error("Ocurrió un error al enviar los datos en el PUT.");
+        toastr.error("Ocurrió un error al enviar los datos.");
       }
     }
 
-    
+    // Determinar URL y método según si es nuevo o edición
+    // let url = "/resoluciones/form-resolucion";
+    // let method = "POST";
+
+    // if (data.id_resoluciones) {
+    //   url = `/resoluciones/${data.id_resoluciones}`;
+    //   method = "PUT";
+    // }
+
+    // Enviar los datos al servidor
+    //   try {
+    // const response = await fetch(url, {
+    //   method: method,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // });
+
+    // Verificamos si la respuesta fue exitosa
+    //   if (!response.ok) {
+    //     throw new Error("Error del servidor");
+    //   }
+
+    //   const result = await response.json();
+    // console.log("redirectTo",result.redirectTo);
+    // console.log("success",result.success);
+    //   if (result.success) {
+    //     toastr.success(result.message || "¡Tarea realizada con éxito!");
+
+    // ✅ Guardamos el ID en el dataset si recién se creó
+    //     if (!form.dataset.idResolucion && result.id) {
+    //       form.dataset.idResolucion = result.id;
+    //     }
+    // await actualizarBotonesPorEstado();
+    //       cambioDetectado = false;
+    // ✅ Redirigir si querés que el usuario vaya al detalle de la resolución
+    // Por ejemplo: después de guardar, ir a la vista de edición
+    //   if (result.id) {
+    //     setTimeout(() => {
+    //       window.location.href = `/resoluciones/${result.id}`;
+    //     }, 1500);
+    //   }
+
+    // } else {
+    //   toastr.error(result.message || "Error desconocido al guardar");
+    // if (data.accion === "guardar"){
+    // window.location.href = result.redirectTo;
+    //  }}
   });
   //BUG Si el usuario deja de estar logueado, no se maneja bien los errores cuando se intenta guardar una resolucion
   document
@@ -259,5 +397,3 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 });
-
-//TODO Obligar de alguna manera a que el organizador vea el pdf al menos una vez antes de enviarlo. Usaré variable booleana. 

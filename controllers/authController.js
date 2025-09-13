@@ -76,7 +76,6 @@ module.exports = {
         return res.status(404).send("Usuario no encontrado");
       }
       res.redirect("/resoluciones/form-resolucion"); // Redirige a la ruta de formulario de resolución
-      //BUG luego del primer ingreso, no redirigió hasta form-resolucion y si lo hago manualmente, sale error al momento de guardar resolucion
     } catch (error) {
       console.error("Error al registrar usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });
