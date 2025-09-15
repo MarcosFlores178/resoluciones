@@ -23,7 +23,7 @@ module.exports = {
       if (!passwordMatch) {
         return res.status(401).json({ error: "Credenciales inválidas" });
       }
-
+//TODO manejar mejor credenciales invalidas
       // Guarda TODOS los datos del usuario en la sesión (incluyendo el rol)
       req.session.user = {
         id_usuarios: usuario.id_usuarios,

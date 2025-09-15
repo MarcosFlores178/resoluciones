@@ -36,4 +36,6 @@ router.get('/estado-formulario/:id', resolucionesController.obtenerEstadoFormula
 
 router.patch('/:id/enviar', resolucionesController.enviarResolucion);
 
+router.patch('/:id/rechazar', resolucionesController.rechazarResolucion);
+
 module.exports = router;

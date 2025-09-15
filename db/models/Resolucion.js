@@ -84,7 +84,7 @@ module.exports = (sequelize, dataTypes) => {
       },
     },
     estado: {
-      type: dataTypes.ENUM("nuevo","guardado","pendiente","emitido"),
+      type: dataTypes.ENUM("nuevo","guardado","pendiente","emitido","rechazado"),
       defaultValue: "nuevo", // Valor por defecto
       allowNull: false,
     },
@@ -100,6 +100,10 @@ module.exports = (sequelize, dataTypes) => {
     titulo_organizador: {
       type: dataTypes.STRING,
       allowNull: false,
+    },
+    motivo_rechazo: {
+      type: dataTypes.STRING,
+      allowNull: true,
     }
   };
 

@@ -49,9 +49,9 @@
                         <span class="badge badge-warning">Pendiente</span>
                         <% } else if (res.estado==='emitido' ) { %>
                           <span class="badge badge-success">Emitida</span>
-                          <% } else if (res.estado==='modificado' ) { %>
-                            <span class="badge badge-success">Con cambios sin guardar - Verificar</span>
-
+                          <% } else if (res.estado==='rechazado' ) { %>
+                            <span class="badge badge-success">Rechazada - Verificar</span>
+                            <span class="tooltip" data-motivo="<%= res.motivo_rechazo %>">📝</span>
                             <% } else { %>
                               <span class="badge badge-secondary">Desconocido</span>
                               <% } %>
@@ -74,17 +74,17 @@
                               <form action="/resoluciones/<%= res.id_resoluciones %>?_method=DELETE" method="POST">
                                 <button type="submit" class="btn btn-delete"
                                   onclick="return confirm('¿Estás seguro de que deseas eliminar esta resolución?');">Eliminar</button>
-                                  <% } %>
-                                  </form>
-                                  </div>
+                                <% } %>
+                              </form>
+                            </div>
 
-                                <% if (res.estado==='emitido' ) { %>
-                                  <div class="reimprimir">
-                                      <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>"
-                                        target="_blank"
-                                        class="btn">Reimprimir</a>
-                                  </div>
-                                  <% } %>
+                            <% if (res.estado==='emitido' ) { %>
+                              <div class="reimprimir">
+                                <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>"
+                                  target="_blank"
+                                  class="btn">Reimprimir</a>
+                              </div>
+                              <% } %>
                         </td>
                 </tr>
                 <% } %>
@@ -121,7 +121,7 @@
                 <% } else { %>
                   <% resoluciones.forEach(res=> { %>
                     <% if (res.estado==='pendiente' || res.estado==='rechazado' || res.estado==='emitido' ) { %>
-                      <tr>
+                      <tr data-id="<%= res.id_resoluciones %>" data-estado="<%= res.estado %>">
                         <td>
                           <%= new Date(res.fecha_creacion).toLocaleDateString('es-AR') %>
                         </td>
@@ -138,7 +138,7 @@
                         <td>
                           <%= res.numero_resolucion || '—' %>
                         </td>
-                        <td>
+                        <td class="estado">
 
                           <% if (res.estado==='pendiente' ) { %>
                             <span class="badge badge-warning">Pendiente</span>
@@ -161,18 +161,19 @@
                             <td>—</td>
                             <% } %>
                               <td>
-
                                 <% if (res.estado==='pendiente' ) { %>
                                   <div class="btn-group">
-                                    <a href="/resoluciones/<%= res.id_resoluciones %>" class="btn">Completar</a>
                                     <a href="/resoluciones/<%= res.id_resoluciones %>"
-                                      class="btn btn-reject">Rechazar</a>
+                                      class="btn btn-completar">Completar</a>
+                                    <button type="button" class="btn-reject btn" data-id="<%= res.id_resoluciones %>">
+                                      Rechazar
+                                    </button>
+
 
                                     <% } %>
-
                                       <% if (res.estado==='emitido' ) { %>
                                         <div class="reimprimir">
-                                          <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>"
+                                          <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>"
                                             target="_blank"
                                             class="btn">Reimprimir</a>
                                         </div>
@@ -189,7 +190,19 @@
           </table>
 
           <% } %>
+          
+            <div id="modal-rechazo" class="modal hidden">
+              <div class="modal-content">
+                <h3>Motivo del rechazo</h3>
+                <textarea id="motivo-rechazo" rows="4" placeholder="Escriba el motivo..."></textarea>
+                <div class="modal-actions">
+                  <button id="btn-cancelar" class="btn">Cancelar</button>
+                  <button id="btn-confirmar-rechazo" class="btn btn-reject">Confirmar</button>
+                </div>
+              </div>
+            </div>
 
 
             <% } %>
 </main>
+<script src="/js/estado.js"></script>

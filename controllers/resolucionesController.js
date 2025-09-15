@@ -874,4 +874,33 @@ module.exports = {
       res.status(500).json({ error: "Error al actualizar estado" });
     }
   },
+  rechazarResolucion: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { estado, motivo } = req.body;
+
+      console.log("id de parametros:id", id);
+      console.log("estado recibido:", estado);
+
+      await Resolucion.update(
+        {
+          estado: "rechazado",
+          fecha_cambio_estado: new Date(),
+          motivo_rechazo: motivo || null
+        },
+        {
+          where: { id_resoluciones: id },
+        }
+      );
+
+      res.json({
+        success: true,
+        message: "Resolución rechazada con éxito",
+        id: id,
+      });
+    } catch (error) {
+      console.error("Error al rechazar la resolución:", error);
+      res.status(500).json({ error: "Error al rechazar la resolución" });
+    }
+  },
 };
