@@ -80,9 +80,9 @@
 
                             <% if (res.estado==='emitido' ) { %>
                               <div class="reimprimir">
-                                <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>"
-                                  target="_blank"
+                                <a href="/pdfs/resolucion-<%= res.id_resoluciones %>.pdf" target="_blank"
                                   class="btn">Reimprimir</a>
+
                               </div>
                               <% } %>
                         </td>
@@ -173,9 +173,9 @@
                                     <% } %>
                                       <% if (res.estado==='emitido' ) { %>
                                         <div class="reimprimir">
-                                          <a href="/pdfs/<%= " resolucion-" + res.id_resoluciones + ".pdf" %>"
-                                            target="_blank"
+                                          <a href="/pdfs/resolucion-<%= res.id_resoluciones %>.pdf" target="_blank"
                                             class="btn">Reimprimir</a>
+
                                         </div>
                                         <% } %>
                                   </div>
