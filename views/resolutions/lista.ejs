@@ -80,8 +80,7 @@
 
                             <% if (res.estado==='emitido' ) { %>
                               <div class="reimprimir">
-                                <a href="/pdfs/<%= "resolucion-" + res.id_resoluciones + ".pdf" %>"
-                                  target="_blank"
+                                <a href="/pdfs/resolucion-<%= String(res.id_resoluciones).trim() %>.pdf" target="_blank"
                                   class="btn">Reimprimir</a>
                               </div>
                               <% } %>
@@ -173,8 +172,8 @@
                                     <% } %>
                                       <% if (res.estado==='emitido' ) { %>
                                         <div class="reimprimir">
-                                          <a href="/pdfs/resolucion-<%= res.id_resoluciones %>.pdf" target="_blank"
-                                            class="btn">Reimprimir</a>
+                                          <a href="/pdfs/resolucion-<%= String(res.id_resoluciones).trim() %>.pdf"
+                                            target="_blank" class="btn">Reimprimir</a>
 
                                         </div>
                                         <% } %>
