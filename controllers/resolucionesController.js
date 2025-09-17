@@ -44,6 +44,8 @@ function renderTemplate(templateText, campos) {
 //   return template.replace(/{{(\w+)}}/g, (_, key) => variables[key] || '');
 // }
 
+//---------------ENCABEZADO---------------
+
 function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
   const imagePath = path.join(__dirname, "../public/images/logo.png");
 
@@ -105,14 +107,23 @@ function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
   doc.y = doc.y;
 }
 
+//--------------PROCESAR CUERPO DEL TEXTO-------------------
+
 function processTemplateLine(doc, line, options = {}) {
   const sangria = "                            ";
 
+  // 1. Detectar si la línea empieza con "--" (no lleva sangría)
+  const noIndent = line.startsWith("--");
+  let rawLine = noIndent ? line.slice(2).trim() : line;
+
   // 2. Verificar si la línea debe centrarse (quita espacios y chequea [[...]])
-  const trimmedLine = line.trim();
+  const trimmedLine = rawLine.trim();
   const centerMatch = trimmedLine.match(/^\[\[(.*?)\]\]$/);
   const isCentered = !!centerMatch;
-  const content = isCentered ? centerMatch[1].trim() : line;
+
+  // 3. El contenido final
+  const content = isCentered ? centerMatch[1].trim() : rawLine;
+  
 
   // 3. Procesar negritas <bold>...</bold>
   const boldPattern = /<bold>(.*?)<\/bold>/g;
@@ -156,7 +167,8 @@ function processTemplateLine(doc, line, options = {}) {
       doc
         .font(part.bold ? "Times-Bold" : "Times-Roman")
         .fontSize(12)
-        .text((isFirst && !isCentered ? sangria : "") + textToPrint, {
+        .text((isFirst && !isCentered && !noIndent ? sangria : "")
+ + textToPrint, {
           continued: index < parts.length - 1,
           // align,
           ...textOptions,

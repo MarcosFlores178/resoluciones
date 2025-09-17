@@ -16,6 +16,6 @@
 [[<bold>DE LA UNIVERSIDAD NACIONAL DE LA RIOJA</bold>]]
 [[<bold>RESUELVE:</bold>]]
 
---<bold>Artículo 1º.- AUTORIZAR</bold> la apertura de la <bold>{{cohorte}}</bold> <bold>COHORTE</bold>del curso de capacitación denominado <bold>"{{curso}}"</bold>, a llevarse a cabo durante el mes de {{mes_curso}}, el que forma parte como anexo de la presente.
---<bold>Artículo 2º.- REMITIR</bold> copia del presente acto administrativo a la Dirección de la Escuela de Informática como así también al Instituto de Formación Continua, dependientes del Departamento de Ciencias Exactas, Físicas y Naturales.
---<bold>Artículo 3º.-</bold> Comuníquese, protocolícese y archívese.
+<bold>Artículo 1º.- AUTORIZAR</bold> la apertura de la <bold>{{cohorte}}</bold> <bold>COHORTE</bold>del curso de capacitación denominado <bold>"{{curso}}"</bold>, a llevarse a cabo durante el mes de {{mes_curso}}, el que forma parte como anexo de la presente.
+<bold>Artículo 2º.- REMITIR</bold> copia del presente acto administrativo a la Dirección de la Escuela de Informática como así también al Instituto de Formación Continua, dependientes del Departamento de Ciencias Exactas, Físicas y Naturales.
+<bold>Artículo 3º.-</bold> Comuníquese, protocolícese y archívese.
