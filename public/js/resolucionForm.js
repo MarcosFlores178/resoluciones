@@ -49,6 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
    if (data.accion === "ver_borrador") {
   // 1️⃣ Guardamos la resolución primero
   const guardarExistente = async () => {
+      if (!data.id_resoluciones) {
+    toastr.warning("Primero debés guardar la resolución para ver el borrador.");
+    return; } else {
     const formData = new FormData(form);
     const data = {};
     formData.forEach((value, key) => data[key] = value);
@@ -78,19 +81,26 @@ document.addEventListener("DOMContentLoaded", () => {
       toastr.error("Ocurrió un error al guardar la resolución");
       return null;
     }
+  }
   };
 
   // 2️⃣ Ejecutamos guardado y luego abrimos PDF
-  (async () => {
-    const id = await guardarExistente();
-    if (!id) return;
-
-    // 3️⃣ Abrimos el PDF actualizado en una nueva ventana
-    const urlBorrador = `/resoluciones/${id}/ver-borrador`;
-    window.open(urlBorrador, "_blank");
-  })();
-
-  return;
+  if (!data.id_resoluciones) {
+    toastr.warning("Primero debés guardar la resolución para ver el borrador.");
+    return;
+  } else {
+    toastr.info("Guardando cambios...");
+    (async () => {
+      const id = await guardarExistente();
+      if (!id) return;
+  
+      // 3️⃣ Abrimos el PDF actualizado en una nueva ventana
+      const urlBorrador = `/resoluciones/${id}/ver-borrador`;
+      window.open(urlBorrador, "_blank");
+    })();
+  
+    return;
+  }
 }
 
 if (data.accion === "ver_borrador_admin") {
@@ -107,50 +117,47 @@ if (data.accion === "ver_borrador_admin") {
 
     // Esta acción sólo puede ser disparada por un organizador que envía la resolución a revisión   
 
-    if (data.accion === "enviar") {
-      //alert para confirmar si quiere enviar
-      const enviar = async () => {
-      if (confirm("¿Estás seguro de que deseas enviar esta resolución?")) {
-        if (data.id_resoluciones) {
-          try {
-            const response = await fetch(
-              `/resoluciones/${data.id_resoluciones}/enviar`,
-              {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ estado: "pendiente" }),
-            }
-          );
-
-          const result = await response.json();
-          toastr.info("Enviando resolución...");
-
-          
-          if (result.success) {
-            toastr.success(result.message || "¡Tarea realizada con éxito!");
-          } else {
-            toastr.error(result.message || "Algo salió mal.");
-          }
-          setTimeout(() => {
-            window.location.href = "/resoluciones/lista-resoluciones";
-          }, 1500);
-        } catch (err) {
-          console.error(err);
-          toastr.error("Error al enviar la resolución.");
-        }}
-      } else {
-        toastr.warning("Primero debés guardar la resolución para enviarla.");
-      }
-    };
-
-      await enviar();
-
-      //hago un set time de 2 segundos y luego lo redirecciono a /resoluciones/lista-resoluciones
-
-      return;
+   if (data.accion === "enviar") {
+  const enviar = async () => {
+    if (!data.id_resoluciones) {
+      toastr.warning("Primero debés guardar la resolución para enviarla.");
+      return; // corto acá, no muestro confirm
     }
+
+    if (confirm("¿Estás seguro de que deseas enviar esta resolución?")) {
+      try {
+        const response = await fetch(
+          `/resoluciones/${data.id_resoluciones}/enviar`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado: "pendiente" }),
+          }
+        );
+
+        const result = await response.json();
+        toastr.info("Enviando resolución...");
+
+        if (result.success) {
+          toastr.success(result.message || "¡Tarea realizada con éxito!");
+        } else {
+          toastr.error(result.message || "Algo salió mal.");
+        }
+
+        setTimeout(() => {
+          window.location.href = "/resoluciones/lista-resoluciones";
+        }, 1500);
+      } catch (err) {
+        console.error(err);
+        toastr.error("Error al enviar la resolución.");
+      }
+    }
+  };
+
+  await enviar();
+  return;
+}
+
 
 
     // Esta acción sólo puede ser disparada por un administrativo que emite la resolución 
