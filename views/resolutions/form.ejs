@@ -112,9 +112,10 @@
 
     <div class="form-group">
       <label for="horas_totales">Horas totales del curso:</label>
-      <input type="text" id="horas_totales" name="horas_totales" required
+      <input type="number" id="horas_totales" name="horas_totales" required
         value="<%= datos ? datos.horas_totales : '' %>"
         <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+        
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="horas_totales">Editar</button>
       <% } %>
@@ -122,7 +123,7 @@
 
     <div class="form-group">
       <label for="clases">Cantidad de clases:</label>
-      <input type="text" id="clases" name="clases" required value="<%= datos ? datos.clases : '' %>"
+      <input type="number" id="clases" name="clases" required value="<%= datos ? datos.clases : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="clases">Editar</button>
@@ -131,7 +132,7 @@
 
     <div class="form-group">
       <label for="horas_clase">Horas de cada clase:</label>
-      <input type="text" id="horas_clase" name="horas_clase" required value="<%= datos ? datos.horas_clase : '' %>"
+      <input type="number" id="horas_clase" name="horas_clase" required value="<%= datos ? datos.horas_clase : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="horas_clase">Editar</button>
@@ -140,7 +141,7 @@
 
     <div class="form-group">
       <label for="minimo">Cantidad mínima de inscriptos:</label>
-      <input type="text" id="minimo" name="minimo" required value="<%= datos ? datos.minimo : '' %>"
+      <input type="number" id="minimo" name="minimo" required value="<%= datos ? datos.minimo : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="minimo">Editar</button>
@@ -149,7 +150,7 @@
 
     <div class="form-group">
       <label for="maximo">Cantidad máxima de inscriptos:</label>
-      <input type="text" id="maximo" name="maximo" required value="<%= datos ? datos.maximo : '' %>"
+      <input type="number" id="maximo" name="maximo" required value="<%= datos ? datos.maximo : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="maximo">Editar</button>

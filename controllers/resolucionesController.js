@@ -6,6 +6,11 @@ const PDFDocument = require("pdfkit");
 const { PassThrough } = require("stream");
 const { format } = require("date-fns");
 const { es } = require("date-fns/locale");
+const { NumeroALetras } = require('numero-a-letras');
+
+function formatNumber(num) {
+  return `${num} (${NumeroALetras(num)})`;
+}
 
 function formatearConDateFns(fechaOriginal) {
   return format(new Date(fechaOriginal), "dd-MMM-yyyy", {
@@ -225,6 +230,10 @@ module.exports = {
       titulo_organizador
     } = req.body;
 
+    const horasTotalesTexto = formatNumber(clases*horas_clase);
+    const clasesTexto = formatNumber(clases);
+    const horasClaseTexto = formatNumber(horas_clase);
+
     try {
       // Crear la resolución en la base de datos
       const nueva = await Resolucion.create({
@@ -238,9 +247,9 @@ module.exports = {
         alumnos,
         objetivos,
         segundos_objetivos,
-        horas_totales,
-        clases,
-        horas_clase,
+        horas_totales: horasTotalesTexto,
+        clases: clasesTexto,
+        horas_clase: horasClaseTexto,
         minimo,
         maximo,
         mes_curso,
@@ -356,6 +365,10 @@ module.exports = {
           message: "Resolución no encontrada",
         });
 
+      const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
+      const clasesTexto = formatNumber(parseInt(resolucion.clases));
+      const horasTotalesTexto = formatNumber(parseInt(resolucion.horas_clase * resolucion.clases));
+
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       let plantilla = fs.readFileSync(plantillaPath, "utf-8");
       // .replace(/\r/g, "");
@@ -372,9 +385,9 @@ module.exports = {
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,
         segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales: resolucion.horas_totales,
-        clases: resolucion.clases,
-        horas_clase: resolucion.horas_clase,
+        horas_totales: horasTotalesTexto,
+        clases: clasesTexto,
+        horas_clase: horasClaseTexto,
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
