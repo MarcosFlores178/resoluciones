@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("formularioResolucion");
   const botonesAccion = form.querySelectorAll('button[type="submit"]');
   const campos = form.querySelectorAll("input, textarea"); //NUEVO
-  //TODO Capturar estado de resolucion o rol de usuario para desactivar la funcion de cambio de estado
-  //TODO Sacar lo de detectar cambios para deshabilitar botones
-  //TODO Hacer que el botón Ver pdf también implique guardar
+
+ 
+
   let cambioDetectado = false; // Flag para no enviar múltiples veces NUEVO
   let visto_pdf; // Variable para almacenar el estado del PDF visto
   const idResolucion = form.dataset.idResolucion || null; // ✅ NECESARIO
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       return; // 👈 Cortamos acá para que no haga el fetch
     }
-//TODO crear ventan modal de advertencia de que se está por enviar y eso es sin posibilidad de deshacer
+//TODO crear ventana modal de advertencia de que se está por enviar y eso es sin posibilidad de deshacer
     if (data.accion === "enviar") {
       if (data.id_resoluciones) {
         try {

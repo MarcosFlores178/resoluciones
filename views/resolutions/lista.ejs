@@ -2,7 +2,7 @@
   <h1>Resoluciones guardadas</h1>
   <button class="btn-actualizar" onclick="location.reload()">🔄 Actualizar listado</button>
   <% if (usuario.rol==="organizador" ) { %>
-    <table>
+    <table id="tabla-resoluciones">
       <thead>
         <tr>
           <th>Fecha</th>
@@ -205,3 +205,12 @@
             <% } %>
 </main>
 <script src="/js/estado.js"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+<script>
+   document.addEventListener("DOMContentLoaded", () => {
+    new DataTable('#tabla-resoluciones', {
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/2.1.8/i18n/es-ES.json"
+      }});
+  });
+</script>

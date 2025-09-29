@@ -99,6 +99,33 @@ textarea:read-only:focus {
   border-color: #ccc;
 }
 
+/* Estilo general del botón */
+.toggle-btn {
+  width: fit-content;
+  padding: 6px 14px;
+  background-color: #4caf50; /* verde por defecto */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+/* Hover */
+.toggle-btn:hover {
+  background-color: #45a049;
+}
+
+/* Estado de Bloquear */
+.toggle-btn.bloquear {
+  background-color: #f44336; /* rojo */
+}
+
+.toggle-btn.bloquear:hover {
+  background-color: #e53935;
+}
+
 
 @media (max-width: 768px) {
   .form-grid {

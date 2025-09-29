@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
     return res.redirect("/auth/register");
   }
   // Redirige según el rol (usando el guardado en sesión)
+  //TODO ACÁ SE MANEJA LA PRIMERA PÁGINA QUE VE SEGÚN EL ROL
   switch (req.session.user.rol) {
     case "superadmin":
       return res.redirect("/superadmin");
