@@ -6,7 +6,7 @@ const PDFDocument = require("pdfkit");
 const { PassThrough } = require("stream");
 const { format } = require("date-fns");
 const { es } = require("date-fns/locale");
-const { NumeroALetras } = require('numero-a-letras');
+const { NumeroALetras } = require("numero-a-letras");
 
 function formatNumber(num) {
   return `${num} (${NumeroALetras(num)})`;
@@ -128,7 +128,6 @@ function processTemplateLine(doc, line, options = {}) {
 
   // 3. El contenido final
   const content = isCentered ? centerMatch[1].trim() : rawLine;
-  
 
   // 3. Procesar negritas <bold>...</bold>
   const boldPattern = /<bold>(.*?)<\/bold>/g;
@@ -172,12 +171,14 @@ function processTemplateLine(doc, line, options = {}) {
       doc
         .font(part.bold ? "Times-Bold" : "Times-Roman")
         .fontSize(12)
-        .text((isFirst && !isCentered && !noIndent ? sangria : "")
- + textToPrint, {
-          continued: index < parts.length - 1,
-          // align,
-          ...textOptions,
-        });
+        .text(
+          (isFirst && !isCentered && !noIndent ? sangria : "") + textToPrint,
+          {
+            continued: index < parts.length - 1,
+            // align,
+            ...textOptions,
+          }
+        );
     });
     doc.text("", { continued: false }); // Finaliza la línea
     doc.font("Times-Roman").fontSize(12);
@@ -227,10 +228,10 @@ module.exports = {
       numero_resolucion,
       resolucion_interes_departamental,
       accion,
-      titulo_organizador
+      titulo_organizador,
     } = req.body;
 
-    const horasTotalesTexto = formatNumber(clases*horas_clase);
+    const horasTotalesTexto = formatNumber(clases * horas_clase);
     const clasesTexto = formatNumber(clases);
     const horasClaseTexto = formatNumber(horas_clase);
 
@@ -272,7 +273,7 @@ module.exports = {
           id: nueva.id_resoluciones,
         });
       }
-//BUG Nunca va a entrar acá abajo porque la acción generar-PDF entra por otro controlador
+      //BUG Nunca va a entrar acá abajo porque la acción generar-PDF entra por otro controlador
       // Si la acción es generar PDF, continúa:
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       const plantilla = fs.readFileSync(plantillaPath, "utf8");
@@ -367,7 +368,9 @@ module.exports = {
 
       const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
       const clasesTexto = formatNumber(parseInt(resolucion.clases));
-      const horasTotalesTexto = formatNumber(parseInt(resolucion.horas_clase * resolucion.clases));
+      const horasTotalesTexto = formatNumber(
+        parseInt(resolucion.horas_clase * resolucion.clases)
+      );
 
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       let plantilla = fs.readFileSync(plantillaPath, "utf-8");
@@ -416,19 +419,16 @@ module.exports = {
         },
       });
 
-
-
       const filePath1 = path.join(__dirname, "..", "archivo-de-pruebas.txt");
 
-  fs.writeFile(filePath1, "Esto es una prueba", (err) => {
-    if (err) {
-      console.error("Error al crear el archivo:", err);
-      return res.status(500).json({ error: "Error al crear archivo" });
-    }
-      //  res.status(200).json({ mensaje: "Archivo creado correctamente" });
-  });
+      fs.writeFile(filePath1, "Esto es una prueba", (err) => {
+        if (err) {
+          console.error("Error al crear el archivo:", err);
+          return res.status(500).json({ error: "Error al crear archivo" });
+        }
+        //  res.status(200).json({ mensaje: "Archivo creado correctamente" });
+      });
       console.log("filePath1: ", filePath1);
-
 
       const fileName = `resolucion-${resolucion.id_resoluciones}.pdf`;
       const filePath = path.join(__dirname, `../public/pdfs/${fileName}`);
@@ -464,8 +464,8 @@ module.exports = {
         //     console.error("Error al enviar el archivo:", err);
         //   } else {
         //     console.log("Descarga enviada correctamente.");
-            // fs.unlinkSync(filePath);
-          // }
+        // fs.unlinkSync(filePath);
+        // }
         // });
       });
     } catch (error) {
@@ -516,10 +516,14 @@ module.exports = {
       numero_resolucion,
       accion,
       resolucion_interes_departamental,
-      titulo_organizador
+      titulo_organizador,
     } = req.body;
     const id = req.params.id;
-
+    const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
+    const clasesTexto = formatNumber(parseInt(resolucion.clases));
+    const horasTotalesTexto = formatNumber(
+      parseInt(resolucion.horas_clase * resolucion.clases)
+    );
     const resolucion = await Resolucion.findByPk(id);
     if (!resolucion)
       return res.status(404).json({
@@ -536,9 +540,9 @@ module.exports = {
     resolucion.alumnos = alumnos;
     resolucion.objetivos = objetivos;
     resolucion.segundos_objetivos = segundos_objetivos;
-    resolucion.horas_totales = horas_totales;
-    resolucion.clases = clases;
-    resolucion.horas_clase = horas_clase;
+    resolucion.horas_totales = horasTotalesTexto;
+    resolucion.clases = clasesTexto;
+    resolucion.horas_clase = horasClaseTexto;
     resolucion.minimo = minimo;
     resolucion.maximo = maximo;
     resolucion.mes_curso = mes_curso;
@@ -696,7 +700,7 @@ module.exports = {
       res.status(500).send("Error al eliminar la resolución");
     }
   },
-  
+
   verBorrador: async (req, res) => {
     try {
       const id = req.params.id;
@@ -710,7 +714,9 @@ module.exports = {
           message: "Resolución no encontrada",
         });
       }
-
+ const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
+      const clasesTexto = formatNumber(parseInt(resolucion.clases));
+      const horasTotalesTexto = formatNumber(parseInt(resolucion.horas_clase * resolucion.clases));
       // Validar sesión
       if (!req.session.user) {
         return res.status(401).send("Sesión expirada o no autenticada");
@@ -730,9 +736,9 @@ module.exports = {
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,
         segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales: resolucion.horas_totales,
-        clases: resolucion.clases,
-        horas_clase: resolucion.horas_clase,
+        horas_totales: horasTotalesTexto,
+        clases: clasesTexto,
+        horas_clase: horasClaseTexto,
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
@@ -746,7 +752,7 @@ module.exports = {
       const textoFinal = renderTemplate(plantilla, campos);
 
       // Guardar antes de enviar el PDF
-      
+
       await resolucion.save();
 
       const doc = new PDFDocument({
@@ -842,7 +848,6 @@ module.exports = {
       // res.json(resolucion); // Devuelve { estado: "...", visto_pdf: true/false }
       res.json({
         estado: resolucion.estado, // "nuevo", "guardado", "emitido"
-        
       });
     } catch (error) {
       console.error("Error al obtener estado de la resolución:", error);
@@ -858,7 +863,7 @@ module.exports = {
       await Resolucion.update(
         {
           estado: "modificado",
-          
+
           fecha_cambio_estado: new Date(), // Actualiza la fecha de cambio de estado
         },
         {
@@ -911,7 +916,7 @@ module.exports = {
         {
           estado: "rechazado",
           fecha_cambio_estado: new Date(),
-          motivo_rechazo: motivo || null
+          motivo_rechazo: motivo || null,
         },
         {
           where: { id_resoluciones: id },
