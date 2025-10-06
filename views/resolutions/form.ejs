@@ -10,38 +10,6 @@
 
   <div class="form-grid">
     <div class="form-group">
-      <label for="expediente">Número de expediente:</label>
-      <input type="text" id="expediente" name="expediente"
-      value="<%= datos ? datos.expediente : '' %>"
-      <%= usuario.rol === "administrativo" ? "readonly" : "" %>
-      <%= usuario.rol === "administrativo" ? "required" : "" %>>
-      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="expediente">Editar</button>
-      <% } %>
-    </div>
-
-    <div class="form-group">
-      <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
-      <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
-        value="<%= datos ? datos.resolucion_interes_departamental : '' %>"
-        <%= usuario.rol === "administrativo" ? "readonly" : "" %>
-        <%= usuario.rol === "administrativo" ? "required" : "" %>>
-         <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="resolucion_interes_departamental">Editar</button>
-      <% } %>
-    </div>
-
-    <div class="form-group">
-      <label for="titulo_organizador">Título del organizador (ej. "el Lic.", "la Ing."):</label>
-      <input type="text" id="titulo_organizador" name="titulo_organizador" required value="<%= datos ? datos.titulo_organizador : '' %>"
-      
-      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
-       <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="titulo_organizador">Editar</button>
-      <% } %>
-    </div>
-
-    <div class="form-group">
       <label for="curso">Nombre del curso:</label>
       <input type="text" id="curso" name="curso" required value="<%= datos ? datos.curso : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
@@ -49,6 +17,17 @@
         <button type="button" class="toggle-btn" data-input="curso">Editar</button>
       <% } %>
     </div>
+   
+    <!-- <div class="form-group">
+      <label for="titulo_organizador">Título del organizador (ej. "el Lic.", "la Ing."):</label>
+      <input type="text" id="titulo_organizador" name="titulo_organizador" required value="<%= datos ? datos.titulo_organizador : '' %>"
+      
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+       <% if (usuario.rol === "administrativo") { %>
+        <button type="button" class="toggle-btn" data-input="titulo_organizador">Editar</button>
+      <% } %>
+    </div> -->
+
 
     <div class="form-group">
       <label for="cohorte">Número de cohorte:</label>
@@ -67,7 +46,7 @@
     </div>
 
     <div class="form-group">
-      <label for="denominacion_docente">Denominación del docente (ej. "el Lic.", "la Ing."):</label>
+      <label for="denominacion_docente">Título del docente:</label>
       <input type="text" id="denominacion_docente" name="denominacion_docente" required value="<%= datos ? datos.denominacion_docente : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
        <% if (usuario.rol === "administrativo") { %>
@@ -79,6 +58,27 @@
       <label for="docente">Nombre del docente:</label>
       <input type="text" id="docente" name="docente" required value="<%= datos ? datos.docente : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+       <% if (usuario.rol === "administrativo") { %>
+        <button type="button" class="toggle-btn" data-input="docente">Editar</button>
+      <% } %>
+    </div>
+
+     <div class="form-group">
+   
+    <legend>Género del docente:</legend>
+
+    <div class="radio-group">
+      <label class="radio-option">
+        <input type="radio" name="genero" value="hombre" required>
+        Hombre
+      </label>
+
+      <label class="radio-option">
+        <input type="radio" name="genero" value="mujer">
+        Mujer
+      </label>
+    </div>
+  
        <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="docente">Editar</button>
       <% } %>
@@ -110,16 +110,7 @@
     </div>
 
 
-    <div class="form-group">
-      <label for="horas_totales">Horas totales del curso:</label>
-      <input type="number" id="horas_totales" name="horas_totales" required
-        value="<%= datos ? datos.horas_totales : '' %>"
-        <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
-        
-     <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="horas_totales">Editar</button>
-      <% } %>
-      </div>
+    
 
     <div class="form-group">
       <label for="clases">Cantidad de clases:</label>
@@ -131,13 +122,24 @@
     </div>
 
     <div class="form-group">
-      <label for="horas_clase">Horas de cada clase:</label>
+      <label for="horas_clase">Duración de cada clase (horas):</label>
       <input type="number" id="horas_clase" name="horas_clase" required value="<%= datos ? datos.horas_clase : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="horas_clase">Editar</button>
       <% } %>
     </div>
+
+    <!-- <div class="form-group">
+      <label for="horas_totales">Horas totales del curso:</label>
+      <input type="number" id="horas_totales" name="horas_totales" required
+        value="<%= datos ? datos.horas_totales : '' %>"
+        <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+        
+     <% if (usuario.rol === "administrativo") { %>
+        <button type="button" class="toggle-btn" data-input="horas_totales">Editar</button>
+      <% } %>
+      </div> -->
 
     <div class="form-group">
       <label for="minimo">Cantidad mínima de inscriptos:</label>
@@ -158,13 +160,67 @@
     </div>
 
     <div class="form-group">
-      <label for="mes_curso">Mes de inicio del curso:</label>
-      <input type="text" id="mes_curso" name="mes_curso" required value="<%= datos ? datos.mes_curso : '' %>"
-      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+      <label for="mes_curso">Mes de inicio:</label>
+     
+      <select name="mes_curso" id="mes_curso" <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+        <option value="Enero" <%= datos && datos.mes_curso === "Enero" ? "selected" : "" %>>Enero</option>
+        <option value="Febrero" <%= datos && datos.mes_curso === "Febrero" ? "selected" : "" %>>Febrero</option>
+        <option value="Marzo" <%= datos && datos.mes_curso === "Marzo" ? "selected" : "" %>>Marzo</option>
+        <option value="Abril" <%= datos && datos.mes_curso === "Abril" ? "selected" : "" %>>Abril</option>
+        <option value="mayo" <%= datos && datos.mes_curso === "Mayo" ? "selected" : "" %>>Mayo</option>
+        <option value="Junio" <%= datos && datos.mes_curso === "Junio" ? "selected" : "" %>>Junio</option>
+        <option value="Julio" <%= datos && datos.mes_curso === "Julio" ? "selected" : "" %>>Julio</option>
+        <option value="Agosto" <%= datos && datos.mes_curso === "Agosto" ? "selected" : "" %>>Agosto</option>
+        <option value="Septiembre" <%= datos && datos.mes_curso === "Septiembre" ? "selected" : "" %>>Septiembre</option>
+        <option value="Octubre" <%= datos && datos.mes_curso === "Octubre" ? "selected" : "" %>>Octubre</option>
+        <option value="Noviembre" <%= datos && datos.mes_curso === "Noviembre" ? "selected" : "" %>>Noviembre</option>
+        <option value="Diciembre" <%= datos && datos.mes_curso === "Diciembre" ? "selected" : "" %>>Diciembre</option>
+      </select>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="mes_curso">Editar</button>
       <% } %>
+</div>
+      <div class="form-group">
+      <label for="año_curso">Año de inicio:</label>
+      <select name="año_curso" id="año_curso" <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+        <option value="2023" <%= datos && datos.año_curso === "2023" ? "selected" : "" %>>2023</option>
+        <option value="2024" <%= datos && datos.año_curso === "2024" ? "selected" : "" %>>2024</option>
+        <option value="2025" <%= datos && datos.año_curso === "2025" ? "selected" : "" %>>2025</option>
+        <option value="2026" <%= datos && datos.año_curso === "2026" ? "selected" : "" %>>2026</option>
+        <option value="2027" <%= datos && datos.año_curso === "2027" ? "selected" : "" %>>2027</option>
+        <option value="2028" <%= datos && datos.año_curso === "2028" ? "selected" : "" %>>2028</option>
+        <option value="2029" <%= datos && datos.año_curso === "2029" ? "selected" : "" %>>2029</option>
+      </select>
+     <% if (usuario.rol === "administrativo") { %>
+        <button type="button" class="toggle-btn" data-input="año_curso">Editar</button>
+      <% } %>
+
     </div>
+
+     <div class="form-group">
+      <label for="expediente">Número de expediente:</label>
+      <input type="text" id="expediente" name="expediente"
+      value="<%= datos ? datos.expediente : '' %>"
+      <%= usuario.rol === "administrativo" ? "readonly" : "" %>
+      <%= usuario.rol === "administrativo" ? "required" : "" %>>
+      <% if (usuario.rol === "administrativo") { %>
+        <button type="button" class="toggle-btn" data-input="expediente">Editar</button>
+      <% } %>
+    </div>
+
+    <div class="form-group">
+      <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
+      <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
+        value="<%= datos ? datos.resolucion_interes_departamental : '' %>"
+        <%= usuario.rol === "administrativo" ? "readonly" : "" %>
+        <%= usuario.rol === "administrativo" ? "required" : "" %>>
+         <% if (usuario.rol === "administrativo") { %>
+        <button type="button" class="toggle-btn" data-input="resolucion_interes_departamental">Editar</button>
+      <% } %>
+    </div>
+
+
+
 <% if (!rellenaFormulario) { %>
     <div class="form-group">
       <label for="fecha">Fecha de la resolución:</label>
