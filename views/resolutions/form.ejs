@@ -31,7 +31,7 @@
 
     <div class="form-group">
       <label for="cohorte">Número de cohorte:</label>
-      <select name="cohorte" id="cohorte" required <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
+      <select name="cohorte" id="cohorte" required <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         <option value="PRIMERA" <%= datos && datos.cohorte === "PRIMERA" ? "selected" : "" %>>PRIMERA</option>
         <option value="SEGUNDA" <%= datos && datos.cohorte === "SEGUNDA" ? "selected" : "" %>>SEGUNDA</option>
         <option value="TERCERA" <%= datos && datos.cohorte === "TERCERA" ? "selected" : "" %>>TERCERA</option>
@@ -46,11 +46,11 @@
     </div>
 
     <div class="form-group">
-      <label for="denominacion_docente">Título del docente:</label>
-      <input type="text" id="denominacion_docente" name="denominacion_docente" required value="<%= datos ? datos.denominacion_docente : '' %>"
+      <label for="titulo_docente">Título del docente:</label>
+      <input type="text" id="titulo_docente" name="titulo_docente" required value="<%= datos ? datos.titulo_docente : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="denominacion_docente">Editar</button>
+        <button type="button" class="toggle-btn" data-input="titulo_docente">Editar</button>
       <% } %>
     </div>
 
@@ -69,18 +69,18 @@
 
     <div class="radio-group">
       <label class="radio-option">
-        <input type="radio" name="genero" value="hombre" required>
+        <input type="radio" name="sexo_docente" id="sexo_docente_masculino" value="masculino" <%= datos? datos.sexo_docente === 'masculino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
         Hombre
       </label>
 
       <label class="radio-option">
-        <input type="radio" name="genero" value="mujer">
+        <input type="radio" name="sexo_docente" id="sexo_docente_femenino" value="femenino" <%= datos? datos.sexo_docente === 'femenino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
         Mujer
       </label>
     </div>
   
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="docente">Editar</button>
+        <button type="button" class="toggle-btn" data-input="sexo_docente_masculino">Editar</button>
       <% } %>
     </div>
 
@@ -113,17 +113,17 @@
     
 
     <div class="form-group">
-      <label for="clases">Cantidad de clases:</label>
-      <input type="number" id="clases" name="clases" required value="<%= datos ? datos.clases : '' %>"
+      <label for="clases_numero">Cantidad de clases:</label>
+      <input type="number" id="clases_numero" name="clases_numero" required value="<%= datos ? datos.clases_numero : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="clases">Editar</button>
+        <button type="button" class="toggle-btn" data-input="clases_numero">Editar</button>
       <% } %>
     </div>
 
     <div class="form-group">
-      <label for="horas_clase">Duración de cada clase (horas):</label>
-      <input type="number" id="horas_clase" name="horas_clase" required value="<%= datos ? datos.horas_clase : '' %>"
+      <label for="horas_clase_numero">Duración de cada clase (horas):</label>
+      <input type="number" id="horas_clase_numero" name="horas_clase_numero" required value="<%= datos ? datos.horas_clase_numero : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn" data-input="horas_clase">Editar</button>
@@ -264,22 +264,62 @@
   const botones = document.querySelectorAll(".toggle-btn");
 
   botones.forEach(boton => {
-    boton.addEventListener("click", () => {
-      const inputId = boton.getAttribute("data-input"); 
-      const input = document.getElementById(inputId);
-
-      if (input.hasAttribute("readonly")) {
-        input.removeAttribute("readonly");
-        boton.textContent = "Bloquear";
-        boton.classList.add('bloquear');     // rojo
-        input.focus();
-      } else {
-        input.setAttribute("readonly", true);
-        boton.textContent = "Editar";
-        boton.classList.remove('bloquear');  // verde
-      }
-    });
+  boton.addEventListener("click", () => {
+    const inputId = boton.dataset.input;
+    const input = document.getElementById(inputId);
+    
+    // Verificar si es un radio button
+    if (input.type === 'radio') {
+      manejarRadioButtons(boton, input);
+    } else {
+      manejarInputNormal(boton, input);
+    }
   });
+});
+
+function manejarInputNormal(boton, input) {
+  const estaBloqueado = input.hasAttribute("readonly") || input.hasAttribute("disabled");
+  
+  if (estaBloqueado) {
+    input.removeAttribute("readonly");
+    input.removeAttribute("disabled");
+    boton.textContent = "Bloquear";
+    boton.classList.add('bloquear');
+    input.focus();
+  } else {
+    if (input.tagName === 'TEXTAREA' || input.type === 'text') {
+      input.setAttribute("readonly", true);
+    } else {
+      input.setAttribute("disabled", true);
+    }
+    boton.textContent = "Editar";
+    boton.classList.remove('bloquear');
+  }
+}
+
+function manejarRadioButtons(boton, input) {
+  // Obtener todos los radio buttons del mismo grupo
+  const radioGroupName = input.name;
+  const radioGroup = document.querySelectorAll(`input[name="${radioGroupName}"]`);
+  const estaBloqueado = radioGroup[0].hasAttribute("disabled");
+  
+  if (estaBloqueado) {
+    // Desbloquear todo el grupo
+    radioGroup.forEach(radio => {
+      radio.removeAttribute("disabled");
+    });
+    boton.textContent = "Bloquear";
+    boton.classList.add('bloquear');
+  } else {
+    // Bloquear todo el grupo
+    radioGroup.forEach(radio => {
+      radio.setAttribute("disabled", true);
+    });
+    boton.textContent = "Editar";
+    boton.classList.remove('bloquear');
+  }
+}
+;
 </script>
 
   

@@ -6,10 +6,10 @@ const PDFDocument = require("pdfkit");
 const { PassThrough } = require("stream");
 const { format } = require("date-fns");
 const { es } = require("date-fns/locale");
-const { NumeroALetras } = require("numero-a-letras");
+const numeroALetras = require("../numeroALetras");
 
 function formatNumber(num) {
-  return `${num} (${NumeroALetras(num)})`;
+  return `${num} (${numeroALetras(num)})`;
 }
 
 function formatearConDateFns(fechaOriginal) {
@@ -25,22 +25,23 @@ function renderTemplate(templateText, campos) {
     .replace(/{{expediente}}/g, campos.expediente)
     .replace(/{{curso}}/g, campos.curso)
     .replace(/{{cohorte}}/g, campos.cohorte)
-    .replace(/{{denominacion_docente}}/g, campos.denominacion_docente)
+    .replace(/{{genero_docente}}/g, campos.genero_docente)
+    .replace(/{{titulo_docente}}/g, campos.titulo_docente)
     .replace(/{{docente}}/g, campos.docente)
     .replace(/{{alumnos}}/g, campos.alumnos)
     .replace(/{{objetivos}}/g, campos.objetivos)
     .replace(/{{segundos_objetivos}}/g, campos.segundos_objetivos)
-    .replace(/{{horas_totales}}/g, campos.horas_totales)
-    .replace(/{{clases}}/g, campos.clases)
-    .replace(/{{horas_clase}}/g, campos.horas_clase)
+    .replace(/{{horas_totales_texto}}/g, campos.horas_totales_texto)
+    .replace(/{{clases_texto}}/g, campos.clases_texto)
+    .replace(/{{horas_clase_texto}}/g, campos.horas_clase_texto)
     .replace(/{{minimo}}/g, campos.minimo)
     .replace(/{{maximo}}/g, campos.maximo)
     .replace(/{{mes_curso}}/g, campos.mes_curso)
-    .replace(/{{numero_resolucion}}/g, campos.numero_resolucion || "numres")
-    .replace(/{{fecha}}/g, campos.fecha || "fecha")
+    .replace(/{{numero_resolucion}}/g, campos.numero_resolucion || "0")
+    .replace(/{{fecha}}/g, campos.fecha)
     .replace(
       /{{resolucion_interes_departamental}}/g,
-      campos.resolucion_interes_departamental
+      campos.resolucion_interes_departamental || "0"
     )
     .replace(/{{titulo_organizador}}/g, campos.titulo_organizador || "titulo");
 }
@@ -214,14 +215,14 @@ module.exports = {
       expediente,
       curso,
       cohorte,
-      denominacion_docente,
+      titulo_docente,
+      sexo_docente,
       docente,
       alumnos,
       objetivos,
       segundos_objetivos,
-      horas_totales,
-      clases,
-      horas_clase,
+      clases_numero,
+      horas_clase_numero,
       minimo,
       maximo,
       mes_curso,
@@ -231,9 +232,17 @@ module.exports = {
       titulo_organizador,
     } = req.body;
 
-    const horasTotalesTexto = formatNumber(clases * horas_clase);
-    const clasesTexto = formatNumber(clases);
-    const horasClaseTexto = formatNumber(horas_clase);
+    const horas_totales_numero = parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque  
+    const horasTotalesTexto = formatNumber(horas_totales_numero);
+    console.log(typeof(clases_numero));
+    console.log(typeof(horas_clase_numero));
+    console.log(typeof(horasTotalesTexto));
+    const clasesTexto = formatNumber(clases_numero);
+    const horasClaseTexto = formatNumber(horas_clase_numero);
+
+    const genero_docente = sexo_docente === "femenino" ? "de la" : "del";
+   
+    console.log(horasClaseTexto);
 
     try {
       // Crear la resolución en la base de datos
@@ -243,14 +252,19 @@ module.exports = {
         expediente,
         curso,
         cohorte,
-        denominacion_docente,
+        sexo_docente: sexo_docente,
+        genero_docente: genero_docente,
+        titulo_docente,
         docente,
         alumnos,
         objetivos,
         segundos_objetivos,
-        horas_totales: horasTotalesTexto,
-        clases: clasesTexto,
-        horas_clase: horasClaseTexto,
+        horas_totales_numero,
+        clases_numero,
+        horas_clase_numero,
+        horas_totales_texto: horasTotalesTexto,
+        clases_texto: clasesTexto,
+        horas_clase_texto: horasClaseTexto,
         minimo,
         maximo,
         mes_curso,
@@ -275,77 +289,7 @@ module.exports = {
       }
       //BUG Nunca va a entrar acá abajo porque la acción generar-PDF entra por otro controlador
       // Si la acción es generar PDF, continúa:
-      const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      const plantilla = fs.readFileSync(plantillaPath, "utf8");
-      const textoFinal = renderTemplate(plantilla, {
-        nombre_organizador: req.session.user.nombre,
-        apellido_organizador: req.session.user.apellido,
-
-        fecha:
-          fecha.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }) || "",
-        resolucion: numero_resolucion || "",
-        expediente,
-        cohorte,
-        curso,
-        denominacion_docente,
-        docente,
-        alumnos,
-        objetivos,
-        segundos_objetivos,
-        horas_totales,
-        clases,
-        horas_clase,
-        minimo,
-        maximo,
-        mes_curso,
-        resolucion_interes_departamental,
-      });
-
-      const doc = new PDFDocument({
-        margins: {
-          top: 42.52,
-          left: 113,
-          right: 42.52,
-          bottom: 70.88,
-        },
-      });
-
-      const fileName = `resolucion-${nueva.id}.pdf`;
-      const filePath = path.join(__dirname, `../pdfs/${fileName}`);
-      const stream = fs.createWriteStream(filePath);
-
-      doc.pipe(stream);
-
-      // Encabezado
-      dibujarEncabezado(doc, numero_resolucion, fecha);
-
-      // Nueva página
-      doc.on("pageAdded", () => {
-        dibujarEncabezado(doc, numero_resolucion, fecha);
-        doc.text("", { continued: false });
-        doc.font("Times-Roman").fontSize(12);
-      });
-
-      textoFinal.split("\n").forEach((line) => {
-        line = line.replace(/\r/g, "").trimEnd();
-        processTemplateLine(doc, line);
-        doc.moveDown(0.5);
-      });
-
-      doc.end();
-
-      stream.on("finish", () => {
-        const pdfUrl = `/pdfs/${fileName}`; // 👈 Asegúrate de servir la carpeta /pdfs
-        return res.json({
-          success: true,
-          message: "PDF generado correctamente.",
-          pdfUrl: pdfUrl,
-        });
-      });
+     
     } catch (error) {
       console.error("Error en el controlador:", error);
       res.status(500).json({
@@ -366,11 +310,11 @@ module.exports = {
           message: "Resolución no encontrada",
         });
 
-      const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
-      const clasesTexto = formatNumber(parseInt(resolucion.clases));
-      const horasTotalesTexto = formatNumber(
-        parseInt(resolucion.horas_clase * resolucion.clases)
-      );
+      // const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase_numero));
+      // const clasesTexto = formatNumber(parseInt(resolucion.clases_numero));
+      // const horasTotalesTexto = formatNumber(
+      //   parseInt(resolucion.horas_clase_numero * resolucion.clases_numero)
+      // );
 
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       let plantilla = fs.readFileSync(plantillaPath, "utf-8");
@@ -383,14 +327,15 @@ module.exports = {
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
-        denominacion_docente: resolucion.denominacion_docente,
+        titulo_docente: resolucion.titulo_docente,
+        genero_docente: resolucion.genero_docente,
         docente: resolucion.docente,
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,
         segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales: horasTotalesTexto,
-        clases: clasesTexto,
-        horas_clase: horasClaseTexto,
+        horas_totales_texto: resolucion.horas_totales_texto,
+        clases_texto: resolucion.clases_texto,
+        horas_clase_texto: resolucion.horas_clase_texto,
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
@@ -501,14 +446,14 @@ module.exports = {
       expediente,
       curso,
       cohorte,
-      denominacion_docente,
+      sexo_docente,
+      titulo_docente,
       docente,
       alumnos,
       objetivos,
       segundos_objetivos,
-      horas_totales,
-      clases,
-      horas_clase,
+      clases_numero,
+      horas_clase_numero,
       minimo,
       maximo,
       mes_curso,
@@ -519,30 +464,31 @@ module.exports = {
       titulo_organizador,
     } = req.body;
     const id = req.params.id;
-    const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
-    const clasesTexto = formatNumber(parseInt(resolucion.clases));
-    const horasTotalesTexto = formatNumber(
-      parseInt(resolucion.horas_clase * resolucion.clases)
-    );
     const resolucion = await Resolucion.findByPk(id);
+    const horas_totales_numero = parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque  
+    const horasTotalesTexto = formatNumber(horas_totales_numero);
+    const clasesTexto = formatNumber(clases_numero);
+    const horasClaseTexto = formatNumber(horas_clase_numero);
     if (!resolucion)
       return res.status(404).json({
         success: false,
         message: "Resolución no encontrada",
       });
-
+    const genero_docente = sexo_docente === "femenino" ? "de la" : "del";
     // Actualizar los datos
     resolucion.expediente = expediente;
     resolucion.curso = curso;
     resolucion.cohorte = cohorte;
-    resolucion.denominacion_docente = denominacion_docente;
+    resolucion.titulo_docente = titulo_docente;
+    resolucion.sexo_docente = sexo_docente;
+    resolucion.genero_docente = genero_docente;
     resolucion.docente = docente;
     resolucion.alumnos = alumnos;
     resolucion.objetivos = objetivos;
     resolucion.segundos_objetivos = segundos_objetivos;
-    resolucion.horas_totales = horasTotalesTexto;
-    resolucion.clases = clasesTexto;
-    resolucion.horas_clase = horasClaseTexto;
+    resolucion.horas_totales_texto = horasTotalesTexto.trim();
+    resolucion.clases_texto = clasesTexto.trim();
+    resolucion.horas_clase_texto = horasClaseTexto.trim();
     resolucion.minimo = minimo;
     resolucion.maximo = maximo;
     resolucion.mes_curso = mes_curso;
@@ -580,14 +526,15 @@ module.exports = {
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
-        denominacion_docente: resolucion.denominacion_docente,
+        titulo_docente: resolucion.titulo_docente,
+        genero_docente: resolucion.genero_docente,
         docente: resolucion.docente,
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,
         segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales: resolucion.horas_totales,
-        clases: resolucion.clases,
-        horas_clase: resolucion.horas_clase,
+        horas_totales_texto: resolucion.horas_totales_texto,
+        clases_texto: resolucion.clases_texto,
+        horas_clase_texto: resolucion.horas_clase_texto,
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
@@ -714,9 +661,10 @@ module.exports = {
           message: "Resolución no encontrada",
         });
       }
- const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase));
-      const clasesTexto = formatNumber(parseInt(resolucion.clases));
-      const horasTotalesTexto = formatNumber(parseInt(resolucion.horas_clase * resolucion.clases));
+    const horas_totales_numero = parseInt(resolucion.clases_numero) * parseInt(resolucion.horas_clase_numero); //se usa parseInt porque  
+    const horasTotalesTexto = formatNumber(horas_totales_numero);
+    const clasesTexto = formatNumber(resolucion.clases_numero);
+    const horasClaseTexto = formatNumber(resolucion.horas_clase_numero);
       // Validar sesión
       if (!req.session.user) {
         return res.status(401).send("Sesión expirada o no autenticada");
@@ -731,14 +679,15 @@ module.exports = {
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
-        denominacion_docente: resolucion.denominacion_docente,
+        genero_docente: resolucion.genero_docente,
+        titulo_docente: resolucion.titulo_docente,
         docente: resolucion.docente,
         alumnos: resolucion.alumnos,
         objetivos: resolucion.objetivos,
         segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales: horasTotalesTexto,
-        clases: clasesTexto,
-        horas_clase: horasClaseTexto,
+        horas_totales_texto: horasTotalesTexto,
+        clases_texto: clasesTexto,
+        horas_clase_texto: horasClaseTexto,
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,

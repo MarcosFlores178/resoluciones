@@ -31,7 +31,15 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING,
       allowNull: false,
     },
-    denominacion_docente: {
+    genero_docente: {
+      type: dataTypes.STRING,
+      allowNull: false,
+    },
+    sexo_docente: {
+      type: dataTypes.STRING,
+      allowNull: false,
+    },
+    titulo_docente: {
       type: dataTypes.STRING,
       allowNull: false,
     },
@@ -51,15 +59,27 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING,
       allowNull: false,
     },
-    horas_totales: {
+    horas_totales_numero: {
+      type: dataTypes.INTEGER,
+      allowNull: false,
+    },
+    clases_numero: {
+      type: dataTypes.INTEGER,
+      allowNull: false,
+    },
+    horas_clase_numero: {
+      type: dataTypes.INTEGER,
+      allowNull: false,
+    },
+    horas_totales_texto: {
       type: dataTypes.STRING,
       allowNull: false,
     },
-    clases: {
+    clases_texto: {
       type: dataTypes.STRING,
       allowNull: false,
     },
-    horas_clase: {
+    horas_clase_texto: {
       type: dataTypes.STRING,
       allowNull: false,
     },

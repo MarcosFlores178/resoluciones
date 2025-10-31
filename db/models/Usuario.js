@@ -28,6 +28,11 @@ module.exports = (sequelize, dataTypes) => {
       allowNull: false,
       unique: true, // Equivalente a UNIQUE KEY en MySQL
     },
+    telefono: {
+      type: dataTypes.STRING(100),
+      allowNull: true,
+      
+    },
      primer_ingreso: {
       type: dataTypes.BOOLEAN,
       defaultValue: true

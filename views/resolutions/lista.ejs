@@ -11,7 +11,7 @@
           <th>Fecha Res.</th>
           <th>N° Res.</th>
           <th>Estado</th>
-          <th>último cambio de estado</th>
+          <th>fecha de estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -98,16 +98,17 @@
 
 
         <% if (usuario.rol==="administrativo" ) { %>
-          <table>
+          <table id="tabla-resoluciones">
             <thead>
               <tr>
                 <th>Fecha</th>
                 <th>Curso</th>
                 <th>Organizador</th>
+                <th>Contacto</th>
                 <th>Fecha Res.</th>
                 <th>N° Res.</th>
                 <th>Estado</th>
-                <th>último cambio de estado</th>
+                <th>fecha de estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -130,6 +131,15 @@
                         <td>
                           <%= res.autor.nombre%>
                             <%= res.autor.apellido%>
+                            
+                        </td>
+                        <td>
+                           <a href='https://wa.me/${res.autor.telefono}' target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands fa-square-whatsapp fa-lg"></i>
+                              </a>
+                              <a href='https://wa.me/${res.autor.mail}' target="_blank" rel="noopener noreferrer">
+                                <i class="fa-solid fa-envelope fa-lg"></i>
+                              </a>
                         </td>
                         <td>
                           <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
@@ -164,9 +174,7 @@
                                   <div class="btn-group">
                                     <a href="/resoluciones/<%= res.id_resoluciones %>"
                                       class="btn btn-completar">Completar</a>
-                                    <button type="button" class="btn-reject btn" data-id="<%= res.id_resoluciones %>">
-                                      Rechazar
-                                    </button>
+                                    <!-- <button type="button" class="btn-reject btn" data-id="<%= res.id_resoluciones %>">Rechazar</button> -->
 
 
                                     <% } %>
@@ -207,10 +215,11 @@
 <script src="/js/estado.js"></script>
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
 <script>
-   document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     new DataTable('#tabla-resoluciones', {
       language: {
         url: "https://cdn.datatables.net/plug-ins/2.1.8/i18n/es-ES.json"
-      }});
+      }
+    });
   });
 </script>
