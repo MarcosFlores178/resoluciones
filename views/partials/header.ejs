@@ -10,14 +10,14 @@
           <li><a href="/resoluciones/lista-resoluciones">Mis resoluciones</a></li>
           <li><a href="/resoluciones/form-resolucion">Nueva resolución</a></li>
           <li><a href="/auth/logout">Cerrar sesión</a></li>
-          <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
+          <li><a href="/users/profile"><span>👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
           <% } else if (rol === "administrativo") { %>
             <li><a href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
             <li><a href="/auth/logout">Cerrar sesión</a></li>
-            <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
+            <li><a href="/users/profile"><span>👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
             <% } else if (rol==="superadmin") {%>
               <li><a href="/auth/logout">Cerrar sesión</a></li>
-              <li><span>👤 <%= user.nombre %> <%= user.apellido %></span></li>
+              <li><a href="/users/profile"><span>👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
               <% } %>
                
       </ul>
