@@ -36,7 +36,19 @@ module.exports = (sequelize, dataTypes) => {
      primer_ingreso: {
       type: dataTypes.BOOLEAN,
       defaultValue: true
-    }
+    },
+    sexo: {
+      type: dataTypes.STRING(50),
+      allowNull: true,
+    },
+    titulo_organizador: {
+      type: dataTypes.STRING(100),
+      allowNull: true,
+    },
+    articulo_definido: {
+      type: dataTypes.STRING(20),
+      allowNull: true,
+    },
   };
 
   let config = {

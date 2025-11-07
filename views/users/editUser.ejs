@@ -20,12 +20,12 @@
 
    <div class="radio-group">
       <label class="radio-option">
-        <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino" <%= datos? datos.sexo_organizador === 'masculino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
+        <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino" <%= usuario? usuario.sexo_organizador === 'masculino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
         Hombre
       </label>
 
       <label class="radio-option">
-        <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino" <%= datos? datos.sexo_organizador === 'femenino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
+        <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino" <%= usuario? usuario.sexo_organizador === 'femenino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
         Mujer
       </label>
     </div>
@@ -46,7 +46,7 @@
     </div>
 
     <div class="form-group full-width">
-      <button type="submit">Registrarse</button>
+      <button type="submit">Guardar</button>
     </div>
   </div>
 </form>

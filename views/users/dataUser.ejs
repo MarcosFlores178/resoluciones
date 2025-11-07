@@ -1,5 +1,16 @@
-<h1>Perfil de Usuario</h1>
-<p>ID: <%= usuario.id %></p>
-<p>Nombre: <%= usuario.nombre %></p>
-<p>Apellido: <%= usuario.apellido %></p>
-<p>Email: <%= usuario.email %></p>
+
+   <div class="datos-usuario">
+    <h1>Perfil de Usuario</h1>
+
+    <div class="grid-datos">
+      <p><span class="label">Nombre:</span> <span class="value"><%= usuario.nombre %></span></p>
+      <p><span class="label">Apellido:</span> <span class="value"><%= usuario.apellido %></span></p>
+      <p><span class="label">Rol:</span> <span class="value"><%= usuario.rol %></span></p>
+      <p><span class="label">Email:</span> <span class="value"><%= usuario.email %></span></p>
+      <p><span class="label">Teléfono:</span> <span class="value"><%= usuario.telefono %></span></p>
+      <p><span class="label">Sexo:</span> <span class="value"><%= usuario.sexo %></span></p>
+      <p><span class="label">Título:</span> <span class="value"><%= usuario.titulo_organizador %></span></p>
+    </div>
+
+    <a class="button" href="/usuarios/edit-profile">Editar</a>
+  </div>

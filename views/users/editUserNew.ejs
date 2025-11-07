@@ -1,0 +1,50 @@
+<div class="datos-usuario">
+  <h1>Editar Perfil</h1>
+
+  <form action="/usuarios/update-profile" method="POST" class="grid-datos">
+    <p>
+      <label class="label" for="nombre">Nombre:</label>
+      <input class="value" type="text" id="nombre" name="nombre" value="<%= usuario.nombre %>" required>
+    </p>
+
+    <p>
+      <label class="label" for="apellido">Apellido:</label>
+      <input class="value" type="text" id="apellido" name="apellido" value="<%= usuario.apellido %>" required>
+    </p>
+
+    <p>
+      <label class="label" for="rol">Rol:</label>
+      <input class="value" type="text" id="rol" name="rol" value="<%= usuario.rol %>" readonly>
+    </p>
+
+    <p>
+      <label class="label" for="email">Email:</label>
+      <input class="value" type="email" id="email" name="email" value="<%= usuario.email %>" required>
+    </p>
+
+    <p>
+      <label class="label" for="telefono">Teléfono:</label>
+      <input class="value" type="tel" id="telefono" name="telefono" value="<%= usuario.telefono %>">
+    </p>
+
+    <p>
+      <label class="label" for="sexo">Sexo:</label>
+      <select class="value" id="sexo" name="sexo">
+        <option value="Masculino" <%= usuario.sexo === 'Masculino' ? 'selected' : '' %>>Masculino</option>
+        <option value="Femenino" <%= usuario.sexo === 'Femenino' ? 'selected' : '' %>>Femenino</option>
+        <option value="Otro" <%= usuario.sexo === 'Otro' ? 'selected' : '' %>>Otro</option>
+      </select>
+    </p>
+
+    <p>
+      <label class="label" for="titulo_organizador">Título:</label>
+      <input class="value" type="text" id="titulo_organizador" name="titulo_organizador" value="<%= usuario.titulo_organizador %>">
+    </p>
+
+    <div style="grid-column: span 2; text-align: center; margin-top: 1.5rem;">
+      <button type="submit" class="button">Guardar cambios</button>
+      <a href="/usuarios/perfil" class="button" style="background-color: gray;">Cancelar</a>
+    </div>
+  </form>
+</div>
+

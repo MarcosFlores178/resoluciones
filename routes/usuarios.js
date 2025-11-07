@@ -9,5 +9,8 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/profile', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.showProfile);
+router.get('/edit-profile', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.showEditProfile);
+router.post('/edit-profile', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.editProfile);
+
 
 module.exports = router;
