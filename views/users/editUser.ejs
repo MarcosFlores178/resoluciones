@@ -1,55 +1,50 @@
+<div class="datos-usuario">
+  <h1>Editar Perfil</h1>
 
-<main>
-  <h1>Editar datos de usuario</h1>
-  <form id="registerForm" method="POST" class="formulario">
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="apellido">Apellido:</label>
-      <input type="text" id="apellido" name="apellido" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="titulo">Título:</label>
-      <input type="text" id="titulo" name="titulo" required>
-    </div>
+  <form action="/usuarios/edit-profile" method="POST" class="grid-datos">
+    <p>
+      <label class="label" for="nombre">Nombre:</label>
+      <input class="value" type="text" id="nombre" name="nombre" value="<%= usuario.nombre %>" required>
+    </p>
 
-   <div class="radio-group">
-      <label class="radio-option">
-        <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino" <%= usuario? usuario.sexo_organizador === 'masculino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
-        Hombre
-      </label>
+    <p>
+      <label class="label" for="apellido">Apellido:</label>
+      <input class="value" type="text" id="apellido" name="apellido" value="<%= usuario.apellido %>" required>
+    </p>
 
-      <label class="radio-option">
-        <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino" <%= usuario? usuario.sexo_organizador === 'femenino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
-        Mujer
-      </label>
+    <p>
+      <label class="label" for="rol">Rol:</label>
+      <input class="value" type="text" id="rol" name="rol" value="<%= usuario.rol %>" readonly>
+    </p>
+
+    <p>
+      <label class="label" for="email">Email:</label>
+      <input class="value" type="email" id="email" name="email" value="<%= usuario.email %>" required>
+    </p>
+
+    <p>
+      <label class="label" for="telefono">Teléfono:</label>
+      <input class="value" type="tel" id="telefono" name="telefono" value="<%= usuario.telefono %>">
+    </p>
+
+    <p>
+      <label class="label" for="sexo">Sexo:</label>
+      <select class="value" id="sexo" name="sexo">
+        <option value="Masculino" <%= usuario.sexo === 'Masculino' ? 'selected' : '' %>>Masculino</option>
+        <option value="Femenino" <%= usuario.sexo === 'Femenino' ? 'selected' : '' %>>Femenino</option>
+        <option value="Otro" <%= usuario.sexo === 'Otro' ? 'selected' : '' %>>Otro</option>
+      </select>
+    </p>
+
+    <p>
+      <label class="label" for="titulo_organizador">Título:</label>
+      <input class="value" type="text" id="titulo_organizador" name="titulo_organizador" value="<%= usuario.titulo_organizador %>">
+    </p>
+
+    <div style="grid-column: span 2; text-align: center; margin-top: 1.5rem;">
+      <button type="submit" class="button">Guardar cambios</button>
+      <a href="/usuarios/profile" class="button" style="background-color: gray;">Cancelar</a>
     </div>
+  </form>
+</div>
 
-    <div class="form-group">
-      <label for="telefono">Teléfono:</label>
-      <input type="tel" id="telefono" name="telefono" required>
-    </div>
-
-     <div class="form-group">
-      <label for="password">Nueva contraseña:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="confirm_password">Confirmar nueva contraseña:</label>
-      <input type="password" id="confirm_password" name="confirm_password" required>
-    </div>
-
-    <div class="form-group full-width">
-      <button type="submit">Guardar</button>
-    </div>
-  </div>
-</form>
-
-
-</main>
