@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const enviarEmailTemporal = require('../utils/email'); // tu función para enviar email
 
 exports.formCrearUsuario = (req, res) => {
-  res.render('dashboard', {cssFile: "dashboard.css", mensaje: null, error: null, usuario: req.session.user});
+  res.render('dashboard', {cssFile: "dashboard.css", mensaje: null, error: null, usuario: req.session.user, passwordTemporal: null });
 };
 
 exports.crearUsuario = async (req, res) => {
@@ -12,6 +12,7 @@ exports.crearUsuario = async (req, res) => {
 
   const passwordTemporal = crypto.randomBytes(5).toString('hex');
   const hashed = await bcrypt.hash(passwordTemporal, 10);
+  console.log("Contraseña temporal generada:", passwordTemporal);
 
   try {
     const nuevoUsuario = await Usuario.create({
@@ -21,12 +22,13 @@ exports.crearUsuario = async (req, res) => {
       primerIngreso: true
     });
 
-    await enviarEmailTemporal(email, passwordTemporal);
+    // await enviarEmailTemporal(email, passwordTemporal);
 
     res.render('dashboard', {
       mensaje: `Usuario creado y correo enviado a ${email}`,
       cssFile: "dashboard.css",
       error: null,
+      passwordTemporal
     });
   } catch (err) {
     console.error(err);

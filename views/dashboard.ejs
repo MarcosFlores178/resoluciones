@@ -17,6 +17,11 @@
 </div>
 </form>
 
+<% if (passwordTemporal) { %>
+  <h2>Contraseña temporal generada:</h2>
+  <p><%= passwordTemporal %></p>
+<% } %>
+
 <% if (mensaje) { %>
   <p><%= mensaje %></p>
 <% } %>

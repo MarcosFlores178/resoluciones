@@ -1,4 +1,5 @@
 const db = require('../db/models');
+const bcrypt = require('bcrypt');
 const { Usuario } = db;
 
 
@@ -81,26 +82,41 @@ showChangePassword: async (req, res) => {
     }
 },
 changePassword: async (req, res) => {
-    try {
-        const id_usuarios = req.session.user.id_usuarios;
-        const { actual, nueva, confirmar } = req.body;
-        const usuario = await Usuario.findByPk(id_usuarios);
-        if (!usuario) {
-            return res.status(404).send("Usuario no encontrado");
-        }
-        if (nueva !== confirmar) {
-            return res.status(400).send("Las nuevas contraseñas no coinciden");
-        }
-        if (usuario.password !== actual) {
-            return res.status(400).send("La contraseña actual es incorrecta");
-        }
-        await usuario.update({ password: nueva });
-        res.redirect('/usuarios/profile');
-    } catch (error) {
-        console.error("Error al cambiar la contraseña del usuario:", error);
-        res.status(500).json({ error: "Error interno del servidor" });
+  try {
+    const id_usuarios = req.session.user.id_usuarios;
+    const { actual, nueva, confirmar } = req.body;
+
+    // 1️⃣ Buscar el usuario
+    const usuario = await Usuario.findByPk(id_usuarios);
+    if (!usuario) {
+      return res.status(404).send("Usuario no encontrado");
     }
+
+    // 2️⃣ Verificar que las nuevas contraseñas coincidan
+    if (nueva !== confirmar) {
+      return res.status(400).send("Las nuevas contraseñas no coinciden");
+    }
+
+    // 3️⃣ Verificar contraseña actual
+    const coincide = await bcrypt.compare(actual, usuario.password);
+    if (!coincide) {
+      return res.status(400).send("La contraseña actual es incorrecta");
+    }
+
+    // 4️⃣ Hashear la nueva contraseña
+    const nuevaHasheada = await bcrypt.hash(nueva, 10);
+
+    // 5️⃣ Guardar en BD
+    await usuario.update({ password: nuevaHasheada });
+
+    // 6️⃣ Redirigir o responder
+    res.redirect("/usuarios/profile");
+  } catch (error) {
+    console.error("Error al cambiar la contraseña del usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 }
+
 };
 
 module.exports = usuariosController;
