@@ -57,18 +57,22 @@ module.exports = {
   },
   showRegister: (req, res) => {
     res.render("auth/register", {
+      usuario: req.session.user,
       error: null, // Puedes pasar un mensaje de error si es necesario
       cssFile: null,
     });
   },
   register: async (req, res) => {
-    const { nombre, apellido, password } = req.body;
+    const { nombre, apellido, password, titulo, sexo_organizador, telefono, confirm_password } = req.body;
+    if (password !== confirm_password) {
+      return res.status(400).send("Las contraseñas no coinciden");
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     req.session.user.nombre = nombre;
     req.session.user.apellido = apellido;
     try {
       const [actualizados] = await Usuario.update(
-        { nombre, apellido, password: hashedPassword, primer_ingreso: false },
+        { nombre, apellido, password: hashedPassword, primer_ingreso: false, titulo_organizador: titulo, sexo: sexo_organizador, telefono },
         { where: { id_usuarios: req.session.user.id_usuarios } }
       );
       // req.session.user = nuevoUsuario;

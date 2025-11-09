@@ -15,7 +15,7 @@ exports.crearUsuario = async (req, res) => {
   console.log("Contraseña temporal generada:", passwordTemporal);
 
   try {
-    const nuevoUsuario = await Usuario.create({
+    const usuario = await Usuario.create({
       email,
       rol,
       password: hashed,
@@ -25,6 +25,7 @@ exports.crearUsuario = async (req, res) => {
     // await enviarEmailTemporal(email, passwordTemporal);
 
     res.render('dashboard', {
+      usuario,
       mensaje: `Usuario creado y correo enviado a ${email}`,
       cssFile: "dashboard.css",
       error: null,
