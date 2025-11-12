@@ -59,7 +59,7 @@ module.exports = {
     res.render("auth/register", {
       usuario: req.session.user,
       error: null, // Puedes pasar un mensaje de error si es necesario
-      cssFile: null,
+      cssFile: "register.css",
     });
   },
   register: async (req, res) => {

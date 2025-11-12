@@ -37,7 +37,7 @@ function renderTemplate(templateText, campos) {
     .replace(/{{minimo}}/g, campos.minimo)
     .replace(/{{maximo}}/g, campos.maximo)
     .replace(/{{mes_curso}}/g, campos.mes_curso)
-    .replace(/{{numero_resolucion}}/g, campos.numero_resolucion || "0")
+    .replace(/{{numero_resolucion}}/g, campos.numero_resolucion)
     .replace(/{{fecha}}/g, campos.fecha)
     .replace(
       /{{resolucion_interes_departamental}}/g,
@@ -610,7 +610,7 @@ module.exports = {
           {
             model: Usuario,
             as: "autor", // Asegúrate de que el alias coincida con tu modelo
-            attributes: ["nombre", "apellido"],
+            attributes: ["nombre", "apellido", "telefono", "email"],
           },
         ],
         order: [["fecha_creacion", "DESC"]],

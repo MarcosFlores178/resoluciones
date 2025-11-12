@@ -124,7 +124,15 @@ module.exports = (sequelize, dataTypes) => {
     motivo_rechazo: {
       type: dataTypes.STRING,
       allowNull: true,
-    }
+    },
+    articulo_docente: {
+      type: dataTypes.STRING,
+      allowNull: true,
+    },
+    año_curso: {
+      type: dataTypes.INTEGER,
+      allowNull: true,
+    },
   };
 
   let config = {

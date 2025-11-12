@@ -1,55 +1,62 @@
+<div class="datos-usuario">
+  <h1>Registro de Usuario</h1>
 
-<main>
-  <h1>Registro de usuario</h1>
-  <form action="/auth/register" id="registerForm" method="POST" class="formulario">
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
+  <form action="/auth/register" id="registerForm" method="POST">
+    <div class="grid-datos">
+      
+      <p>
+        <span class="label"><label for="nombre">Nombre:</label></span>
+        <input type="text" id="nombre" name="nombre" class="value" required>
+      </p>
+
+      <p>
+        <span class="label"><label for="apellido">Apellido:</label></span>
+        <input type="text" id="apellido" name="apellido" class="value" required>
+      </p>
+
+      <p>
+        <span class="label"><label for="titulo">Título:</label></span>
+        <input type="text" id="titulo" name="titulo" class="value" required>
+      </p>
+
+      <p>
+        <span class="label">Sexo:</span>
+        <span class="value">
+          <label style="margin-right: 10px;">
+            <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino"
+              <%= usuario?.rol === "administrativo" ? "disabled" : "" %> required>
+            Hombre
+          </label>
+          <label>
+            <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino"
+              <%= usuario?.rol === "administrativo" ? "disabled" : "" %> required>
+            Mujer
+          </label>
+        </span>
+      </p>
+
+      <p>
+        <span class="label"><label for="telefono">Teléfono:</label></span>
+        <input type="tel" id="telefono" name="telefono" class="value" required>
+      </p>
     </div>
+    <div class="password-container">
+      <div class="password">
+          <p>
+            <span class="label"><label for="password">Contraseña:</label></span>
+            <input type="password" id="password" name="password" class="value" required>
+          </p>
     
-    <div class="form-group">
-      <label for="apellido">Apellido:</label>
-      <input type="text" id="apellido" name="apellido" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="titulo">Título:</label>
-      <input type="text" id="titulo" name="titulo" required>
+          <p>
+            <span class="label"><label for="confirm_password">Confirmar contraseña:</label></span>
+            <input type="password" id="confirm_password" name="confirm_password" class="value" required>
+          </p>
+          </div>
     </div>
 
-   <div class="radio-group">
-      <label class="radio-option">
-        <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino" <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
-        Hombre
-      </label>
-
-      <label class="radio-option">
-        <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino" <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
-        Mujer
-      </label>
+<div style="grid-column: span 2; text-align: center; margin-top: 1.5rem;">
+    <button type="submit" class="button">Registrarse</button>
     </div>
 
-    <div class="form-group">
-      <label for="telefono">Teléfono:</label>
-      <input type="tel" id="telefono" name="telefono" required>
-    </div>
-
-     <div class="form-group">
-      <label for="password">Nueva contraseña:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="confirm_password">Confirmar nueva contraseña:</label>
-      <input type="password" id="confirm_password" name="confirm_password" required>
-    </div>
-
-    <div class="form-group full-width">
-      <button type="submit">Registrarse</button>
-    </div>
-  </div>
-</form>
-
-
-</main>
+  </form>
+</div>
