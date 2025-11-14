@@ -37,7 +37,7 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.BOOLEAN,
       defaultValue: true
     },
-    sexo: {
+    sexo_organizador: {
       type: dataTypes.STRING(50),
       allowNull: true,
     },
@@ -45,7 +45,7 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING(100),
       allowNull: true,
     },
-    articulo_definido: {
+    articulo_organizador: {
       type: dataTypes.STRING(20),
       allowNull: true,
     },

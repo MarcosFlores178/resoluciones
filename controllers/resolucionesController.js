@@ -37,13 +37,16 @@ function renderTemplate(templateText, campos) {
     .replace(/{{minimo}}/g, campos.minimo)
     .replace(/{{maximo}}/g, campos.maximo)
     .replace(/{{mes_curso}}/g, campos.mes_curso)
+    .replace(/{{año_curso}}/g, campos.año_curso)
+    .replace(/{{articulo_docente}}/g, campos.articulo_docente)
     .replace(/{{numero_resolucion}}/g, campos.numero_resolucion)
     .replace(/{{fecha}}/g, campos.fecha)
     .replace(
       /{{resolucion_interes_departamental}}/g,
-      campos.resolucion_interes_departamental || "0"
+      campos.resolucion_interes_departamental
     )
-    .replace(/{{titulo_organizador}}/g, campos.titulo_organizador || "titulo");
+    .replace(/{{articulo_organizador}}/g, campos.articulo_organizador)
+    .replace(/{{titulo_organizador}}/g, campos.titulo_organizador);
 }
 
 // function renderTemplate(template, variables) {
@@ -226,22 +229,29 @@ module.exports = {
       minimo,
       maximo,
       mes_curso,
+      año_curso,
       numero_resolucion,
       resolucion_interes_departamental,
       accion,
       titulo_organizador,
     } = req.body;
 
-    const horas_totales_numero = parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque  
+    const usuario = req.session.user;
+
+    const horas_totales_numero =
+      parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque
     const horasTotalesTexto = formatNumber(horas_totales_numero);
-    console.log(typeof(clases_numero));
-    console.log(typeof(horas_clase_numero));
-    console.log(typeof(horasTotalesTexto));
+
     const clasesTexto = formatNumber(clases_numero);
     const horasClaseTexto = formatNumber(horas_clase_numero);
 
+    const articulo_docente = sexo_docente === "femenino" ? "la" : "el";
+
+    const articulo_organizador =
+      usuario.sexo_organizador === "femenino" ? "la" : "el";
+
     const genero_docente = sexo_docente === "femenino" ? "de la" : "del";
-   
+
     console.log(horasClaseTexto);
 
     try {
@@ -268,12 +278,16 @@ module.exports = {
         minimo,
         maximo,
         mes_curso,
+        año_curso,
         numero_resolucion: numero_resolucion || null,
         resolucion_interes_departamental,
         estado: "guardado",
         fecha_creacion: new Date(), // Fecha de creación
         fecha_cambio_estado: new Date(), // Se registra la fecha del guardado
-        titulo_organizador: titulo_organizador || "titulo", // Asegúrate de que este campo esté en el formulario
+        titulo_organizador: usuario.titulo_organizador,
+        articulo_docente: articulo_docente,
+        articulo_organizador: articulo_organizador,
+        // Asegúrate de que este campo esté en el formulario
       });
       console.log("procesarFormulario", nueva.fecha);
 
@@ -289,7 +303,6 @@ module.exports = {
       }
       //BUG Nunca va a entrar acá abajo porque la acción generar-PDF entra por otro controlador
       // Si la acción es generar PDF, continúa:
-     
     } catch (error) {
       console.error("Error en el controlador:", error);
       res.status(500).json({
@@ -303,7 +316,16 @@ module.exports = {
     try {
       console.log("dentro de generar pdf");
       const id = req.params.id;
-      const resolucion = await Resolucion.findByPk(id);
+      const resolucion = await Resolucion.findByPk(id, {
+        include: [
+          {
+            model: Usuario,
+            as: "autor",
+            attributes: ["id_usuarios", "nombre", "apellido", "sexo_organizador", "titulo_organizador"], // Campos específicos
+          },
+        ],
+      });
+      //TODO traer el nombre y apellido del autor de la resolucion
       if (!resolucion)
         return res.status(404).json({
           success: false,
@@ -315,15 +337,18 @@ module.exports = {
       // const horasTotalesTexto = formatNumber(
       //   parseInt(resolucion.horas_clase_numero * resolucion.clases_numero)
       // );
-
+      //const usuario = req.session.user;
+      const articulo_organizador =
+        resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
       let plantilla = fs.readFileSync(plantillaPath, "utf-8");
       // .replace(/\r/g, "");
       console.log("generarPDF", resolucion.fecha);
+      console.log(articulo_organizador);
       // Reemplazo múltiple
       const campos = {
-        nombre_organizador: req.session.user.nombre,
-        apellido_organizador: req.session.user.apellido,
+        nombre_organizador: resolucion.autor.nombre,
+        apellido_organizador: resolucion.autor.apellido,
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
@@ -339,18 +364,14 @@ module.exports = {
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
+        año_curso: resolucion.año_curso,
         fecha: formatearConDateFns(resolucion.fecha) || "", // Usamos la función para formatear la fecha
-        //     fecha: resolucion.fecha
-        // ? new Date(resolucion.fecha).toLocaleDateString('es-ES', {
-        //     day: '2-digit',
-        //     month: '2-digit',
-        //     year: 'numeric'
-        //   })
-        // : "",
         numero_resolucion: resolucion.numero_resolucion || "",
         resolucion_interes_departamental:
           resolucion.resolucion_interes_departamental,
-        titulo_organizador: resolucion.titulo_organizador || "titulo",
+        titulo_organizador: resolucion.autor.titulo_organizador || "titulo",
+        articulo_docente: resolucion.articulo_docente || "el",
+        articulo_organizador: articulo_organizador,
       };
       console.log("campos: ", campos);
       const textoFinal = renderTemplate(plantilla, campos);
@@ -457,18 +478,28 @@ module.exports = {
       minimo,
       maximo,
       mes_curso,
+      año_curso,
       fecha,
       numero_resolucion,
       accion,
       resolucion_interes_departamental,
-      titulo_organizador,
     } = req.body;
+    const usuario = req.session.user;
     const id = req.params.id;
-    const resolucion = await Resolucion.findByPk(id);
-    const horas_totales_numero = parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque  
+    const resolucion = await Resolucion.findByPk(id,  {
+  include: [{
+    model: Usuario,
+    as: 'autor',
+    attributes: ['id_usuarios', 'nombre', 'email', 'sexo_organizador', 'titulo_organizador'] // Campos específicos
+  }]
+});
+    const horas_totales_numero =
+      parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque
     const horasTotalesTexto = formatNumber(horas_totales_numero);
     const clasesTexto = formatNumber(clases_numero);
     const horasClaseTexto = formatNumber(horas_clase_numero);
+    const articulo_organizador =
+      resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
     if (!resolucion)
       return res.status(404).json({
         success: false,
@@ -492,13 +523,15 @@ module.exports = {
     resolucion.minimo = minimo;
     resolucion.maximo = maximo;
     resolucion.mes_curso = mes_curso;
+    resolucion.año_curso = año_curso;
     resolucion.fecha = fecha || null;
     resolucion.numero_resolucion = numero_resolucion || null;
     resolucion.resolucion_interes_departamental =
       resolucion_interes_departamental;
     resolucion.estado = "guardado";
     resolucion.fecha_cambio_estado = new Date(); // Se registra la fecha del guardado
-    resolucion.titulo_organizador = titulo_organizador || "titulo"; // Asegúrate de que este campo esté en el formulario
+    resolucion.titulo_organizador = resolucion.autor.titulo_organizador || "titulo"; // Asegúrate de que este campo esté en el formulario
+    resolucion.articulo_organizador = articulo_organizador;
 
     if (resolucion.changed()) {
       console.log("entró al changed");
@@ -650,10 +683,19 @@ module.exports = {
 
   verBorrador: async (req, res) => {
     try {
+      
       const id = req.params.id;
       console.log("El id es:", id);
 
-      const resolucion = await Resolucion.findByPk(id);
+      const resolucion = await Resolucion.findByPk(id, {
+        include: [
+          {
+            model: Usuario,
+            as: "autor",
+            attributes: ["id_usuarios", "nombre", "apellido", "sexo_organizador", "titulo_organizador"], // Campos específicos
+          },
+        ],
+      });
 
       if (!resolucion) {
         return res.status(404).json({
@@ -661,10 +703,14 @@ module.exports = {
           message: "Resolución no encontrada",
         });
       }
-    const horas_totales_numero = parseInt(resolucion.clases_numero) * parseInt(resolucion.horas_clase_numero); //se usa parseInt porque  
-    const horasTotalesTexto = formatNumber(horas_totales_numero);
-    const clasesTexto = formatNumber(resolucion.clases_numero);
-    const horasClaseTexto = formatNumber(resolucion.horas_clase_numero);
+      const horas_totales_numero =
+        parseInt(resolucion.clases_numero) *
+        parseInt(resolucion.horas_clase_numero); //se usa parseInt porque
+      const horasTotalesTexto = formatNumber(horas_totales_numero);
+      const clasesTexto = formatNumber(resolucion.clases_numero);
+      const horasClaseTexto = formatNumber(resolucion.horas_clase_numero);
+      const articulo_organizador =
+        resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
       // Validar sesión
       if (!req.session.user) {
         return res.status(401).send("Sesión expirada o no autenticada");
@@ -674,8 +720,8 @@ module.exports = {
       const plantilla = fs.readFileSync(plantillaPath, "utf-8");
 
       const campos = {
-        nombre_organizador: req.session.user.nombre,
-        apellido_organizador: req.session.user.apellido,
+        nombre_organizador: resolucion.autor.nombre,
+        apellido_organizador: resolucion.autor.apellido,
         expediente: resolucion.expediente,
         curso: resolucion.curso,
         cohorte: resolucion.cohorte,
@@ -691,11 +737,14 @@ module.exports = {
         minimo: resolucion.minimo,
         maximo: resolucion.maximo,
         mes_curso: resolucion.mes_curso,
+        año_curso: resolucion.año_curso,
+        articulo_docente: resolucion.articulo_docente,
         fecha: resolucion.fecha || "N/A",
         numero_resolucion: resolucion.numero_resolucion || "N/A",
         resolucion_interes_departamental:
           resolucion.resolucion_interes_departamental,
-        titulo_organizador: resolucion.titulo_organizador || "titulo",
+        titulo_organizador: resolucion.titulo_organizador,
+        articulo_organizador: articulo_organizador,
       };
 
       const textoFinal = renderTemplate(plantilla, campos);

@@ -61,12 +61,12 @@ editProfile: async (req, res) => {
 
     try {
         const id_usuarios = req.session.user.id_usuarios;
-        const { nombre, apellido, telefono, email, sexo, titulo_organizador } = req.body;
+        const { nombre, apellido, telefono, email, sexo_organizador, titulo_organizador } = req.body;
         const usuario = await Usuario.findByPk(id_usuarios);
         if (!usuario) {
             return res.status(404).send("Usuario no encontrado");
         }
-        await usuario.update({ nombre, apellido, telefono, email, sexo, titulo_organizador });
+        await usuario.update({ nombre, apellido, telefono, email, sexo_organizador, titulo_organizador });
         res.redirect('/usuarios/profile');
     } catch (error) {
         console.error("Error al editar el perfil del usuario:", error);

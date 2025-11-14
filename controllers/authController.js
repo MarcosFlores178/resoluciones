@@ -31,7 +31,9 @@ module.exports = {
         rol: usuario.rol,
         nombre: usuario.nombre || null, // Asegúrate de que el modelo tenga este campo
         apellido: usuario.apellido || null, // Asegúrate de que el modelo tenga
-        primer_ingreso: usuario.primer_ingreso, // Asegúrate de que el modelo tenga este campo
+        primer_ingreso: usuario.primer_ingreso,
+        titulo_organizador: usuario.titulo_organizador,
+        sexo_organizador: usuario.sexo_organizador
       };
       const rol = req.session.user.rol; // Obtiene el rol del usuario desde la sesión
       console.log("Rol del usuario:", rol);
@@ -72,7 +74,7 @@ module.exports = {
     req.session.user.apellido = apellido;
     try {
       const [actualizados] = await Usuario.update(
-        { nombre, apellido, password: hashedPassword, primer_ingreso: false, titulo_organizador: titulo, sexo: sexo_organizador, telefono },
+        { nombre, apellido, password: hashedPassword, primer_ingreso: false, titulo_organizador: titulo, sexo_organizador, telefono },
         { where: { id_usuarios: req.session.user.id_usuarios } }
       );
       // req.session.user = nuevoUsuario;
