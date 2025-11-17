@@ -38,4 +38,6 @@ router.patch('/:id/enviar', resolucionesController.enviarResolucion);
 
 router.patch('/:id/rechazar', resolucionesController.rechazarResolucion);
 
+router.patch('/borrador/:id', resolucionesController.actualizarBorrador);
+
 module.exports = router;

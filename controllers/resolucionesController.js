@@ -332,12 +332,7 @@ module.exports = {
           message: "Resolución no encontrada",
         });
 
-      // const horasClaseTexto = formatNumber(parseInt(resolucion.horas_clase_numero));
-      // const clasesTexto = formatNumber(parseInt(resolucion.clases_numero));
-      // const horasTotalesTexto = formatNumber(
-      //   parseInt(resolucion.horas_clase_numero * resolucion.clases_numero)
-      // );
-      //const usuario = req.session.user;
+     
       const articulo_organizador =
         resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
       const plantillaPath = path.join(__dirname, "../plantilla.txt");
@@ -878,7 +873,7 @@ module.exports = {
   emitirFormulario: async (req, res) => {
     try {
       const { id } = req.params;
-      const { fecha, numero_resolucion } = req.body;
+      const { fecha, numero_resolucion, expediente, resolucion_interes_departamental } = req.body;
 
       await Resolucion.update(
         {
@@ -886,6 +881,9 @@ module.exports = {
           numero_resolucion,
           estado: "emitido",
           fecha_cambio_estado: new Date(), // Actualiza la fecha de cambio de estado
+          expediente,
+          resolucion_interes_departamental
+          
         },
         {
           where: { id_resoluciones: id },
@@ -929,6 +927,36 @@ module.exports = {
     } catch (error) {
       console.error("Error al rechazar la resolución:", error);
       res.status(500).json({ error: "Error al rechazar la resolución" });
+    }
+  },
+  actualizarBorrador: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { expediente, resolucion_interes_departamental, fecha, numero_resolucion } = req.body;
+
+      console.log("id de parametros:id", id);
+     
+
+      await Resolucion.update(
+        {
+          expediente,
+          resolucion_interes_departamental,
+          fecha, 
+          numero_resolucion
+        },
+        {
+          where: { id_resoluciones: id },
+        }
+      );
+
+      res.json({
+        success: true,
+        message: "Borrador actualizado con éxito",
+        id: id,
+      });
+    } catch (error) {
+      console.error("Error al actualizar borrador:", error);
+      res.status(500).json({ error: "Error al actualizar el borrador de la resolución" });
     }
   },
 };

@@ -105,10 +105,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 if (data.accion === "ver_borrador_admin") {
   if (data.id_resoluciones) {
+       try {
+        console.log("dentro de ver_borrador_admin");
+        const response = await fetch(
+          `/resoluciones/borrador/${data.id_resoluciones}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fecha: data.fecha,
+              numero_resolucion: data.numero_resolucion,
+              expediente: data.expediente,
+              resolucion_interes_departamental: data.resolucion_interes_departamental
+            }),
+          }
+        );
+      } catch (err) {
+        console.error(err);
+        toastr.error("Error al preparar la resolución.");
+      }
+      if (response.ok) {
+        toastr.success("Borrador preparado con éxito.");
+      } else {
+        toastr.error("Error al preparar el borrador.");
+        return;
+      }
     // visto = true;
     // console.log("visto_pdf antes de actualizarBotones", visto_pdf);
     const urlBorrador = `/resoluciones/${data.id_resoluciones}/ver-borrador`;
-    window.open(urlBorrador, "_blank");
+        window.open(urlBorrador, "_blank");
   } else {
     toastr.warning("Primero debés guardar la resolución para ver el borrador.");
   }
@@ -177,6 +204,8 @@ if (data.accion === "ver_borrador_admin") {
             body: JSON.stringify({
               fecha: data.fecha,
               numero_resolucion: data.numero_resolucion,
+              expediente: data.expediente,
+              resolucion_interes_departamental: data.resolucion_interes_departamental
             }),
           }
         );
@@ -305,21 +334,48 @@ return;
   });
   //BUG Si el usuario deja de estar logueado, no se maneja bien los errores cuando se intenta guardar una resolucion
   
-  document
-    .getElementById("ver-borrador-btn-admin")
-    .addEventListener("click", function () {
-   
-      const idResolucion = form.dataset.idResolucion;
-      // console.log("object", idResolucion);
-      if (idResolucion) {
-        const urlPDF = `/resoluciones/${idResolucion}/ver-borrador`;
-        window.open(urlPDF, "_blank");
-      } else {
-        toastr.warning(
-          "Primero debés guardar la resolución para generar el PDF."
-        );
-      }
-    });
+  document.getElementById("ver-borrador-btn-admin").addEventListener("click", async function () {
+    console.log("dentro de ver borrador btn admin");
+    
+    const idResolucion = form.dataset.idResolucion;
+    
+    if (idResolucion) {
+        try {
+            console.log("dentro de ver_borrador_admin - haciendo fetch");
+            
+            // Obtener los datos del formulario
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            const response = await fetch(`/resoluciones/borrador/${idResolucion}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    fecha: data.fecha?data.fecha:null,
+                    numero_resolucion: data.numero_resolucion?data.numero_resolucion:null,
+                    expediente: data.expediente,
+                    resolucion_interes_departamental: data.resolucion_interes_departamental
+                }),
+            });
+
+            if (response.ok) {
+                toastr.success("Borrador preparado con éxito.");
+                // Abrir el borrador después de actualizar
+                  const urlBorrador = `/resoluciones/${idResolucion}/ver-borrador`;
+        window.open(urlBorrador, "_blank");
+            } else {
+                toastr.error("Error al preparar el borrador.");
+            }
+        } catch (err) {
+            console.error(err);
+            toastr.error("Error al preparar la resolución.");
+        }
+    } else {
+        toastr.warning("Primero debés guardar la resolución para ver el borrador.");
+    }
+});
 
 const botonRechazar = document.getElementById(idResolucion);
 
