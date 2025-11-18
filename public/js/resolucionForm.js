@@ -188,7 +188,7 @@ if (data.accion === "ver_borrador_admin") {
 
 
     // Esta acción sólo puede ser disparada por un administrativo que emite la resolución 
-    if (data.accion === "generar_pdf") {
+    if (data.accion === "generar_pdf2") {
     
       toastr.info("Generando PDF...");
 
@@ -242,6 +242,62 @@ if (data.accion === "ver_borrador_admin") {
       }
       return;
     }
+
+    if (data.accion === "generar_pdf") {
+  toastr.info("Generando PDF...");
+  console.log(idResolucion);
+  
+  try {
+    const response = await fetch(
+      `/resoluciones/emitir-formulario/${idResolucion}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fecha: data.fecha,
+          numero_resolucion: data.numero_resolucion,
+          expediente: data.expediente,
+          resolucion_interes_departamental: data.resolucion_interes_departamental
+        }),
+      }
+    );
+
+    const result = await response.json();
+    toastr.info("Enviando resolución...");
+
+    if (result.success) {
+      toastr.success(result.message || "¡Tarea realizada con éxito!");
+    } else {
+      toastr.error(result.message || "Algo salió mal.");
+    }
+
+    console.log(`/resoluciones/${idResolucion}/pdf`);
+    const resGenerarPdf = await fetch(`/resoluciones/${idResolucion}/pdf`);
+    const dataGenerarPdf = await resGenerarPdf.json();
+
+    // ✅ CAMBIO PRINCIPAL: Usar la URL de Cloudflare R2
+    if (dataGenerarPdf.success && dataGenerarPdf.pdfUrl) {
+      setTimeout(() => {
+        // Abrir la URL de Cloudflare R2 en nueva pestaña
+        window.open(dataGenerarPdf.pdfUrl, "_blank");
+      }, 1500);
+
+      setTimeout(() => {
+        console.log("redireccion al listado");
+        window.open("/resoluciones/lista-resoluciones", "_self");
+      }, 1800);
+    } else {
+      throw new Error(dataGenerarPdf.message || "Error al generar PDF");
+    }
+    
+  } catch (err) {
+    console.error(err);
+    toastr.error("Error al enviar la resolución.");
+  }
+  return;
+}
 
     // Esta acción es generada por el organizador para guardar borrador de formulario
     if (data.accion === "guardar" && !data.id_resoluciones) {

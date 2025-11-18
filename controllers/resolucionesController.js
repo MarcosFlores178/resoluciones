@@ -7,6 +7,16 @@ const { PassThrough } = require("stream");
 const { format } = require("date-fns");
 const { es } = require("date-fns/locale");
 const numeroALetras = require("../numeroALetras");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
+const s3Client = new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY,
+  },
+});
 
 function formatNumber(num) {
   return `${num} (${numeroALetras(num)})`;
@@ -312,7 +322,7 @@ module.exports = {
     }
   },
 
-  generarPDF: async (req, res) => {
+  generarPDF1: async (req, res) => {
     try {
       console.log("dentro de generar pdf");
       const id = req.params.id;
@@ -434,7 +444,139 @@ module.exports = {
       res.status(500).send("Error al generar el PDF");
     }
   },
+  generarPDF: async (req, res) => {
+  try {
+    console.log("dentro de generar pdf");
+    const id = req.params.id;
+    const resolucion = await Resolucion.findByPk(id, {
+      include: [
+        {
+          model: Usuario,
+          as: "autor",
+          attributes: ["id_usuarios", "nombre", "apellido", "sexo_organizador", "titulo_organizador"],
+        },
+      ],
+    });
 
+    if (!resolucion)
+      return res.status(404).json({
+        success: false,
+        message: "Resolución no encontrada",
+      });
+
+    const articulo_organizador = resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
+    const plantillaPath = path.join(__dirname, "../plantilla.txt");
+    let plantilla = fs.readFileSync(plantillaPath, "utf-8");
+
+    console.log("generarPDF", resolucion.fecha);
+    console.log(articulo_organizador);
+
+    const campos = {
+      nombre_organizador: resolucion.autor.nombre,
+      apellido_organizador: resolucion.autor.apellido,
+      expediente: resolucion.expediente,
+      curso: resolucion.curso,
+      cohorte: resolucion.cohorte,
+      titulo_docente: resolucion.titulo_docente,
+      genero_docente: resolucion.genero_docente,
+      docente: resolucion.docente,
+      alumnos: resolucion.alumnos,
+      objetivos: resolucion.objetivos,
+      segundos_objetivos: resolucion.segundos_objetivos,
+      horas_totales_texto: resolucion.horas_totales_texto,
+      clases_texto: resolucion.clases_texto,
+      horas_clase_texto: resolucion.horas_clase_texto,
+      minimo: resolucion.minimo,
+      maximo: resolucion.maximo,
+      mes_curso: resolucion.mes_curso,
+      año_curso: resolucion.año_curso,
+      fecha: formatearConDateFns(resolucion.fecha) || "",
+      numero_resolucion: resolucion.numero_resolucion || "",
+      resolucion_interes_departamental: resolucion.resolucion_interes_departamental,
+      titulo_organizador: resolucion.autor.titulo_organizador || "titulo",
+      articulo_docente: resolucion.articulo_docente || "el",
+      articulo_organizador: articulo_organizador,
+    };
+
+    console.log("campos: ", campos);
+    const textoFinal = renderTemplate(plantilla, campos);
+
+    const doc = new PDFDocument({
+      margins: {
+        top: 42.52,
+        left: 113,
+        right: 42.52,
+        bottom: 70.88,
+      },
+    });
+
+    // ✅ CORRECCIÓN: Definir pdfChunks ANTES de usarlo
+    const pdfChunks = [];
+    
+    // Capturar los datos del PDF
+    doc.on('data', (chunk) => pdfChunks.push(chunk));
+
+    // Dibujar contenido del PDF
+    dibujarEncabezado(doc, resolucion.numero_resolucion, campos.fecha);
+
+    doc.on("pageAdded", () => {
+      dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
+      doc.text("", { continued: false });
+      doc.font("Times-Roman").fontSize(12);
+    });
+
+    textoFinal.split("\n").forEach((line) => {
+      line = line.replace(/\r/g, "").trimEnd();
+      processTemplateLine(doc, line);
+      doc.moveDown(0.5);
+    });
+
+    doc.end();
+
+    // ✅ CORRECCIÓN: Esperar a que termine el PDF
+    doc.on('end', async () => {
+      try {
+        // Ahora pdfChunks está definido
+        const pdfBuffer = Buffer.concat(pdfChunks);
+        const fileName = `resolucion-${resolucion.id_resoluciones}.pdf`;
+        
+        // Subir a Cloudflare R2
+        const uploadParams = {
+          Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
+          Key: fileName,
+          Body: pdfBuffer,
+          ContentType: 'application/pdf',
+        };
+
+        await s3Client.send(new PutObjectCommand(uploadParams));
+        
+        console.log("PDF subido a Cloudflare R2 correctamente");
+        
+        // Retornar URL pública del PDF
+        const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;        
+        res.json({ 
+          success: true,
+          pdfUrl: publicUrl, 
+          fileName 
+        });
+        
+      } catch (uploadError) {
+        console.error("Error al subir a Cloudflare R2:", uploadError);
+        res.status(500).json({
+          success: false,
+          message: "Error al guardar el PDF en la nube"
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error al generar el PDF"
+    });
+  }
+},
   // Mostrar + ya guardados (para edición o generación posterior)
   mostrarResolucion: async (req, res) => {
     const usuario = req.session.user;
