@@ -1,33 +1,48 @@
-// Reemplaza el require de nodemailer por el de Brevo
-const brevo = require('@getbrevo/brevo');
-// Configura la API Key globalmente
-const defaultClient = brevo.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY; // Tu nueva variable de entorno
+const { MailerSend, EmailParams, Sender, Recipient } = require("mailersend");
+
+// Configurar MailerSend
+const mailerSend = new MailerSend({
+  apiKey: process.env.MAILERSEND_API_KEY,
+});
+
+const sentFrom = new Sender("marcosflores@test-68zxl270p2m4j905.mlsender.net", "Marcos Fabian Flores");
 
 async function enviarEmailTemporal(email, passwordTemporal) {
-  // Crea una instancia de la API de correos transaccionales
-  const apiInstance = new brevo.TransactionalEmailsApi();
-  const sendSmtpEmail = new brevo.SendSmtpEmail(); // Este es el objeto para construir el email
-
-  // Configura el contenido del correo
-  sendSmtpEmail.subject = "Acceso al sistema";
-  sendSmtpEmail.htmlContent = `
-    <p>Te damos acceso al sistema. Tu contraseña temporal es:</p>
-    <p><b>${passwordTemporal}</b></p>
-    <p>Ingresá a <a href="http://127.0.0.1:3000/auth/login">este enlace</a> para acceder y completar tu perfil.</p>
-  `;
-  sendSmtpEmail.sender = { "name": "Marcos Fabian Flores", "email": "marcosfabianflores@gmail.com" };
-  sendSmtpEmail.to = [{ "email": email }];
-  // Opcional: Configura un parámetro de respuesta
-  sendSmtpEmail.replyTo = { "email": "marcosfabianflores@gmail.com", "name": "Marcos Fabian Flores" };
-
   try {
-    // Envía el correo usando la API HTTP de Brevo
-    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log('Correo enviado correctamente. ID: ', data.messageId);
+    // Crear recipiente
+    const recipients = [
+      new Recipient(email, "") // El segundo parámetro es el nombre (opcional)
+    ];
+
+    // Configurar el email
+    const emailParams = new EmailParams()
+      .setFrom(sentFrom)
+      .setTo(recipients)
+      .setReplyTo(sentFrom)
+      .setSubject("Acceso al sistema")
+      .setHtml(`
+        <p>Te damos acceso al sistema. Tu contraseña temporal es:</p>
+        <p style="font-size: 18px; font-weight: bold; color: #2563eb;">${passwordTemporal}</p>
+        <p>Ingresá a <a href="http://127.0.0.1:3000/auth/login">este enlace</a> para acceder y completar tu perfil.</p>
+        <br>
+        <p><small>Este es un mensaje automático, por favor no respondas a este correo.</small></p>
+      `)
+      .setText(`
+        Te damos acceso al sistema. Tu contraseña temporal es: ${passwordTemporal}
+        
+        Ingresá a http://127.0.0.1:3000/auth/login para acceder y completar tu perfil.
+        
+        Este es un mensaje automático, por favor no respondas a este correo.
+      `);
+
+    // Enviar el email
+    const response = await mailerSend.email.send(emailParams);
+    console.log('✅ Email enviado correctamente');
+    return response;
+    
   } catch (error) {
-    console.error('Error al enviar el correo: ', error);
+    console.error('❌ Error al enviar email:', error);
+    throw error;
   }
 }
 
