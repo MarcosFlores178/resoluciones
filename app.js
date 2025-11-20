@@ -7,12 +7,14 @@ let logger = require('morgan');
 const { isAuthenticated } = require('./middlewares/authMiddleware');
 const { checkRole } = require('./middlewares/roleMiddleware');
 
+
 // import toastr from 'toastr';
 // import 'toastr/build/toastr.min.css';
 const toastr = require('toastr');
 let session = require('express-session');
 const bcrypt = require('bcrypt');
 const expressLayouts = require('express-ejs-layouts');
+const flash = require('connect-flash');
 
 //LIVERELOAD:
 const livereload = require("livereload");
@@ -55,11 +57,20 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+app.use(flash());
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.rol = req.session.user?.rol || null;
+   res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.warning_msg = req.flash('warning_msg');
+  res.locals.info_msg = req.flash('info_msg');
   next();
 });
+
+
+
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
 app.use('/toastr', express.static(path.join(__dirname, 'node_modules', 'toastr', 'build')));

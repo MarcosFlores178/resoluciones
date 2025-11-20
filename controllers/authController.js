@@ -21,7 +21,8 @@ module.exports = {
       // Verifica la contraseña
       const passwordMatch = await bcrypt.compare(password, usuario.password);
       if (!passwordMatch) {
-        return res.status(401).json({ error: "Credenciales inválidas" });
+        req.flash('error_msg', 'Credenciales inválidas');
+        return res.redirect('/auth/login');
       }
 //TODO manejar mejor credenciales invalidas
       // Guarda TODOS los datos del usuario en la sesión (incluyendo el rol)
@@ -45,14 +46,17 @@ module.exports = {
       res.redirect("/"); // Redirige a la ruta principal (que manejará el rol)
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      req.flash('error_msg', 'Error interno del servidor');
+      res.redirect('/auth/login');
+      // res.status(500).json({ error: "Error interno del servidor" });
     }
   },
   logout: (req, res) => {
     req.session.destroy((err) => {
       if (err) {
+        req.flash('error_msg', 'Error interno del servidor');
         console.error("Error al cerrar sesión:", err);
-        return res.status(500).json({ error: "Error interno del servidor" });
+        return res.redirect('/');
       }
       res.redirect("/auth/login"); // Redirige al login después de cerrar sesión
     });
@@ -67,8 +71,15 @@ module.exports = {
   register: async (req, res) => {
     const { nombre, apellido, password, titulo, sexo_organizador, telefono, confirm_password } = req.body;
     if (password !== confirm_password) {
-      return res.status(400).send("Las contraseñas no coinciden");
+      req.flash('error_msg', 'Las contraseñas no coinciden');
+      return res.redirect('/auth/register');
     }
+
+    if (!nombre || !apellido || !password || !titulo || !sexo_organizador || !telefono) {
+      req.flash('error_msg', 'Por favor, completa todos los campos requeridos');
+      return res.redirect('/auth/register');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     req.session.user.nombre = nombre;
     req.session.user.apellido = apellido;
@@ -79,12 +90,14 @@ module.exports = {
       );
       // req.session.user = nuevoUsuario;
       if (actualizados === 0) {
-        return res.status(404).send("Usuario no encontrado");
+        req.flash('error_msg', 'Usuario no encontrado');
+        return res.redirect('/auth/register');
       }
       res.redirect("/resoluciones/form-resolucion"); // Redirige a la ruta de formulario de resolución
     } catch (error) {
       console.error("Error al registrar usuario:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      req.flash('error_msg', 'Error interno del servidor');
+      res.redirect('/auth/register');
     }
   },
 };

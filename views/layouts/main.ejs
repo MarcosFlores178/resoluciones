@@ -15,5 +15,34 @@
 
     <%- include('../partials/footer') %>
   </body>
+
+<script>
+  toastr.options = {
+    closeButton: true,
+    progressBar: true,
+    timeOut: 5000
+  };
+</script>
+
+  <!-- PRIMERO el EJS fuera del script -->
+<% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+  <script>
+    toastr.success('<%= success_msg[0] %>');
+  </script>
+<% } %>
+
+<% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+  <script>
+    toastr.error('<%= error_msg[0] %>');
+  </script>
+<% } %>
+
+<% if (typeof warning_msg !== 'undefined' && warning_msg.length > 0) { %>
+  <script>
+    toastr.warning('<%= warning_msg[0] %>');
+  </script>
+<% } %>
+  
+ 
 </html>
 

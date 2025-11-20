@@ -242,8 +242,7 @@ module.exports = {
       año_curso,
       numero_resolucion,
       resolucion_interes_departamental,
-      accion,
-      titulo_organizador,
+      accion
     } = req.body;
 
     const usuario = req.session.user;
@@ -553,7 +552,9 @@ module.exports = {
         console.log("PDF subido a Cloudflare R2 correctamente");
         
         // Retornar URL pública del PDF
-        const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;        
+        const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;  
+        req.flash('success_msg', 'PDF generado y subido correctamente');
+        
         res.json({ 
           success: true,
           pdfUrl: publicUrl, 
@@ -562,19 +563,15 @@ module.exports = {
         
       } catch (uploadError) {
         console.error("Error al subir a Cloudflare R2:", uploadError);
-        res.status(500).json({
-          success: false,
-          message: "Error al guardar el PDF en la nube"
-        });
+        req.flash('error_msg', 'Error al guardar el PDF en la nube');
+        res.redirect('/resoluciones/form-resolucion');
       }
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Error al generar el PDF"
-    });
+    req.flash('error_msg', 'Error al generar el PDF');
+    res.redirect('/resoluciones/form-resolucion');
   }
 },
   // Mostrar + ya guardados (para edición o generación posterior)
@@ -585,12 +582,10 @@ module.exports = {
       rellenaFormulario = true;
     }
     const resolucion = await Resolucion.findByPk(req.params.id);
-    if (!resolucion)
-      return res.status(404).json({
-        success: false,
-        message: "Resolución no encontrada",
-      });
-
+    if (!resolucion) {
+      req.flash('error_msg', 'Resolución no encontrada');
+      return res.redirect('/resoluciones/form-resolucion');
+    }
     res.render("resolutions/form", {
       datos: resolucion,
       cssFile: "form.css",
@@ -799,8 +794,9 @@ module.exports = {
 
       // res.redirect('/resoluciones/lista');
     } catch (error) {
+      req.flash('error_msg', 'Error al obtener las resoluciones');
       console.error("Error al obtener las resoluciones:", error);
-      res.status(500).send("Error al obtener las resoluciones");
+      res.redirect('/resoluciones/form-resolucion');
     }
   },
   eliminarResolucion: async (req, res) => {
