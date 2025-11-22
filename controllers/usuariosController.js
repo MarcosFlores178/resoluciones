@@ -94,13 +94,17 @@ changePassword: async (req, res) => {
 
     // 2️⃣ Verificar que las nuevas contraseñas coincidan
     if (nueva !== confirmar) {
-      return res.status(400).send("Las nuevas contraseñas no coinciden");
+        req.flash('error_msg', 'Las nuevas contraseñas no coinciden');
+    //   return res.status(400).send("Las nuevas contraseñas no coinciden");
+        return res.redirect('/usuarios/change-password');
     }
 
     // 3️⃣ Verificar contraseña actual
     const coincide = await bcrypt.compare(actual, usuario.password);
     if (!coincide) {
-      return res.status(400).send("La contraseña actual es incorrecta");
+        req.flash('error_msg', 'La contraseña actual es incorrecta');
+        return res.redirect('/usuarios/change-password');
+    //
     }
 
     // 4️⃣ Hashear la nueva contraseña
@@ -112,6 +116,7 @@ changePassword: async (req, res) => {
     // 6️⃣ Redirigir o responder
     res.redirect("/usuarios/profile");
   } catch (error) {
+    req.flash('error_msg', 'Error interno del servidor');
     console.error("Error al cambiar la contraseña del usuario:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }

@@ -100,4 +100,30 @@ module.exports = {
       res.redirect('/auth/register');
     }
   },
+  showForgotPassword: (req, res) => {
+    res.render("auth/recuperarPassword", {
+      error: null, // Puedes pasar un mensaje de error si es necesario
+      cssFile: "recuperarPassword.css",
+    });
+  },
+  forgotPassword: async (req, res) => {
+    const { email, newPassword, confirmNewPassword } = req.body;
+    try {
+    const findEmail = await Usuario.findOne({ where: { email } });
+    if (!findEmail) {
+      req.flash('error_msg', 'El correo electrónico no está registrado');
+      return res.redirect('/auth/forgot-password');
+    }
+    if (newPassword !== confirmNewPassword) {
+      req.flash('error_msg', 'Las contraseñas no coinciden');
+      return res.redirect('/auth/forgot-password');
+    }
+
+  }
+    catch (error) {
+      console.error("Error al restablecer la contraseña:", error);
+      req.flash('error_msg', 'Error interno del servidor');
+      res.redirect('/auth/forgot-password');
+    }
+  }
 };

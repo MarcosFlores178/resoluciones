@@ -13,6 +13,9 @@ router.post('/login', authController.login);
 
 router.get('/logout', authController.logout);
 
+router.get('/forgot-password', authController.showForgotPassword);
+router.patch('/forgot-password', authController.forgotPassword);
+
 
 // router.get('/listar', usuariosController.listar);
 // router.get('/listar/:id', usuariosController.listarPorId);
