@@ -23,6 +23,14 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.STRING(100),
       allowNull: false,
     },
+    password_temporal: {
+      type: dataTypes.STRING(100),
+      allowNull: true,
+    },
+    password_temporal_expira: {
+      type: dataTypes.DATE,
+      allowNull: true,
+    },
     email: {
       type: dataTypes.STRING(100),
       allowNull: false,
@@ -47,6 +55,14 @@ module.exports = (sequelize, dataTypes) => {
     },
     articulo_organizador: {
       type: dataTypes.STRING(20),
+      allowNull: true,
+    },
+    token_recuperacion: {
+      type: dataTypes.STRING(100),
+      allowNull: true,
+    },
+    token_expiracion: {
+      type: dataTypes.DATE,
       allowNull: true,
     },
   };

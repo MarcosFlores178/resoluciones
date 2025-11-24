@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 router.get('/profile', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.showProfile);
 router.get('/edit-profile', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.showEditProfile);
 router.post('/edit-profile', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.editProfile);
-router.get('/change-password', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.showChangePassword);
-router.post('/change-password', checkRole(['superadmin', 'organizador', 'administrativo']), usuariosController.changePassword);
+
+
 
 module.exports = router;
