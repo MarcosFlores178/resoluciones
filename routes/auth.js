@@ -21,6 +21,7 @@ router.post('/cambiar-password', checkRole(['superadmin', 'organizador', 'admini
 // RECUPERACIÓN DE CONTRASEÑA
 router.get('/recuperar-password', authController.mostrarRecuperacion);
 router.post('/solicitar-recuperacion', authController.solicitarRecuperacion);
+router.get('/ingresar-codigo/:token', authController.mostrarVerificarCodigo); // Con token
 router.post('/verificar-codigo', authController.verificarCodigo);
 router.get('/cambiar-password/:token', authController.mostrarCambiarPasswordOlvido);
 router.post('/cambiar-password-olvido', authController.changePasswordOlvido);
