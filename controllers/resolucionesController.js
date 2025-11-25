@@ -457,11 +457,41 @@ module.exports = {
       ],
     });
 
+
     if (!resolucion)
       return res.status(404).json({
         success: false,
         message: "Resolución no encontrada",
       });
+
+// 2. Hacer el UPDATE aquí con los datos del body
+    const updateData = {
+      fecha: req.body.fecha || null,
+      numero_resolucion: req.body.numero_resolucion || null,
+      expediente: req.body.expediente,
+      resolucion_interes_departamental: req.body.resolucion_interes_departamental,
+      curso: req.body.curso || null,
+      cohorte: req.body.cohorte || null,
+      titulo_docente: req.body.titulo_docente || null,
+      nombre_organizador: req.body.nombre_organizador || null,
+      docente: req.body.docente || null,
+      sexo_docente: req.body.sexo_docente || null,
+      alumnos: req.body.alumnos || null,
+      segundos_objetivos: req.body.segundos_objetivos || null,
+      objetivos: req.body.objetivos || null,
+      clases_numero: req.body.clases_numero || null,
+      horas_clase_numero: req.body.horas_clase_numero || null,
+      minimo: req.body.minimo || null,
+      maximo: req.body.maximo || null,
+      mes_curso: req.body.mes_curso || null,
+      año_curso: req.body.año_curso || null,
+    };
+
+    // Actualizar la resolución
+    await resolucion.update(updateData);
+
+    // 3. Recargar la instancia para asegurar datos frescos (opcional pero recomendado)
+    await resolucion.reload();
 
     const articulo_organizador = resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
     const plantillaPath = path.join(__dirname, "../plantilla.txt");
@@ -489,8 +519,8 @@ module.exports = {
       maximo: resolucion.maximo,
       mes_curso: resolucion.mes_curso,
       año_curso: resolucion.año_curso,
-      fecha: formatearConDateFns(resolucion.fecha) || "",
-      numero_resolucion: resolucion.numero_resolucion || "",
+      fecha: formatearConDateFns(resolucion.fecha),
+      numero_resolucion: resolucion.numero_resolucion,
       resolucion_interes_departamental: resolucion.resolucion_interes_departamental,
       titulo_organizador: resolucion.autor.titulo_organizador || "titulo",
       articulo_docente: resolucion.articulo_docente || "el",
@@ -537,7 +567,7 @@ module.exports = {
       try {
         // Ahora pdfChunks está definido
         const pdfBuffer = Buffer.concat(pdfChunks);
-        const fileName = `resolucion-${resolucion.id_resoluciones}.pdf`;
+        const fileName = `resolucion-${resolucion.numero_resolucion}.pdf`;
         
         // Subir a Cloudflare R2
         const uploadParams = {
@@ -554,6 +584,8 @@ module.exports = {
         // Retornar URL pública del PDF
         const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;  
         req.flash('success_msg', 'PDF generado y subido correctamente');
+
+        await resolucion.update({ pdf_url: publicUrl, pdf_key: fileName });
         
         res.json({ 
           success: true,
@@ -563,7 +595,7 @@ module.exports = {
         
       } catch (uploadError) {
         console.error("Error al subir a Cloudflare R2:", uploadError);
-        req.flash('error_msg', 'Error al guardar el PDF en la nube');
+        req.flash('error_msg', 'Error al guardar el PDF en la nube. Intente nuevamente en unos minutos');
         res.redirect('/resoluciones/form-resolucion');
       }
     });
@@ -789,6 +821,8 @@ module.exports = {
         error: null,
         usuario: req.session.user,
         rellenaFormulario,
+        pdf_url: resoluciones.pdf_url,
+        pdf_key: resoluciones.pdf_key
       }); //cssFile debe ser igual a lista.css
       console.log("esto sale despues del res render");
 
@@ -1011,7 +1045,7 @@ module.exports = {
   emitirFormulario: async (req, res) => {
     try {
       const { id } = req.params;
-      const { fecha, numero_resolucion, expediente, resolucion_interes_departamental } = req.body;
+      const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, nombre_organizador, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
 
       await Resolucion.update(
         {
@@ -1020,7 +1054,24 @@ module.exports = {
           estado: "emitido",
           fecha_cambio_estado: new Date(), // Actualiza la fecha de cambio de estado
           expediente,
-          resolucion_interes_departamental
+          resolucion_interes_departamental,
+          curso, 
+          cohorte,
+          titulo_docente,
+          nombre_organizador,
+          docente,
+          sexo_docente,
+          alumnos,
+          segundos_objetivos,
+          objetivos,
+          clases_numero,
+          horas_clase_numero,
+          minimo,
+          maximo,
+          mes_curso,
+          año_curso
+
+
           
         },
         {

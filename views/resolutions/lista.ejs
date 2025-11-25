@@ -180,7 +180,7 @@
                                     <% } %>
                                       <% if (res.estado==='emitido' ) { %>
                                         <div class="reimprimir">
-                                          <a href="/pdfs/resolucion-<%= String(res.id_resoluciones).trim() %>.pdf"
+                                          <a href="<%= res.pdf_url %>"
                                             target="_blank" class="btn">Reimprimir</a>
 
                                         </div>

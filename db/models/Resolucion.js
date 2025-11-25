@@ -133,6 +133,14 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.INTEGER,
       allowNull: true,
     },
+    pdf_url: {
+      type: dataTypes.STRING,
+      allowNull: true,
+    },
+    pdf_key: {
+      type: dataTypes.STRING,
+      allowNull: true,
+    }
   };
 
   let config = {

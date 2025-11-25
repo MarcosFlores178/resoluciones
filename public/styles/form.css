@@ -5,6 +5,48 @@
   margin: 2rem 1rem 2rem;
 } */
 
+.toggle-btn {
+  width: fit-content;
+  padding: 6px 14px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+/* Estado inicial - Editar */
+.btn-editar {
+  background-color: #4caf50;
+}
+
+.btn-editar:hover {
+  background-color: #45a049;
+}
+
+/* Estado edición - Cancelar */
+.btn-editando {
+  background-color: #dc3545;
+}
+
+.btn-editando:hover {
+  background-color: #c82333;
+}
+
+/* Estado de Bloquear */
+/* .toggle-btn.bloquear {
+  background-color: #f44336; /* rojo */
+/* } */ */
+
+
+/* Opcional: estilo para inputs en edición */
+input:not([readonly]):not([disabled]), 
+textarea:not([readonly]):not([disabled]) {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
 .formulario {
   max-width: 900px;
   background: #f9f9f9;
@@ -99,32 +141,8 @@ textarea:read-only:focus {
   border-color: #ccc;
 }
 
-/* Estilo general del botón */
-.toggle-btn {
-  width: fit-content;
-  padding: 6px 14px;
-  background-color: #4caf50; /* verde por defecto */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
 
-/* Hover */
-.toggle-btn:hover {
-  background-color: #45a049;
-}
 
-/* Estado de Bloquear */
-.toggle-btn.bloquear {
-  background-color: #f44336; /* rojo */
-}
-
-.toggle-btn.bloquear:hover {
-  background-color: #e53935;
-}
 
 
 legend {

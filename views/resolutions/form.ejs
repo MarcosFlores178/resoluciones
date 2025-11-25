@@ -14,7 +14,7 @@
       <input type="text" id="curso" name="curso" required value="<%= datos ? datos.curso : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="curso">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="curso">Editar</button>
       <% } %>
     </div>
    
@@ -41,7 +41,7 @@
         <option value="SÉPTIMA" <%= datos && datos.cohorte === "SÉPTIMA" ? "selected" : "" %>>SÉPTIMA</option>
       </select>
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="cohorte">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="cohorte">Editar</button>
       <% } %>
     </div>
 
@@ -50,7 +50,7 @@
       <input type="text" id="titulo_docente" name="titulo_docente" required value="<%= datos ? datos.titulo_docente : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="titulo_docente">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="titulo_docente">Editar</button>
       <% } %>
     </div>
 
@@ -59,7 +59,7 @@
       <input type="text" id="docente" name="docente" required value="<%= datos ? datos.docente : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="docente">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="docente">Editar</button>
       <% } %>
     </div>
 
@@ -80,7 +80,7 @@
     </div>
   
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="sexo_docente_masculino">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="sexo_docente_masculino">Editar</button>
       <% } %>
     </div>
 
@@ -89,7 +89,7 @@
       <input type="text" id="alumnos" name="alumnos" required value="<%= datos ? datos.alumnos : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
        <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="alumnos">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="alumnos">Editar</button>
       <% } %>
     </div>
 
@@ -97,7 +97,7 @@
       <label for="segundos_objetivos">Objetivo general:</label>
       <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %>><%= datos ? datos.segundos_objetivos : '' %></textarea>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="segundos_objetivos">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="segundos_objetivos">Editar</button>
       <% } %>
     </div>
     
@@ -105,7 +105,7 @@
       <label for="objetivos">Objetivo específico:</label>
       <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %>><%= datos ? datos.objetivos : ''%></textarea>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="objetivos">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="objetivos">Editar</button>
       <% } %>
     </div>
 
@@ -117,7 +117,7 @@
       <input type="number" id="clases_numero" name="clases_numero" required value="<%= datos ? datos.clases_numero : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="clases_numero">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="clases_numero">Editar</button>
       <% } %>
     </div>
 
@@ -126,7 +126,7 @@
       <input type="number" id="horas_clase_numero" name="horas_clase_numero" required value="<%= datos ? datos.horas_clase_numero : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="horas_clase">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="horas_clase">Editar</button>
       <% } %>
     </div>
 
@@ -146,7 +146,7 @@
       <input type="number" id="minimo" name="minimo" required value="<%= datos ? datos.minimo : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="minimo">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="minimo">Editar</button>
       <% } %>
     </div>
 
@@ -155,7 +155,7 @@
       <input type="number" id="maximo" name="maximo" required value="<%= datos ? datos.maximo : '' %>"
       <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="maximo">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="maximo">Editar</button>
       <% } %>
     </div>
 
@@ -177,7 +177,7 @@
         <option value="Diciembre" <%= datos && datos.mes_curso === "Diciembre" ? "selected" : "" %>>Diciembre</option>
       </select>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="mes_curso">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="mes_curso">Editar</button>
       <% } %>
 </div>
       <div class="form-group">
@@ -192,7 +192,7 @@
         <option value="2029" <%= datos && datos.año_curso == "2029" ? "selected" : "" %>>2029</option>
       </select>
      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="año_curso">Editar</button>
+        <button type="button" class="toggle-btn btn-editar" data-input="año_curso">Editar</button>
       <% } %>
 
     </div>
@@ -201,22 +201,21 @@
       <label for="expediente">Número de expediente:</label>
       <input type="text" id="expediente" name="expediente"
       value="<%= datos ? datos.expediente : '' %>"
-      <%= usuario.rol === "administrativo" ? "readonly" : "" %>
+      
+    
+      
       <%= usuario.rol === "administrativo" ? "required" : "" %>>
-      <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="expediente">Editar</button>
-      <% } %>
+     
     </div>
 
     <div class="form-group">
       <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
       <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
         value="<%= datos ? datos.resolucion_interes_departamental : '' %>"
-        <%= usuario.rol === "administrativo" ? "readonly" : "" %>
+        
+       
         <%= usuario.rol === "administrativo" ? "required" : "" %>>
-         <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="resolucion_interes_departamental">Editar</button>
-      <% } %>
+       
     </div>
 
 
@@ -242,10 +241,10 @@
     <button id="guardar-btn" type="submit" name="accion" value="guardar">Guardar</button>
 
 
-    <button id="ver-borrador-btn" type="submit" name="accion" value="ver_borrador">Guardar y Ver PDF</button>
+    <button id="ver-borrador-btn" type="submit" name="accion" value="ver_borrador">Ver PDF</button>
     
     
-    <button id="enviar-btn" type="submit" name="accion" value="enviar">Guardar y Enviar</button>
+    <button id="enviar-btn" type="submit" name="accion" value="enviar">Enviar</button>
     
     <% } else if (usuario.rol === "administrativo") { %>
       <!-- <button type="submit" name="accion" value="guardar">Guardar borrador</button> -->
@@ -264,62 +263,113 @@
   const botones = document.querySelectorAll(".toggle-btn");
 
   botones.forEach(boton => {
-  boton.addEventListener("click", () => {
-    const inputId = boton.dataset.input;
-    const input = document.getElementById(inputId);
-    
-    // Verificar si es un radio button
-    if (input.type === 'radio') {
-      manejarRadioButtons(boton, input);
-    } else {
-      manejarInputNormal(boton, input);
-    }
+    boton.addEventListener("click", () => {
+      const inputId = boton.dataset.input;
+      const input = document.getElementById(inputId);
+      
+      if (input.type === 'radio') {
+        manejarRadioButtons(boton, input);
+      } else {
+        manejarInputNormal(boton, input);
+      }
+    });
   });
-});
 
-function manejarInputNormal(boton, input) {
-  const estaBloqueado = input.hasAttribute("readonly") || input.hasAttribute("disabled");
-  
-  if (estaBloqueado) {
-    input.removeAttribute("readonly");
-    input.removeAttribute("disabled");
-    boton.textContent = "Bloquear";
-    boton.classList.add('bloquear');
-    input.focus();
-  } else {
-    if (input.tagName === 'TEXTAREA' || input.type === 'text') {
-      input.setAttribute("readonly", true);
+  function manejarInputNormal(boton, input) {
+    const estaEditando = boton.textContent === "Cancelar";
+    
+    if (estaEditando) {
+      // MODO CANCELAR - restaurar valores y bloquear
+      if (input.dataset.valorOriginal !== undefined) {
+        input.value = input.dataset.valorOriginal;
+      }
+      
+      // Volver a bloquear
+      if (input.tagName === 'TEXTAREA' || input.type === 'text') {
+        input.setAttribute("readonly", true);
+      } else {
+        input.setAttribute("disabled", true);
+      }
+      
+      // Restaurar botón
+      boton.textContent = "Editar";
+      boton.classList.remove('btn-editando');
+    boton.classList.add('btn-editar');
+      delete input.dataset.valorOriginal;
+      
     } else {
-      input.setAttribute("disabled", true);
+      // MODO EDITAR - guardar valor original y desbloquear
+      input.dataset.valorOriginal = input.value;
+      
+      input.removeAttribute("readonly");
+      input.removeAttribute("disabled");
+      boton.textContent = "Cancelar";
+        boton.classList.remove('btn-editar');
+    boton.classList.add('btn-editando');
+      input.focus();
     }
-    boton.textContent = "Editar";
-    boton.classList.remove('bloquear');
   }
-}
 
-function manejarRadioButtons(boton, input) {
-  // Obtener todos los radio buttons del mismo grupo
-  const radioGroupName = input.name;
-  const radioGroup = document.querySelectorAll(`input[name="${radioGroupName}"]`);
-  const estaBloqueado = radioGroup[0].hasAttribute("disabled");
-  
-  if (estaBloqueado) {
-    // Desbloquear todo el grupo
-    radioGroup.forEach(radio => {
-      radio.removeAttribute("disabled");
-    });
-    boton.textContent = "Bloquear";
-    boton.classList.add('bloquear');
-  } else {
-    // Bloquear todo el grupo
-    radioGroup.forEach(radio => {
-      radio.setAttribute("disabled", true);
-    });
-    boton.textContent = "Editar";
-    boton.classList.remove('bloquear');
+  function manejarRadioButtons(boton, input) {
+    const estaEditando = boton.textContent === "Cancelar";
+    
+    if (estaEditando) {
+      // MODO CANCELAR - restaurar selección original y bloquear
+      const radioGroupName = input.name;
+      const radioGroup = document.querySelectorAll(`input[name="${radioGroupName}"]`);
+      
+      // Restaurar selección original
+      if (input.dataset.valorOriginal !== undefined) {
+        radioGroup.forEach(radio => {
+          radio.checked = (radio.value === input.dataset.valorOriginal);
+        });
+      }
+      
+      // Bloquear grupo
+      radioGroup.forEach(radio => {
+        radio.setAttribute("disabled", true);
+      });
+      
+      // Restaurar botón
+      boton.textContent = "Editar";
+          boton.classList.remove('btn-editando');
+    boton.classList.add('btn-editar');
+      delete input.dataset.valorOriginal;
+      
+    } else {
+      // MODO EDITAR - guardar selección actual y desbloquear
+      const radioGroupName = input.name;
+      const radioGroup = document.querySelectorAll(`input[name="${radioGroupName}"]`);
+      const radioSeleccionadoActual = document.querySelector(`input[name="${radioGroupName}"]:checked`);
+      
+      // Guardar selección actual
+      if (radioSeleccionadoActual) {
+        input.dataset.valorOriginal = radioSeleccionadoActual.value;
+      }
+      
+      // Desbloquear grupo
+      radioGroup.forEach(radio => {
+        radio.removeAttribute("disabled");
+      });
+      
+      boton.textContent = "Cancelar";
+       boton.classList.remove('btn-editar');
+    boton.classList.add('btn-editando');
+      // Enfocar el primer radio button
+      if (radioGroup.length > 0) {
+        radioGroup[0].focus();
+    }
   }
+
+  // Opcional: Resetear todos los botones "Cancelar" al enviar el formulario
+  document.querySelector('form').addEventListener('submit', function() {
+    botones.forEach(boton => {
+      if (boton.textContent === "Cancelar") {
+        boton.textContent = "Editar";
+        boton.classList.remove('editando');
+      }
+    });
+  });
 }
-;
 </script>
 
-  
