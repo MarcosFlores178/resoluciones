@@ -473,7 +473,6 @@ module.exports = {
       curso: req.body.curso || null,
       cohorte: req.body.cohorte || null,
       titulo_docente: req.body.titulo_docente || null,
-      nombre_organizador: req.body.nombre_organizador || null,
       docente: req.body.docente || null,
       sexo_docente: req.body.sexo_docente || null,
       alumnos: req.body.alumnos || null,
@@ -709,7 +708,7 @@ module.exports = {
 
       return res.json({
         success: true,
-        message: "Plantilla actualizada correctamente.",
+        message: "Resolución actualizada correctamente",
         id: resolucion.id_resoluciones,
       });
     } else if (accion === "generar_pdf") {
@@ -1045,7 +1044,16 @@ module.exports = {
   emitirFormulario: async (req, res) => {
     try {
       const { id } = req.params;
-      const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, nombre_organizador, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
+  // DEBUG: Ver qué llega al controlador
+    console.log("=== DATOS RECIBIDOS EN CONTROLADOR ===");
+    console.log("Body completo:", req.body);
+    console.log("ID:", id);
+    console.log("Fecha:", req.body.fecha);
+    console.log("Curso:", req.body.curso);
+    console.log("Docente:", req.body.docente);
+    console.log("================================");
+
+      const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
 
       await Resolucion.update(
         {
@@ -1058,7 +1066,6 @@ module.exports = {
           curso, 
           cohorte,
           titulo_docente,
-          nombre_organizador,
           docente,
           sexo_docente,
           alumnos,
@@ -1078,6 +1085,13 @@ module.exports = {
           where: { id_resoluciones: id },
         }
       );
+
+  // DEBUG: Ver los valores que se van a actualizar
+    console.log("=== VALORES A ACTUALIZAR ===");
+    console.log("Curso:", curso);
+    console.log("Docente:", docente);
+    console.log("Objetivos:", objetivos);
+    console.log("=============================");
 
       res.json({
         success: true,
@@ -1121,7 +1135,7 @@ module.exports = {
   actualizarBorrador: async (req, res) => {
     try {
       const { id } = req.params;
-      const { expediente, resolucion_interes_departamental, fecha, numero_resolucion } = req.body;
+      const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
 
       console.log("id de parametros:id", id);
      
@@ -1131,7 +1145,21 @@ module.exports = {
           expediente,
           resolucion_interes_departamental,
           fecha, 
-          numero_resolucion
+          numero_resolucion,
+          curso, 
+          cohorte,
+          titulo_docente,
+          docente,
+          sexo_docente,
+          alumnos,
+          segundos_objetivos,
+          objetivos,
+          clases_numero,
+          horas_clase_numero,
+          minimo,
+          maximo,
+          mes_curso,
+          año_curso
         },
         {
           where: { id_resoluciones: id },

@@ -25,7 +25,7 @@ router.put('/:id', resolucionesController.actualizarResolucion);
 
 router.delete('/:id', resolucionesController.eliminarResolucion);
 
-router.get('/:id/pdf', resolucionesController.generarPDF);
+router.patch('/:id/pdf', resolucionesController.generarPDF);
 
 router.get('/:id/ver-borrador', resolucionesController.verBorrador);
 

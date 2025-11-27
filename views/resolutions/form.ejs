@@ -31,7 +31,7 @@
 
     <div class="form-group">
       <label for="cohorte">Número de cohorte:</label>
-      <select name="cohorte" id="cohorte" required <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
+      <select name="cohorte" id="cohorte" required >
         <option value="PRIMERA" <%= datos && datos.cohorte === "PRIMERA" ? "selected" : "" %>>PRIMERA</option>
         <option value="SEGUNDA" <%= datos && datos.cohorte === "SEGUNDA" ? "selected" : "" %>>SEGUNDA</option>
         <option value="TERCERA" <%= datos && datos.cohorte === "TERCERA" ? "selected" : "" %>>TERCERA</option>
@@ -69,12 +69,12 @@
 
     <div class="radio-group">
       <label class="radio-option">
-        <input type="radio" name="sexo_docente" id="sexo_docente_masculino" value="masculino" <%= datos? datos.sexo_docente === 'masculino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
+        <input type="radio" name="sexo_docente" id="sexo_docente_masculino" value="masculino" <%= datos? datos.sexo_docente === 'masculino'? 'checked' : '' : '' %> required>
         Hombre
       </label>
 
       <label class="radio-option">
-        <input type="radio" name="sexo_docente" id="sexo_docente_femenino" value="femenino" <%= datos? datos.sexo_docente === 'femenino'? 'checked' : '' : '' %> <%= usuario.rol === "administrativo" ? "disabled" : "" %> required>
+        <input type="radio" name="sexo_docente" id="sexo_docente_femenino" value="femenino" <%= datos? datos.sexo_docente === 'femenino'? 'checked' : '' : '' %> required>
         Mujer
       </label>
     </div>
@@ -162,7 +162,7 @@
     <div class="form-group">
       <label for="mes_curso">Mes de inicio:</label>
      
-      <select name="mes_curso" id="mes_curso" <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
+      <select name="mes_curso" id="mes_curso" >
         <option value="Enero" <%= datos && datos.mes_curso === "Enero" ? "selected" : "" %>>Enero</option>
         <option value="Febrero" <%= datos && datos.mes_curso === "Febrero" ? "selected" : "" %>>Febrero</option>
         <option value="Marzo" <%= datos && datos.mes_curso === "Marzo" ? "selected" : "" %>>Marzo</option>
@@ -182,7 +182,7 @@
 </div>
       <div class="form-group">
       <label for="año_curso">Año de inicio:</label>
-      <select name="año_curso" id="año_curso" <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
+      <select name="año_curso" id="año_curso" >
         <option value="2023" <%= datos && datos.año_curso == "2023" ? "selected" : "" %>>2023</option>
         <option value="2024" <%= datos && datos.año_curso == "2024" ? "selected" : "" %>>2024</option>
         <option value="2025" <%= datos && datos.año_curso == "2025" ? "selected" : "" %>>2025</option>

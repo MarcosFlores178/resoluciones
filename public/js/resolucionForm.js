@@ -90,12 +90,15 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         return;
       } else {
-        toastr.info("Guardando cambios...");
+        toastr.info("Generando PDF...");
         (async () => {
           const id = await guardarExistente();
           if (!id) return;
 
           // 3️⃣ Abrimos el PDF actualizado en una nueva ventana
+           // Espera 1.5 segundos (1500 ms)
+    await new Promise(resolve => setTimeout(resolve, 1200));
+
           const urlBorrador = `/resoluciones/${id}/ver-borrador`;
           window.open(urlBorrador, "_blank");
         })();
@@ -117,10 +120,32 @@ document.addEventListener("DOMContentLoaded", () => {
               },
               body: JSON.stringify({
                 fecha: data.fecha,
-                numero_resolucion: data.numero_resolucion,
-                expediente: data.expediente,
-                resolucion_interes_departamental:
-                  data.resolucion_interes_departamental,
+              numero_resolucion: data.numero_resolucion,
+              expediente: data.expediente,
+              resolucion_interes_departamental:
+                data.resolucion_interes_departamental,
+
+              curso: data.curso ? data.curso : null,
+              cohorte: data.cohorte ? data.cohorte : null,
+              titulo_docente: data.titulo_docente ? data.titulo_docente : null,
+
+              docente: data.docente ? data.docente : null,
+              sexo_docente: data.sexo_docente ? data.sexo_docente : null,
+              alumnos: data.alumnos ? data.alumnos : null,
+              segundos_objetivos: data.segundos_objetivos
+                ? data.segundos_objetivos
+                : null,
+              objetivos: data.objetivos ? data.objetivos : null,
+              clases_numero: data.clases_numero ? data.clases_numero : null,
+              horas_clase_numero: data.horas_clase_numero
+                ? data.horas_clase_numero
+                : null,
+              minimo: data.minimo ? data.minimo : null,
+              maximo: data.maximo ? data.maximo : null,
+              mes_curso: data.mes_curso ? data.mes_curso : null,
+              año_curso: data.año_curso ? data.año_curso : null,
+            
+                  
               }),
             }
           );
@@ -263,16 +288,11 @@ document.addEventListener("DOMContentLoaded", () => {
               expediente: data.expediente,
               resolucion_interes_departamental:
                 data.resolucion_interes_departamental,
-              
-           
-              
-           
+
               curso: data.curso ? data.curso : null,
               cohorte: data.cohorte ? data.cohorte : null,
               titulo_docente: data.titulo_docente ? data.titulo_docente : null,
-              nombre_organizador: data.nombre_organizador
-                ? data.nombre_organizador
-                : null,
+
               docente: data.docente ? data.docente : null,
               sexo_docente: data.sexo_docente ? data.sexo_docente : null,
               alumnos: data.alumnos ? data.alumnos : null,
@@ -303,23 +323,71 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         console.log(`/resoluciones/${idResolucion}/pdf`);
-        const resGenerarPdf = await fetch(`/resoluciones/${idResolucion}/pdf`);
+        const resGenerarPdf = await fetch(`/resoluciones/${idResolucion}/pdf`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fecha: data.fecha,
+            numero_resolucion: data.numero_resolucion,
+            expediente: data.expediente,
+            resolucion_interes_departamental:
+              data.resolucion_interes_departamental,
+
+            curso: data.curso ? data.curso : null,
+            cohorte: data.cohorte ? data.cohorte : null,
+            titulo_docente: data.titulo_docente ? data.titulo_docente : null,
+
+            docente: data.docente ? data.docente : null,
+            sexo_docente: data.sexo_docente ? data.sexo_docente : null,
+            alumnos: data.alumnos ? data.alumnos : null,
+            segundos_objetivos: data.segundos_objetivos
+              ? data.segundos_objetivos
+              : null,
+            objetivos: data.objetivos ? data.objetivos : null,
+            clases_numero: data.clases_numero ? data.clases_numero : null,
+            horas_clase_numero: data.horas_clase_numero
+              ? data.horas_clase_numero
+              : null,
+            minimo: data.minimo ? data.minimo : null,
+            maximo: data.maximo ? data.maximo : null,
+            mes_curso: data.mes_curso ? data.mes_curso : null,
+            año_curso: data.año_curso ? data.año_curso : null,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.success || !data.pdfUrl) {
+              throw new Error(data.message || "Error al generar PDF");
+            }
+
+            // 👉 Abre la pestaña del PDF **antes** de la redirección
+            const nuevaVentana = window.open("", "_blank");
+            nuevaVentana.location.href = data.pdfUrl;
+
+            // 👉 Redirección después de un pequeño delay óptimo
+            setTimeout(() => {
+              window.location.href = "/resoluciones/lista-resoluciones";
+            }, 400);
+          })
+          .catch((err) => console.error(err));
         const dataGenerarPdf = await resGenerarPdf.json();
 
         // ✅ CAMBIO PRINCIPAL: Usar la URL de Cloudflare R2
-        if (dataGenerarPdf.success && dataGenerarPdf.pdfUrl) {
-          setTimeout(() => {
-            // Abrir la URL de Cloudflare R2 en nueva pestaña
-            window.open(dataGenerarPdf.pdfUrl, "_blank");
-          }, 1500);
+        // if (dataGenerarPdf.success && dataGenerarPdf.pdfUrl) {
+        //   setTimeout(() => {
+        //     // Abrir la URL de Cloudflare R2 en nueva pestaña
+        //     window.open(dataGenerarPdf.pdfUrl, "_blank");
+        //   }, 1500);
 
-          setTimeout(() => {
-            console.log("redireccion al listado");
-            window.open("/resoluciones/lista-resoluciones", "_self");
-          }, 1800);
-        } else {
-          throw new Error(dataGenerarPdf.message || "Error al generar PDF");
-        }
+        //   setTimeout(() => {
+        //     console.log("redireccion al listado");
+        //     window.open("/resoluciones/lista-resoluciones", "_self");
+        //   }, 1800);
+        // } else {
+        //   throw new Error(dataGenerarPdf.message || "Error al generar PDF");
+        // }
       } catch (err) {
         console.error(err);
         toastr.error("Error al enviar la resolución.");
@@ -438,45 +506,48 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                fecha: data.fecha ? data.fecha : null,
-                numero_resolucion: data.numero_resolucion
-                  ? data.numero_resolucion
-                  : null,
-                expediente: data.expediente,
-                resolucion_interes_departamental:
-                  data.resolucion_interes_departamental,
-                curso: data.curso ? data.curso : null,
-                cohorte: data.cohorte ? data.cohorte : null,
-                titulo_docente: data.titulo_docente
-                  ? data.titulo_docente
-                  : null,
-                nombre_organizador: data.nombre_organizador
-                  ? data.nombre_organizador
-                  : null,
-                docente: data.docente ? data.docente : null,
-                sexo_docente: data.sexo_docente ? data.sexo_docente : null,
-                alumnos: data.alumnos ? data.alumnos : null,
-                segundos_objetivos: data.segundos_objetivos
-                  ? data.segundos_objetivos
-                  : null,
-                objetivos: data.objetivos ? data.objetivos : null,
-                clases_numero: data.clases_numero ? data.clases_numero : null,
-                horas_clase_numero: data.horas_clase_numero
-                  ? data.horas_clase_numero
-                  : null,
-                minimo: data.minimo ? data.minimo : null,
-                maximo: data.maximo ? data.maximo : null,
-                mes_curso: data.mes_curso ? data.mes_curso : null,
-                año_curso: data.año_curso ? data.año_curso : null,
+                fecha: data.fecha,
+            numero_resolucion: data.numero_resolucion,
+            expediente: data.expediente,
+            resolucion_interes_departamental:
+              data.resolucion_interes_departamental,
+
+            curso: data.curso ? data.curso : null,
+            cohorte: data.cohorte ? data.cohorte : null,
+            titulo_docente: data.titulo_docente ? data.titulo_docente : null,
+
+            docente: data.docente ? data.docente : null,
+            sexo_docente: data.sexo_docente ? data.sexo_docente : null,
+            alumnos: data.alumnos ? data.alumnos : null,
+            segundos_objetivos: data.segundos_objetivos
+              ? data.segundos_objetivos
+              : null,
+            objetivos: data.objetivos ? data.objetivos : null,
+            clases_numero: data.clases_numero ? data.clases_numero : null,
+            horas_clase_numero: data.horas_clase_numero
+              ? data.horas_clase_numero
+              : null,
+            minimo: data.minimo ? data.minimo : null,
+            maximo: data.maximo ? data.maximo : null,
+            mes_curso: data.mes_curso ? data.mes_curso : null,
+            año_curso: data.año_curso ? data.año_curso : null
               }),
             }
+          
+         
           );
+          
+          //  const nuevaVentana = window.open("", "_blank");
+          //   nuevaVentana.location.href = data.pdfUrl;
+          
 
           if (response.ok) {
+
             toastr.success("Borrador preparado con éxito.");
             // Abrir el borrador después de actualizar
             const urlBorrador = `/resoluciones/${idResolucion}/ver-borrador`;
-            window.open(urlBorrador, "_blank");
+            setTimeout(() => {
+            window.open(urlBorrador, "_blank")}, 800) ;
           } else {
             toastr.error("Error al preparar el borrador.");
           }
