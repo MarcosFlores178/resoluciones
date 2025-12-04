@@ -40,6 +40,13 @@
     box-sizing: border-box;
 }
 
+    input[readonly] {
+    background-color: #f9f9f9;
+    color: #555;
+    border: 1px solid #ccc;
+    cursor: default;
+}
+
 /* Etiqueta: ancho fijo relativo, alineada a la derecha */
 .label {
     flex: 0 0 37%;      /* <-- controlá este valor (35-45%) según cuánto espacio quieras para la etiqueta */
@@ -82,7 +89,13 @@ a.button {
     .grid-datos p {
         justify-content: flex-start; /* etiqueta + valor en la misma línea si alcanza el espacio */
     }
-
+    
+    input[readonly] {
+    background-color: #f9f9f9;
+    color: #555;
+    border: 1px solid #ccc;
+    cursor: default;
+}
     .label {
         flex: 0 0 auto;   /* deja que el texto tenga su ancho natural */
         text-align: left;
@@ -93,6 +106,8 @@ a.button {
     .value {
         flex: 1 1 auto;
     }
+
+
 }
 
 

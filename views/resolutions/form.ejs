@@ -18,20 +18,10 @@
       <% } %>
     </div>
    
-    <!-- <div class="form-group">
-      <label for="titulo_organizador">Título del organizador (ej. "el Lic.", "la Ing."):</label>
-      <input type="text" id="titulo_organizador" name="titulo_organizador" required value="<%= datos ? datos.titulo_organizador : '' %>"
-      
-      <%= usuario.rol === "administrativo" ? "readonly" : "" %>>
-       <% if (usuario.rol === "administrativo") { %>
-        <button type="button" class="toggle-btn" data-input="titulo_organizador">Editar</button>
-      <% } %>
-    </div> -->
-
 
     <div class="form-group">
       <label for="cohorte">Número de cohorte:</label>
-      <select name="cohorte" id="cohorte" required >
+      <select name="cohorte" id="cohorte" required <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         <option value="PRIMERA" <%= datos && datos.cohorte === "PRIMERA" ? "selected" : "" %>>PRIMERA</option>
         <option value="SEGUNDA" <%= datos && datos.cohorte === "SEGUNDA" ? "selected" : "" %>>SEGUNDA</option>
         <option value="TERCERA" <%= datos && datos.cohorte === "TERCERA" ? "selected" : "" %>>TERCERA</option>
@@ -69,12 +59,12 @@
 
     <div class="radio-group">
       <label class="radio-option">
-        <input type="radio" name="sexo_docente" id="sexo_docente_masculino" value="masculino" <%= datos? datos.sexo_docente === 'masculino'? 'checked' : '' : '' %> required>
+        <input type="radio" name="sexo_docente" id="sexo_docente_masculino" value="masculino" <%= datos? datos.sexo_docente === 'masculino'? 'checked' : '' : '' %> required <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         Hombre
       </label>
 
       <label class="radio-option">
-        <input type="radio" name="sexo_docente" id="sexo_docente_femenino" value="femenino" <%= datos? datos.sexo_docente === 'femenino'? 'checked' : '' : '' %> required>
+        <input type="radio" name="sexo_docente" id="sexo_docente_femenino" value="femenino" <%= datos? datos.sexo_docente === 'femenino'? 'checked' : '' : '' %> required <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         Mujer
       </label>
     </div>
@@ -162,12 +152,12 @@
     <div class="form-group">
       <label for="mes_curso">Mes de inicio:</label>
      
-      <select name="mes_curso" id="mes_curso" >
+      <select name="mes_curso" id="mes_curso" <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         <option value="Enero" <%= datos && datos.mes_curso === "Enero" ? "selected" : "" %>>Enero</option>
         <option value="Febrero" <%= datos && datos.mes_curso === "Febrero" ? "selected" : "" %>>Febrero</option>
         <option value="Marzo" <%= datos && datos.mes_curso === "Marzo" ? "selected" : "" %>>Marzo</option>
         <option value="Abril" <%= datos && datos.mes_curso === "Abril" ? "selected" : "" %>>Abril</option>
-        <option value="mayo" <%= datos && datos.mes_curso === "Mayo" ? "selected" : "" %>>Mayo</option>
+        <option value="Mayo" <%= datos && datos.mes_curso === "Mayo" ? "selected" : "" %>>Mayo</option>
         <option value="Junio" <%= datos && datos.mes_curso === "Junio" ? "selected" : "" %>>Junio</option>
         <option value="Julio" <%= datos && datos.mes_curso === "Julio" ? "selected" : "" %>>Julio</option>
         <option value="Agosto" <%= datos && datos.mes_curso === "Agosto" ? "selected" : "" %>>Agosto</option>
@@ -180,16 +170,17 @@
         <button type="button" class="toggle-btn btn-editar" data-input="mes_curso">Editar</button>
       <% } %>
 </div>
+
       <div class="form-group">
       <label for="año_curso">Año de inicio:</label>
-      <select name="año_curso" id="año_curso" >
-        <option value="2023" <%= datos && datos.año_curso == "2023" ? "selected" : "" %>>2023</option>
-        <option value="2024" <%= datos && datos.año_curso == "2024" ? "selected" : "" %>>2024</option>
+      <select name="año_curso" id="año_curso" <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         <option value="2025" <%= datos && datos.año_curso == "2025" ? "selected" : "" %>>2025</option>
         <option value="2026" <%= datos && datos.año_curso == "2026" ? "selected" : "" %>>2026</option>
         <option value="2027" <%= datos && datos.año_curso == "2027" ? "selected" : "" %>>2027</option>
         <option value="2028" <%= datos && datos.año_curso == "2028" ? "selected" : "" %>>2028</option>
         <option value="2029" <%= datos && datos.año_curso == "2029" ? "selected" : "" %>>2029</option>
+        <option value="2030" <%= datos && datos.año_curso == "2030" ? "selected" : "" %>>2030</option>
+        <option value="2031" <%= datos && datos.año_curso == "2031" ? "selected" : "" %>>2031</option>
       </select>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn btn-editar" data-input="año_curso">Editar</button>

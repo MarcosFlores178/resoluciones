@@ -18,7 +18,8 @@ module.exports = {
     try {
       const usuario = await Usuario.findOne({ where: { email } });
       if (!usuario) {
-        return res.status(401).json({ error: "Credenciales inválidas" });
+        req.flash("error_msg", "Credenciales inválidas");
+        return res.redirect("/auth/login");
       }
       // Verifica la contraseña
       const passwordMatch = await bcrypt.compare(password, usuario.password);

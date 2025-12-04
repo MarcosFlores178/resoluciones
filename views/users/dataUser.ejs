@@ -5,15 +5,17 @@
     <div class="grid-datos">
       <p><span class="label">Nombre:</span> <span class="value"><%= usuario.nombre %></span></p>
       <p><span class="label">Apellido:</span> <span class="value"><%= usuario.apellido %></span></p>
-      <p><span class="label">Rol:</span> <span class="value"><%= usuario.rol %></span></p>
+      <p><span class="label">Rol:</span> <span class="value"><%= usuario.rol==='organizador'? 'Organizador' : 'Administrativo' %></span></p>
       <p><span class="label">Email:</span> <span class="value"><%= usuario.email %></span></p>
       <p><span class="label">Teléfono:</span> <span class="value"><%= usuario.telefono %></span></p>
+       <%if (usuario.rol === 'organizador') { %>
       <p><span class="label">Sexo:</span> <span class="value"><%= usuario.sexo_organizador %></span></p>
+      <% } %>
       <p><span class="label">Título:</span> <span class="value"><%= usuario.titulo_organizador %></span></p>
     </div>
 
     <a class="button" href="/usuarios/edit-profile">Editar</a>
-    <a href="/auth/cambiar-password" class="button" style="background-color: gray;">
+    <a href="/auth/cambiar-password" class="button" style="background-color: #0055a5;">
   Cambiar contraseña
 </a>
 

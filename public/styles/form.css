@@ -18,11 +18,11 @@
 
 /* Estado inicial - Editar */
 .btn-editar {
-  background-color: #4caf50;
+  background-color: rgb(95, 123, 160);
 }
 
 .btn-editar:hover {
-  background-color: #45a049;
+  background-color: rgb(75, 103, 140);
 }
 
 /* Estado edición - Cancelar */

@@ -112,10 +112,10 @@ td button.btn-reject:hover {
   margin: 0; /* evita saltos raros */
 }
 
-.reimprimir {
+.reimprimir .btn {
   display: flex;
   justify-content: center;
-  /* background-color: cadetblue; */
+  background-color: rgb(95, 123, 160);
 }
 
 /* td form {

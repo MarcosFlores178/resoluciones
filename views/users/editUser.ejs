@@ -14,7 +14,7 @@
 
     <p>
       <label class="label" for="rol">Rol:</label>
-      <input class="value" type="text" id="rol" name="rol" value="<%= usuario.rol %>" readonly>
+      <input type="text" id="rol" name="rol" value="<%= usuario.rol==='organizador'? 'Organizador' : 'Administrativo' %>" readonly>
     </p>
 
     <p>
@@ -27,15 +27,17 @@
       <input class="value" type="tel" id="telefono" name="telefono" value="<%= usuario.telefono %>">
     </p>
 
+    <%if (usuario.rol === 'organizador') { %>
+     
     <p>
-      <label class="label" for="sexo">Sexo:</label>
-      <select class="value" id="sexo" name="sexo">
+      <label class="label" for="sexo_organizador">Sexo:</label>
+      <select class="value" id="sexo_organizador" name="sexo_organizador">
         <option value="Masculino" <%= usuario.sexo_organizador === 'Masculino' ? 'selected' : '' %>>Masculino</option>
         <option value="Femenino" <%= usuario.sexo_organizador === 'Femenino' ? 'selected' : '' %>>Femenino</option>
-        <option value="Otro" <%= usuario.sexo_organizador === 'Otro' ? 'selected' : '' %>>Otro</option>
+        <!-- <option value="Otro" <%= usuario.sexo_organizador === 'Otro' ? 'selected' : '' %>>Otro</option> -->
       </select>
     </p>
-
+<% } %>
     <p>
       <label class="label" for="titulo_organizador">Título:</label>
       <input class="value" type="text" id="titulo_organizador" name="titulo_organizador" value="<%= usuario.titulo_organizador %>">

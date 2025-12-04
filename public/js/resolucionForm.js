@@ -19,6 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //NUEVO ABAJO
 
+  function habilitarCampos() {
+    const elementos = document.querySelectorAll("input, select, textarea");
+    elementos.forEach(el => {
+        if (el.disabled) el.disabled = false;
+    });
+}
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -271,6 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (data.accion === "generar_pdf") {
+      habilitarCampos();
       toastr.info("Generando PDF...");
       console.log(idResolucion);
 
@@ -486,6 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("ver-borrador-btn-admin")
     .addEventListener("click", async function () {
+      habilitarCampos();
       console.log("dentro de ver borrador btn admin");
 
       const idResolucion = form.dataset.idResolucion;

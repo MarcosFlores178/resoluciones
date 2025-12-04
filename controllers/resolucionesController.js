@@ -711,88 +711,88 @@ module.exports = {
         message: "Resolución actualizada correctamente",
         id: resolucion.id_resoluciones,
       });
-    } else if (accion === "generar_pdf") {
-      console.log("dentro de generar pdf (actualizarResolucion controller)");
-      const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      let plantilla = fs.readFileSync(plantillaPath, "utf-8");
-      // .replace(/\r/g, "");
-      console.log("Datos antes de const campos: ", numero_resolucion, fecha);
-      // Reemplazo múltiple
-      const campos = {
-        expediente: resolucion.expediente,
-        curso: resolucion.curso,
-        cohorte: resolucion.cohorte,
-        titulo_docente: resolucion.titulo_docente,
-        genero_docente: resolucion.genero_docente,
-        docente: resolucion.docente,
-        alumnos: resolucion.alumnos,
-        objetivos: resolucion.objetivos,
-        segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales_texto: resolucion.horas_totales_texto,
-        clases_texto: resolucion.clases_texto,
-        horas_clase_texto: resolucion.horas_clase_texto,
-        minimo: resolucion.minimo,
-        maximo: resolucion.maximo,
-        mes_curso: resolucion.mes_curso,
-        fecha: resolucion.fecha || "",
-        numero_resolucion: resolucion.numero_resolucion || "",
-        resolucion_interes_departamental:
-          resolucion.resolucion_interes_departamental,
-        titulo_organizador: resolucion.titulo_organizador || "titulo",
-      };
-      console.log("Datos despues de const campos: ", numero_resolucion, fecha);
-      console.log(
-        "Datos resolucion despues de const campos: ",
-        resolucion.numero_resolucion,
-        resolucion.fecha
-      );
-      console.log("campos: ", campos);
-      const textoFinal = renderTemplate(plantilla, campos);
+    // } else if (accion === "generar_pdf") {
+    //   console.log("dentro de generar pdf (actualizarResolucion controller)");
+    //   const plantillaPath = path.join(__dirname, "../plantilla.txt");
+    //   let plantilla = fs.readFileSync(plantillaPath, "utf-8");
+    //   // .replace(/\r/g, "");
+    //   console.log("Datos antes de const campos: ", numero_resolucion, fecha);
+    //   // Reemplazo múltiple
+    //   const campos = {
+    //     expediente: resolucion.expediente,
+    //     curso: resolucion.curso,
+    //     cohorte: resolucion.cohorte,
+    //     titulo_docente: resolucion.titulo_docente,
+    //     genero_docente: resolucion.genero_docente,
+    //     docente: resolucion.docente,
+    //     alumnos: resolucion.alumnos,
+    //     objetivos: resolucion.objetivos,
+    //     segundos_objetivos: resolucion.segundos_objetivos,
+    //     horas_totales_texto: resolucion.horas_totales_texto,
+    //     clases_texto: resolucion.clases_texto,
+    //     horas_clase_texto: resolucion.horas_clase_texto,
+    //     minimo: resolucion.minimo,
+    //     maximo: resolucion.maximo,
+    //     mes_curso: resolucion.mes_curso,
+    //     fecha: resolucion.fecha || "",
+    //     numero_resolucion: resolucion.numero_resolucion || "",
+    //     resolucion_interes_departamental:
+    //       resolucion.resolucion_interes_departamental,
+    //     titulo_organizador: resolucion.titulo_organizador || "titulo",
+    //   };
+    //   console.log("Datos despues de const campos: ", numero_resolucion, fecha);
+    //   console.log(
+    //     "Datos resolucion despues de const campos: ",
+    //     resolucion.numero_resolucion,
+    //     resolucion.fecha
+    //   );
+    //   console.log("campos: ", campos);
+    //   const textoFinal = renderTemplate(plantilla, campos);
 
-      const doc = new PDFDocument({
-        margins: {
-          top: 42.52, // 1.5 cm
-          left: 113, // 3 cm
-          right: 42.52, // 1.5 cm
-          bottom: 70.88, // 2.5 cm
-        },
-      });
-      const fileName = `resolucion-${resolucion.id}.pdf`;
-      const filePath = path.join(__dirname, `../pdfs/${fileName}`);
-      const stream = fs.createWriteStream(filePath);
+    //   const doc = new PDFDocument({
+    //     margins: {
+    //       top: 42.52, // 1.5 cm
+    //       left: 113, // 3 cm
+    //       right: 42.52, // 1.5 cm
+    //       bottom: 70.88, // 2.5 cm
+    //     },
+    //   });
+    //   const fileName = `resolucion-${resolucion.id}.pdf`;
+    //   const filePath = path.join(__dirname, `../pdfs/${fileName}`);
+    //   const stream = fs.createWriteStream(filePath);
 
-      doc.pipe(stream);
+    //   doc.pipe(stream);
 
-      // textoFinal.split('\n').forEach(line => {
-      //   processTemplateLine(doc, line);
-      //   doc.moveDown(0.5);
-      // });
-      dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
+    //   // textoFinal.split('\n').forEach(line => {
+    //   //   processTemplateLine(doc, line);
+    //   //   doc.moveDown(0.5);
+    //   // });
+    //   dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
 
-      doc.on("pageAdded", () => {
-        dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
-        doc.text("", { continued: false }); //Es para evitar que el inicio de la nueva página se comporte raro
-        doc.font("Times-Roman").fontSize(12);
-      });
+    //   doc.on("pageAdded", () => {
+    //     dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
+    //     doc.text("", { continued: false }); //Es para evitar que el inicio de la nueva página se comporte raro
+    //     doc.font("Times-Roman").fontSize(12);
+    //   });
 
-      textoFinal.split("\n").forEach((line) => {
-        line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible importante para que no salgan caracteres extraños en saltos de linea
-        processTemplateLine(doc, line);
-        doc.moveDown(0.5);
-      });
+    //   textoFinal.split("\n").forEach((line) => {
+    //     line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible importante para que no salgan caracteres extraños en saltos de linea
+    //     processTemplateLine(doc, line);
+    //     doc.moveDown(0.5);
+    //   });
 
-      doc.end();
+    //   doc.end();
 
-      stream.on("finish", () => {
-        console.log("PDF terminado");
-        // OPCIÓN 1: Devolver JSON con la URL del archivo
-        return res.json({
-          success: true,
-          message: "PDF generado correctamente.",
-          pdfUrl: `/pdfs/${fileName}`, // Asegúrate de que esta ruta sea accesible desde el cliente
-        });
-      });
-    }
+    //   stream.on("finish", () => {
+    //     console.log("PDF terminado");
+    //     // OPCIÓN 1: Devolver JSON con la URL del archivo
+    //     return res.json({
+    //       success: true,
+    //       message: "PDF generado correctamente.",
+    //       pdfUrl: `/pdfs/${fileName}`, // Asegúrate de que esta ruta sea accesible desde el cliente
+    //     });
+    //   });
+     }
   },
   listarResoluciones: async (req, res) => {
     const usuario = req.session.user;
