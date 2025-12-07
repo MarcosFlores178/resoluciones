@@ -66,6 +66,33 @@ function renderTemplate(templateText, campos) {
 //---------------ENCABEZADO---------------
 
 function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
+// VERIFICACIÓN ROBUSTA
+  if (!doc) {
+    console.error("❌ dibujarEncabezado: doc es null/undefined");
+    return;
+  }
+  
+  // Si no hay página, intentar inicializar
+  if (!doc.page) {
+    console.warn("⚠️  dibujarEncabezado: doc.page no existe, intentando inicializar...");
+    try {
+      // Truco para forzar creación de página
+      doc.x = 0;
+      doc.y = 0;
+    } catch (e) {
+      console.error("💥 No se puede inicializar página:", e.message);
+      return;
+    }
+  }
+  
+  console.log(`✅ dibujarEncabezado en página ${doc.page?.number || 1}`);
+  // ----- AGREGA ESTO AL INICIO -----
+  console.log(`📌 dibujarEncabezado llamado: 
+    Página ${doc.page.number} 
+    Hora: ${new Date().toISOString().split('T')[1].split('.')[0]}
+    Stack:`, new Error().stack.split('\n').slice(1, 4).join(' | '));
+  // ----- FIN DEPURACIÓN -----
+
   const imagePath = path.join(__dirname, "../public/images/logo.png");
 
   if (fs.existsSync(imagePath)) {
@@ -130,46 +157,82 @@ function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
 
 function processTemplateLine(doc, line, options = {}) {
   const sangria = "                            ";
-
-  // 1. Detectar si la línea empieza con "--" (no lleva sangría)
+  
+  // ----- 1. VERIFICAR QUE TENEMOS PÁGINA -----
+  if (!doc.page) {
+    console.error("❌ ERROR CRÍTICO: doc.page es undefined!");
+    // Intentar recuperar
+    doc.text("", 0, 0); // Truco para forzar inicialización
+    if (!doc.page) {
+      console.error("💥 No se puede recuperar doc.page. Abortando línea.");
+      return;
+    }
+  }
+  
+  // ----- 2. ANTES de procesar: VERIFICAR ESPACIO y CREAR PÁGINA SI ES NECESARIO -----
+  const lineHeight = 20; // Altura conservadora
+  const espacioNecesario = lineHeight * 2; // Espacio para esta línea + margen
+  
+  const margenInferior = doc.page.margins.bottom;
+  const alturaPagina = doc.page.height;
+  const espacioDisponible = alturaPagina - margenInferior - doc.y;
+  
+  console.log(`📊 Página ${doc.page.number} - Y: ${doc.y.toFixed(1)} - Disponible: ${espacioDisponible.toFixed(1)}`);
+  
+  // SI NO HAY ESPACIO SUFICIENTE, CREAR NUEVA PÁGINA AHORA
+  if (espacioDisponible < espacioNecesario) {
+    console.log(`🚨 CREANDO NUEVA PÁGINA ANTICIPADA (solo ${espacioDisponible.toFixed(1)} disponible)`);
+    
+    // Cerrar cualquier texto pendiente
+    doc.text("", { continued: false });
+    
+    // Crear nueva página
+    doc.addPage();
+    
+    // DIBUJAR ENCABEZADO
+    if (doc._headerData) {
+      console.log(`🎨 Dibujando encabezado en página ${doc.page.number}`);
+      dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+    }
+    
+    // POSICIÓN INICIAL
+    doc.y = doc._posicionInicialContenido || 150;
+    doc.x = doc.page.margins.left;
+    doc.font("Times-Roman").fontSize(12);
+    
+    console.log(`✅ Nueva página ${doc.page.number} en Y=${doc.y}`);
+  }
+  
+  // ----- 3. TU CÓDIGO ORIGINAL COMPLETO (sin cambios en la lógica de formato) -----
   const noIndent = line.startsWith("--");
   let rawLine = noIndent ? line.slice(2).trim() : line;
 
-  // 2. Verificar si la línea debe centrarse (quita espacios y chequea [[...]])
   const trimmedLine = rawLine.trim();
   const centerMatch = trimmedLine.match(/^\[\[(.*?)\]\]$/);
   const isCentered = !!centerMatch;
-
-  // 3. El contenido final
   const content = isCentered ? centerMatch[1].trim() : rawLine;
 
-  // 3. Procesar negritas <bold>...</bold>
   const boldPattern = /<bold>(.*?)<\/bold>/g;
   let match;
   const parts = [];
   let lastIndex = 0;
 
   while ((match = boldPattern.exec(content)) !== null) {
-    // Texto antes de la negrita
     if (match.index > lastIndex) {
       parts.push({ text: content.slice(lastIndex, match.index), bold: false });
     }
-    // Texto en negrita
     parts.push({ text: match[1], bold: true });
     lastIndex = boldPattern.lastIndex;
   }
 
-  // Texto restante después de la última etiqueta <bold>
   if (lastIndex < content.length) {
     parts.push({ text: content.slice(lastIndex), bold: false });
   }
 
-  // 4. Dibujar en PDF con alineación y estilo adecuado
   const align = isCentered ? "center" : "justify";
-
   const textOptions = {
     align,
-    lineGap: align === "justify" ? 5 : 0, // 👈 Aplica solo si justificado
+    lineGap: align === "justify" ? 5 : 0,
   };
 
   if (parts.length > 0) {
@@ -189,20 +252,21 @@ function processTemplateLine(doc, line, options = {}) {
           (isFirst && !isCentered && !noIndent ? sangria : "") + textToPrint,
           {
             continued: index < parts.length - 1,
-            // align,
             ...textOptions,
           }
         );
     });
-    doc.text("", { continued: false }); // Finaliza la línea
+    doc.text("", { continued: false });
     doc.font("Times-Roman").fontSize(12);
   } else {
-    // Línea sin negritas
     doc
       .font("Times-Roman")
       .fontSize(12)
       .text((isCentered ? "" : sangria) + content, { ...textOptions });
   }
+  
+  // ----- 4. ESPACIO DESPUÉS -----
+  doc.moveDown(0.5);
 }
 
 module.exports = {
@@ -321,132 +385,14 @@ module.exports = {
     }
   },
 
-  generarPDF1: async (req, res) => {
-    try {
-      console.log("dentro de generar pdf");
-      const id = req.params.id;
-      const resolucion = await Resolucion.findByPk(id, {
-        include: [
-          {
-            model: Usuario,
-            as: "autor",
-            attributes: ["id_usuarios", "nombre", "apellido", "sexo_organizador", "titulo_organizador"], // Campos específicos
-          },
-        ],
-      });
-      //TODO traer el nombre y apellido del autor de la resolucion
-      if (!resolucion)
-        return res.status(404).json({
-          success: false,
-          message: "Resolución no encontrada",
-        });
-
-     
-      const articulo_organizador =
-        resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
-      const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      let plantilla = fs.readFileSync(plantillaPath, "utf-8");
-      // .replace(/\r/g, "");
-      console.log("generarPDF", resolucion.fecha);
-      console.log(articulo_organizador);
-      // Reemplazo múltiple
-      const campos = {
-        nombre_organizador: resolucion.autor.nombre,
-        apellido_organizador: resolucion.autor.apellido,
-        expediente: resolucion.expediente,
-        curso: resolucion.curso,
-        cohorte: resolucion.cohorte,
-        titulo_docente: resolucion.titulo_docente,
-        genero_docente: resolucion.genero_docente,
-        docente: resolucion.docente,
-        alumnos: resolucion.alumnos,
-        objetivos: resolucion.objetivos,
-        segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales_texto: resolucion.horas_totales_texto,
-        clases_texto: resolucion.clases_texto,
-        horas_clase_texto: resolucion.horas_clase_texto,
-        minimo: resolucion.minimo,
-        maximo: resolucion.maximo,
-        mes_curso: resolucion.mes_curso,
-        año_curso: resolucion.año_curso,
-        fecha: formatearConDateFns(resolucion.fecha) || "", // Usamos la función para formatear la fecha
-        numero_resolucion: resolucion.numero_resolucion || "",
-        resolucion_interes_departamental:
-          resolucion.resolucion_interes_departamental,
-        titulo_organizador: resolucion.autor.titulo_organizador || "titulo",
-        articulo_docente: resolucion.articulo_docente || "el",
-        articulo_organizador: articulo_organizador,
-      };
-      console.log("campos: ", campos);
-      const textoFinal = renderTemplate(plantilla, campos);
-
-      const doc = new PDFDocument({
-        margins: {
-          top: 42.52, // 1.5 cm
-          left: 113, // 3 cm
-          right: 42.52, // 1.5 cm
-          bottom: 70.88, // 2.5 cm
-        },
-      });
-
-      const filePath1 = path.join(__dirname, "..", "archivo-de-pruebas.txt");
-
-      fs.writeFile(filePath1, "Esto es una prueba", (err) => {
-        if (err) {
-          console.error("Error al crear el archivo:", err);
-          return res.status(500).json({ error: "Error al crear archivo" });
-        }
-        //  res.status(200).json({ mensaje: "Archivo creado correctamente" });
-      });
-      console.log("filePath1: ", filePath1);
-
-      const fileName = `resolucion-${resolucion.id_resoluciones}.pdf`;
-      const filePath = path.join(__dirname, `../public/pdfs/${fileName}`);
-      const stream = fs.createWriteStream(filePath);
-
-      doc.pipe(stream);
-
-      // textoFinal.split('\n').forEach(line => {
-      //   processTemplateLine(doc, line);
-      //   doc.moveDown(0.5);
-      // });
-      dibujarEncabezado(doc, resolucion.numero_resolucion, campos.fecha);
-
-      doc.on("pageAdded", () => {
-        dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
-        doc.text("", { continued: false }); //Es para evitar que el inicio de la nueva página se comporte raro
-        doc.font("Times-Roman").fontSize(12);
-      });
-
-      textoFinal.split("\n").forEach((line) => {
-        line = line.replace(/\r/g, "").trimEnd(); // Limpia cualquier basura invisible importante para que no salgan caracteres extraños en saltos de linea
-        processTemplateLine(doc, line);
-        doc.moveDown(0.5);
-      });
-
-      doc.end();
-
-      stream.on("finish", () => {
-        console.log("PDF terminado, iniciando descarga...");
-        res.json({ pdfUrl: `../pdfs/${fileName}`, fileName });
-        // res.download(filePath, (err) => {
-        //   if (err) {
-        //     console.error("Error al enviar el archivo:", err);
-        //   } else {
-        //     console.log("Descarga enviada correctamente.");
-        // fs.unlinkSync(filePath);
-        // }
-        // });
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error al generar el PDF");
-    }
-  },
   generarPDF: async (req, res) => {
   try {
     console.log("dentro de generar pdf");
     const id = req.params.id;
+
+    // ================================
+    // 1. OBTENER RESOLUCIÓN
+    // ================================
     const resolucion = await Resolucion.findByPk(id, {
       include: [
         {
@@ -457,14 +403,16 @@ module.exports = {
       ],
     });
 
-
-    if (!resolucion)
+    if (!resolucion) {
       return res.status(404).json({
         success: false,
         message: "Resolución no encontrada",
       });
+    }
 
-// 2. Hacer el UPDATE aquí con los datos del body
+    // ================================
+    // 2. ACTUALIZAR CON LOS DATOS DEL FORMULARIO
+    // ================================
     const updateData = {
       fecha: req.body.fecha || null,
       numero_resolucion: req.body.numero_resolucion || null,
@@ -486,18 +434,17 @@ module.exports = {
       año_curso: req.body.año_curso || null,
     };
 
-    // Actualizar la resolución
     await resolucion.update(updateData);
-
-    // 3. Recargar la instancia para asegurar datos frescos (opcional pero recomendado)
     await resolucion.reload();
 
-    const articulo_organizador = resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
-    const plantillaPath = path.join(__dirname, "../plantilla.txt");
-    let plantilla = fs.readFileSync(plantillaPath, "utf-8");
+    // ================================
+    // 3. PREPARAR CAMPOS PARA LA PLANTILLA
+    // ================================
+    const articuloOrganizador =
+      resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
 
-    console.log("generarPDF", resolucion.fecha);
-    console.log(articulo_organizador);
+    const plantillaPath = path.join(__dirname, "../plantilla.txt");
+    const plantilla = fs.readFileSync(plantillaPath, "utf-8");
 
     const campos = {
       nombre_organizador: resolucion.autor.nombre,
@@ -523,12 +470,16 @@ module.exports = {
       resolucion_interes_departamental: resolucion.resolucion_interes_departamental,
       titulo_organizador: resolucion.autor.titulo_organizador || "titulo",
       articulo_docente: resolucion.articulo_docente || "el",
-      articulo_organizador: articulo_organizador,
+      articulo_organizador: articuloOrganizador,
     };
 
     console.log("campos: ", campos);
+
     const textoFinal = renderTemplate(plantilla, campos);
 
+    // ================================
+    // 4. CREAR PDF
+    // ================================
     const doc = new PDFDocument({
       margins: {
         top: 42.52,
@@ -538,73 +489,113 @@ module.exports = {
       },
     });
 
-    // ✅ CORRECCIÓN: Definir pdfChunks ANTES de usarlo
+    // ===== CAPTURAR PDF PARA SUBIRLO A CLOUDFLARE =====
     const pdfChunks = [];
-    
-    // Capturar los datos del PDF
-    doc.on('data', (chunk) => pdfChunks.push(chunk));
 
-    // Dibujar contenido del PDF
-    dibujarEncabezado(doc, resolucion.numero_resolucion, campos.fecha);
+    doc.on("data", (chunk) => pdfChunks.push(chunk));
+
+    doc.on("error", (err) => {
+      console.error("PDF ERROR:", err);
+      if (!res.headersSent) {
+        req.flash("error_msg", "Error generando el PDF");
+        return res.redirect("/resoluciones/form-resolucion");
+      }
+    });
+
+    // ================================
+    // 5. ENCABEZADO AUTOMÁTICO
+    // ================================
+    doc._headerData = {
+      numero: resolucion.numero_resolucion || "BORRADOR",
+      fecha: campos.fecha || new Date().toLocaleDateString(),
+    };
 
     doc.on("pageAdded", () => {
-      dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
-      doc.text("", { continued: false });
-      doc.font("Times-Roman").fontSize(12);
+      if (doc.page.number > 1) {
+        dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+        doc.y = doc._posicionInicialContenido || 150;
+        doc.x = doc.page.margins.left;
+      }
     });
 
-    textoFinal.split("\n").forEach((line) => {
-      line = line.replace(/\r/g, "").trimEnd();
-      processTemplateLine(doc, line);
-      doc.moveDown(0.5);
-    });
+    // Primera página
+    dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
 
+    if (doc.y < 100) doc.y = 150;
+
+    doc._posicionInicialContenido = doc.y;
+    doc.x = doc.page.margins.left;
+
+    // ================================
+    // 6. DIBUJAR TEXTO
+    // ================================
+    const lineas = textoFinal.split("\n");
+
+    for (let i = 0; i < lineas.length; i++) {
+      const linea = lineas[i].replace(/\r/g, "").trimEnd();
+
+      if (linea.trim() === "") {
+        doc.moveDown(0.5);
+        continue;
+      }
+
+      processTemplateLine(doc, linea);
+    }
+
+    console.log("PDF contenido generado.");
+
+    // ================================
+    // 7. CERRAR PDF (SIEMPRE AL FINAL)
+    // ================================
     doc.end();
 
-    // ✅ CORRECCIÓN: Esperar a que termine el PDF
-    doc.on('end', async () => {
+    // ================================
+    // 8. ESPERAR FIN Y SUBIR A R2
+    // ================================
+    doc.on("end", async () => {
       try {
-        // Ahora pdfChunks está definido
         const pdfBuffer = Buffer.concat(pdfChunks);
         const fileName = `resolucion-${resolucion.numero_resolucion}.pdf`;
-        
-        // Subir a Cloudflare R2
-        const uploadParams = {
-          Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
-          Key: fileName,
-          Body: pdfBuffer,
-          ContentType: 'application/pdf',
-        };
 
-        await s3Client.send(new PutObjectCommand(uploadParams));
-        
+        await s3Client.send(
+          new PutObjectCommand({
+            Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
+            Key: fileName,
+            Body: pdfBuffer,
+            ContentType: "application/pdf",
+          })
+        );
+
         console.log("PDF subido a Cloudflare R2 correctamente");
-        
-        // Retornar URL pública del PDF
-        const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;  
-        req.flash('success_msg', 'PDF generado y subido correctamente');
 
-        await resolucion.update({ pdf_url: publicUrl, pdf_key: fileName });
-        
-        res.json({ 
-          success: true,
-          pdfUrl: publicUrl, 
-          fileName 
+        const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;
+
+        await resolucion.update({
+          pdf_url: publicUrl,
+          pdf_key: fileName,
         });
-        
-      } catch (uploadError) {
-        console.error("Error al subir a Cloudflare R2:", uploadError);
-        req.flash('error_msg', 'Error al guardar el PDF en la nube. Intente nuevamente en unos minutos');
-        res.redirect('/resoluciones/form-resolucion');
+
+        req.flash("success_msg", "PDF generado y subido correctamente");
+
+        res.json({
+          success: true,
+          pdfUrl: publicUrl,
+          fileName,
+        });
+      } catch (err) {
+        console.error("Error al subir PDF a R2:", err);
+        req.flash("error_msg", "Error al subir el PDF. Reintente.");
+        return res.redirect("/resoluciones/form-resolucion");
       }
     });
 
   } catch (error) {
     console.error(error);
-    req.flash('error_msg', 'Error al generar el PDF');
-    res.redirect('/resoluciones/form-resolucion');
+    req.flash("error_msg", "Error al generar el PDF");
+    res.redirect("/resoluciones/form-resolucion");
   }
 },
+
   // Mostrar + ya guardados (para edición o generación posterior)
   mostrarResolucion: async (req, res) => {
     const usuario = req.session.user;
@@ -848,116 +839,174 @@ module.exports = {
   },
 
   verBorrador: async (req, res) => {
-    try {
-      
-      const id = req.params.id;
-      console.log("El id es:", id);
+  try {
+    const id = req.params.id;
+    console.log("El id es:", id);
 
-      const resolucion = await Resolucion.findByPk(id, {
-        include: [
-          {
-            model: Usuario,
-            as: "autor",
-            attributes: ["id_usuarios", "nombre", "apellido", "sexo_organizador", "titulo_organizador"], // Campos específicos
-          },
-        ],
+    // ================================
+    // 1. OBTENER RESOLUCIÓN
+    // ================================
+    const resolucion = await Resolucion.findByPk(id, {
+      include: [
+        {
+          model: Usuario,
+          as: "autor",
+          attributes: [
+            "id_usuarios",
+            "nombre",
+            "apellido",
+            "sexo_organizador",
+            "titulo_organizador",
+          ]
+        }
+      ]
+    });
+
+    if (!resolucion) {
+      return res.status(404).json({
+        success: false,
+        message: "Resolución no encontrada"
       });
+    }
 
-      if (!resolucion) {
-        return res.status(404).json({
-          success: false,
-          message: "Resolución no encontrada",
-        });
+    if (!req.session.user) {
+      return res.status(401).send("Sesión expirada o no autenticada");
+    }
+
+    // ================================
+    // 2. PREPARAR DATOS PARA PLANTILLA
+    // ================================
+    const horasTotales = parseInt(resolucion.clases_numero) * parseInt(resolucion.horas_clase_numero);
+
+    const plantillaPath = path.join(__dirname, "../plantilla.txt");
+    const plantilla = fs.readFileSync(plantillaPath, "utf-8");
+
+    const articuloOrganizador = resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
+
+    const campos = {
+      nombre_organizador: resolucion.autor.nombre,
+      apellido_organizador: resolucion.autor.apellido,
+      expediente: resolucion.expediente,
+      curso: resolucion.curso,
+      cohorte: resolucion.cohorte,
+      genero_docente: resolucion.genero_docente,
+      titulo_docente: resolucion.titulo_docente,
+      docente: resolucion.docente,
+      alumnos: resolucion.alumnos,
+      objetivos: resolucion.objetivos,
+      segundos_objetivos: resolucion.segundos_objetivos,
+      horas_totales_texto: formatNumber(horasTotales),
+      clases_texto: formatNumber(resolucion.clases_numero),
+      horas_clase_texto: formatNumber(resolucion.horas_clase_numero),
+      minimo: resolucion.minimo,
+      maximo: resolucion.maximo,
+      mes_curso: resolucion.mes_curso,
+      año_curso: resolucion.año_curso,
+      articulo_docente: resolucion.articulo_docente,
+      fecha: resolucion.fecha || "N/A",
+      numero_resolucion: resolucion.numero_resolucion || "BORRADOR",
+      resolucion_interes_departamental: resolucion.resolucion_interes_departamental,
+      titulo_organizador: resolucion.autor.titulo_organizador,
+      articulo_organizador: articuloOrganizador
+    };
+
+    const textoFinal = renderTemplate(plantilla, campos);
+
+    // Guardar último cambio
+    await resolucion.save();
+
+    // ================================
+    // 3. CREAR PDF
+    // ================================
+    const doc = new PDFDocument({
+      margins: {
+        top: 42.52,
+        left: 113,
+        right: 42.52,
+        bottom: 70.88
       }
-      const horas_totales_numero =
-        parseInt(resolucion.clases_numero) *
-        parseInt(resolucion.horas_clase_numero); //se usa parseInt porque
-      const horasTotalesTexto = formatNumber(horas_totales_numero);
-      const clasesTexto = formatNumber(resolucion.clases_numero);
-      const horasClaseTexto = formatNumber(resolucion.horas_clase_numero);
-      const articulo_organizador =
-        resolucion.autor.sexo_organizador === "femenino" ? "la" : "el";
-      // Validar sesión
-      if (!req.session.user) {
-        return res.status(401).send("Sesión expirada o no autenticada");
-      }
+    });
 
-      const plantillaPath = path.join(__dirname, "../plantilla.txt");
-      const plantilla = fs.readFileSync(plantillaPath, "utf-8");
+    // ===== Capturar PDF para enviarlo al navegador =====
+    const chunks = [];
 
-      const campos = {
-        nombre_organizador: resolucion.autor.nombre,
-        apellido_organizador: resolucion.autor.apellido,
-        expediente: resolucion.expediente,
-        curso: resolucion.curso,
-        cohorte: resolucion.cohorte,
-        genero_docente: resolucion.genero_docente,
-        titulo_docente: resolucion.titulo_docente,
-        docente: resolucion.docente,
-        alumnos: resolucion.alumnos,
-        objetivos: resolucion.objetivos,
-        segundos_objetivos: resolucion.segundos_objetivos,
-        horas_totales_texto: horasTotalesTexto,
-        clases_texto: clasesTexto,
-        horas_clase_texto: horasClaseTexto,
-        minimo: resolucion.minimo,
-        maximo: resolucion.maximo,
-        mes_curso: resolucion.mes_curso,
-        año_curso: resolucion.año_curso,
-        articulo_docente: resolucion.articulo_docente,
-        fecha: resolucion.fecha || "N/A",
-        numero_resolucion: resolucion.numero_resolucion || "N/A",
-        resolucion_interes_departamental:
-          resolucion.resolucion_interes_departamental,
-        titulo_organizador: resolucion.titulo_organizador,
-        articulo_organizador: articulo_organizador,
-      };
+    doc.on("data", (chunk) => chunks.push(chunk));
 
-      const textoFinal = renderTemplate(plantilla, campos);
-
-      // Guardar antes de enviar el PDF
-
-      await resolucion.save();
-
-      const doc = new PDFDocument({
-        margins: {
-          top: 42.52,
-          left: 113,
-          right: 42.52,
-          bottom: 70.88,
-        },
-      });
+    doc.on("end", () => {
+      const pdfBuffer = Buffer.concat(chunks);
 
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `inline; filename="resolucion-${resolucion.id}.pdf"`
-      );
+      res.setHeader("Content-Disposition", "inline; filename=borrador.pdf");
+      res.send(pdfBuffer);
+    });
 
-      doc.pipe(res);
-
-      dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
-
-      doc.on("pageAdded", () => {
-        dibujarEncabezado(doc, resolucion.numero_resolucion, resolucion.fecha);
-        doc.text("", { continued: false });
-        doc.font("Times-Roman").fontSize(12);
-      });
-
-      textoFinal.split("\n").forEach((line) => {
-        line = line.replace(/\r/g, "").trimEnd();
-        processTemplateLine(doc, line);
-        doc.moveDown(0.5);
-      });
-
-      doc.end();
-    } catch (error) {
-      console.error("Error general:", error);
+    doc.on("error", (err) => {
+      console.error("PDF ERROR:", err);
       if (!res.headersSent) {
-        res.status(500).send("Error al procesar la solicitud");
+        res.status(500).send("Error al generar PDF");
       }
+    });
+
+    // ================================
+    // 4. CONFIGURACIÓN DE ENCABEZADOS
+    // ================================
+    doc._headerData = {
+      numero: campos.numero_resolucion,
+      fecha: campos.fecha
+    };
+
+    doc.on("pageAdded", () => {
+      console.log("📄 Nueva página:", doc.page.number);
+
+      if (doc.page.number > 1) {
+        dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+        doc.y = doc._posicionInicialContenido || 150;
+        doc.x = doc.page.margins.left;
+        doc.font("Times-Roman").fontSize(12);
+      }
+    });
+
+    // ================================
+    // 5. PRIMERA PÁGINA
+    // ================================
+    dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+
+    if (doc.y < 100) doc.y = 150;
+
+    doc._posicionInicialContenido = doc.y;
+    doc.x = doc.page.margins.left;
+
+    // ================================
+    // 6. DIBUJAR TEXTO
+    // ================================
+    const lineas = textoFinal.split("\n");
+
+    for (let i = 0; i < lineas.length; i++) {
+      const linea = lineas[i].replace(/\r/, "").trimEnd();
+
+      if (linea.trim() === "") {
+        doc.moveDown(0.5);
+        continue;
+      }
+
+      processTemplateLine(doc, linea);
     }
-  },
+
+    console.log("📌 Borrador dibujado correctamente");
+
+    // ================================
+    // 7. CERRAR PDF (AL FINAL)
+    // ================================
+    doc.end();
+
+  } catch (error) {
+    console.error("Error general:", error);
+    if (!res.headersSent) {
+      res.status(500).send("Error al procesar solicitud");
+    }
+  }
+},
+
 
   enviarResolucion: async (req, res) => {
     // await this.actualizarResolucion(req, res);
