@@ -8,6 +8,9 @@ const { format } = require("date-fns");
 const { es } = require("date-fns/locale");
 const numeroALetras = require("../numeroALetras");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { imageSize } = require("image-size");
+
+
 
 const s3Client = new S3Client({
   region: "auto",
@@ -28,6 +31,7 @@ function formatearConDateFns(fechaOriginal) {
   }).toUpperCase();
 }
 // Reemplaza los {{campos}} de la plantilla
+// ----------------- RENDER TEMPLATE (igual que antes) -----------------
 function renderTemplate(templateText, campos) {
   return templateText
     .replace(/{{nombre_organizador}}/g, campos.nombre_organizador)
@@ -59,164 +63,218 @@ function renderTemplate(templateText, campos) {
     .replace(/{{titulo_organizador}}/g, campos.titulo_organizador);
 }
 
-// function renderTemplate(template, variables) {
-//   return template.replace(/{{(\w+)}}/g, (_, key) => variables[key] || '');
-// }
-
-//---------------ENCABEZADO---------------
-
+// ----------------- ENCABEZADO (mejorado, con protecciones) -----------------
 function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
-// VERIFICACIÓN ROBUSTA
-  if (!doc) {
-    console.error("❌ dibujarEncabezado: doc es null/undefined");
-    return;
-  }
-  
-  // Si no hay página, intentar inicializar
-  if (!doc.page) {
-    console.warn("⚠️  dibujarEncabezado: doc.page no existe, intentando inicializar...");
-    try {
-      // Truco para forzar creación de página
-      doc.x = 0;
-      doc.y = 0;
-    } catch (e) {
-      console.error("💥 No se puede inicializar página:", e.message);
+  try {
+    if (!doc) {
+      console.error("❌ dibujarEncabezado: doc es null/undefined");
       return;
     }
-  }
-  
-  console.log(`✅ dibujarEncabezado en página ${doc.page?.number || 1}`);
-  // ----- AGREGA ESTO AL INICIO -----
-  console.log(`📌 dibujarEncabezado llamado: 
-    Página ${doc.page.number} 
+
+    // Asegurar página existente
+    if (!doc.page) {
+      try {
+        doc.addPage();
+      } catch (e) {
+        console.error("💥 No se puede crear página:", e.message);
+        return;
+      }
+    }
+
+    // Debug
+    console.log(`✅ dibujarEncabezado en página ${doc.page?.number || "?"}`);
+    console.log(`📌 dibujarEncabezado llamado: 
+    Página ${doc.page?.number || "?"}
     Hora: ${new Date().toISOString().split('T')[1].split('.')[0]}
     Stack:`, new Error().stack.split('\n').slice(1, 4).join(' | '));
-  // ----- FIN DEPURACIÓN -----
 
-  const imagePath = path.join(__dirname, "../public/images/logo.png");
+    // ------------------------------
+    // 1) LOGO — calcular tamaño real
+    // ------------------------------
+    const imagePath = path.join(__dirname, "../public/images/logo.png");
+    const imageX = doc.page.margins.left + 20;
+    const imageWidth = 150;
+    const imagePaddingBottom = 8;
 
-  if (fs.existsSync(imagePath)) {
-    // Inserta la imagen a la izquierda del encabezado
-    doc.image(imagePath, doc.page.margins.left + 20, 30, { width: 150 });
-    doc.moveDown(2.5); // Esto crea espacio antes de la siguiente línea de texto.
+    if (fs.existsSync(imagePath)) {
+      try {
+        // ✅ NUEVA FORMA CORRECTA (SIN async)
+        const buffer = fs.readFileSync(imagePath);
+        const dims = imageSize(buffer); // {width, height}
+
+        const scaledHeight = Math.round(dims.height * (imageWidth / dims.width));
+
+        // Dibujamos la imagen
+        const imageY = 30;
+        doc.image(imagePath, imageX, imageY, { width: imageWidth });
+
+        // Ajustamos el cursor vertical (doc.y)
+        const newY = imageY + scaledHeight + imagePaddingBottom;
+
+        if (!doc.y || doc.y < newY) doc.y = newY;
+        doc.x = doc.page.margins.left;
+
+      } catch (err) {
+        console.warn("⚠️ No se pudo medir imagen, uso fallback moveDown:", err.message);
+        doc.image(imagePath, imageX, 30, { width: imageWidth });
+        doc.moveDown(2.5);
+      }
+    }
+
+    // -----------------------------------
+    // 2) TEXTO DEL ENCABEZADO
+    // -----------------------------------
+    doc.font("Times-Bold").fontSize(10);
+
+    const headerY = doc.y; // YA ESTÁ AJUSTADO POR LA IMAGEN
+
+    // Título principal centrado
+    doc.text(
+      "DEPARTAMENTO ACADÉMICO DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES",
+      doc.page.margins.left,
+      headerY,
+      {
+        align: "center",
+        width: doc.page.width - doc.page.margins.left - doc.page.margins.right,
+      }
+    );
+
+    // Lema
+    doc.font("Helvetica-BoldOblique").fontSize(10).text(
+      "“Año 2025 Con Orden y Unidos por una Nueva UNLaR”",
+      {
+        align: "center",
+        width: doc.page.width - doc.page.margins.left - doc.page.margins.right,
+      }
+    );
+
+    // Número y fecha centrados
+    doc.font("Times-Bold").fontSize(11);
+    const texto2 = `RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº ${numeroResolucion || ""}`;
+    const texto1 = `LA RIOJA, ${fechaResolucion || ""}`;
+
+    const anchoTexto1 = doc.widthOfString(texto1);
+    const anchoTexto2 = doc.widthOfString(texto2);
+    const anchoMax = Math.max(anchoTexto1, anchoTexto2);
+
+    const pageWidth = doc.page.width;
+    const contentWidth = pageWidth - doc.page.margins.left - doc.page.margins.right;
+    const x = doc.page.margins.left + (contentWidth - anchoMax) / 2;
+
+    let y = doc.y + 15; // separacion extra del lema
+    doc.text(texto1, x, y);
+    y += doc.currentLineHeight() + 15;
+    doc.text(texto2, x, y);
+
+    // Ajuste final para el cuerpo del texto
+    doc.y = y + doc.currentLineHeight() + 35;
+    doc.x = doc.page.margins.left;
+
+  } catch (e) {
+    console.error("❌ Error al dibujar encabezado:", e);
   }
-
-  doc
-    .font("Times-Bold")
-    .fontSize(10)
-    .text("DEPARTAMENTO ACADÉMICO DE CIENCIAS EXACTAS, FÍSICAS Y NATURALES", {
-      align: "center",
-      baseline: "top",
-    });
-
-  doc
-    .font("Helvetica-BoldOblique")
-    .fontSize(10)
-    .text("“Año 2025 Con Orden y Unidos por una Nueva UNLaR”", {
-      align: "center",
-    })
-    .moveDown(1);
-
-  // Ajustá la fuente antes de calcular el ancho
-  doc.font("Times-Bold").fontSize(11);
-
-  // Definí los textos
-  const texto2 = `RESOLUCIÓN INTERNA D.A.C.E.F. y N. Nº ${numeroResolucion}`;
-  const texto1 = `LA RIOJA, ${fechaResolucion}`;
-
-  // Calculá el ancho del texto más largo (para alinear ambos)
-  const anchoTexto1 = doc.widthOfString(texto1);
-  const anchoTexto2 = doc.widthOfString(texto2);
-
-  // Tomá el ancho máximo
-  const anchoMax = Math.max(anchoTexto1, anchoTexto2);
-
-  // Calculá la posición X para centrar ambos textos
-  const pageWidth = doc.page.width;
-  const leftMargin = doc.page.margins.left;
-  const rightMargin = doc.page.margins.right;
-  const contentWidth = pageWidth - leftMargin - rightMargin;
-  const x = leftMargin + (contentWidth - anchoMax) / 2;
-
-  // Definí la coordenada Y donde empezar (puede ser la posición actual de doc.y o algo como 150)
-  let y = doc.y;
-
-  // Dibujá el primer texto
-  doc.text(texto1, x, y, { baseline: "top" });
-  doc.moveDown(1); // salta a la siguiente línea
-  doc.text(texto2, { baseline: "top" }); // NO pongas `x` o `y` y usará la posición siguiente automáticamente
-  doc.moveDown(1.5);
-
-  // Si querés podés usar doc.moveDown(1.5) para saltar más espacio debajo.
-  doc.moveDown(1.5); // Espacio debajo del encabezado
-  doc.x = doc.page.margins.left;
-  doc.y = doc.y;
 }
 
-//--------------PROCESAR CUERPO DEL TEXTO-------------------
 
+// ----------------- ENSURE SPACE (control de salto manual) -----------------
+/**
+ * Garantiza que haya `requiredHeight` disponible en la página actual.
+ * Si no hay, crea nueva página y dibuja encabezado.
+ */
+function ensureSpace(doc, requiredHeight = 20) {
+  // Forzar página si no existe
+  // Si aún no hay ninguna página (PDFKit no la creó), no hacer nada.
+    // Si la primera página aún NO existe → no hacer nada
+  if (!doc._paginaInicialCreada) return false;
+  console.log("Pagina inicial crada:", doc._paginaInicialCreada);
+  if (!doc.page) return false;
+
+// Si doc.y todavía no fue fijado por primera vez → NO FORZAR SALTO
+  if (typeof doc.y !== "number" || isNaN(doc.y)) return;
+
+  const margenInferior = doc.page.margins.bottom || 0;
+  const alturaPagina = doc.page.height;
+  const espacioDisponible = alturaPagina - margenInferior - (doc.y || 0);
+
+  if (espacioDisponible < requiredHeight) {
+    // cerramos cualquier texto continued
+    try {
+      doc.text("", { continued: false });
+    } catch (e) {
+      // ignore
+    }
+    // ⛔️ NO dibujes ni muevas Y acá
+    console.log(`📄 Nueva página POR ensureSpace(), doc.page=${doc.page.number}`);
+    doc.addPage();
+
+    // if (doc._headerData) {
+    //   dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+    // }
+
+    // Posición de inicio del contenido
+    // doc.y = doc._posicionInicialContenido || doc.page.margins.top + 100;
+    // doc.x = doc.page.margins.left;
+    // doc.font("Times-Roman").fontSize(12);
+
+    // console.log(`✅ Nueva página con posición de Y (esto no sale en la página sin texto): ${doc.page.number} en Y=${doc.y}`);
+  return true;
+  }
+  return false;
+}
+
+function safeNewPage(doc) {
+  doc.addPage();
+
+  // 🔥 IMPORTANTÍSIMO
+  doc._baseStyleApplied = false;  
+  doc._currentBold = false;
+
+  // Dibujar encabezado
+  dibujarEncabezado(
+    doc,
+    doc._headerData.numero,
+    doc._headerData.fecha
+  );
+
+  // Reset posición de escritura
+  doc.x = doc.page.margins.left;
+  doc.y = doc._posicionInicialContenido || 150;
+}
+
+
+// ----------------- PROCESS TEMPLATE LINE (medición antes de escribir) -----------------
 function processTemplateLine(doc, line, options = {}) {
+
+  // ========= 🔧 Estilo base por página =========
+  if (!doc._baseStyleApplied) {
+    doc.font("Times-Roman").fontSize(12);
+    doc._currentBold = false;
+    doc._baseStyleApplied = true;
+  }
+
   const sangria = "                            ";
-  
-  // ----- 1. VERIFICAR QUE TENEMOS PÁGINA -----
+
   if (!doc.page) {
-    console.error("❌ ERROR CRÍTICO: doc.page es undefined!");
-    // Intentar recuperar
-    doc.text("", 0, 0); // Truco para forzar inicialización
-    if (!doc.page) {
-      console.error("💥 No se puede recuperar doc.page. Abortando línea.");
+    try { doc.addPage(); }
+    catch (e) {
+      console.error("❌ ERROR CRÍTICO: no se pudo inicializar doc.page");
       return;
     }
   }
-  
-  // ----- 2. ANTES de procesar: VERIFICAR ESPACIO y CREAR PÁGINA SI ES NECESARIO -----
-  const lineHeight = 20; // Altura conservadora
-  const espacioNecesario = lineHeight * 2; // Espacio para esta línea + margen
-  
-  const margenInferior = doc.page.margins.bottom;
-  const alturaPagina = doc.page.height;
-  const espacioDisponible = alturaPagina - margenInferior - doc.y;
-  
-  console.log(`📊 Página ${doc.page.number} - Y: ${doc.y.toFixed(1)} - Disponible: ${espacioDisponible.toFixed(1)}`);
-  
-  // SI NO HAY ESPACIO SUFICIENTE, CREAR NUEVA PÁGINA AHORA
-  if (espacioDisponible < espacioNecesario) {
-    console.log(`🚨 CREANDO NUEVA PÁGINA ANTICIPADA (solo ${espacioDisponible.toFixed(1)} disponible)`);
-    
-    // Cerrar cualquier texto pendiente
-    doc.text("", { continued: false });
-    
-    // Crear nueva página
-    doc.addPage();
-    
-    // DIBUJAR ENCABEZADO
-    if (doc._headerData) {
-      console.log(`🎨 Dibujando encabezado en página ${doc.page.number}`);
-      dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
-    }
-    
-    // POSICIÓN INICIAL
-    doc.y = doc._posicionInicialContenido || 150;
-    doc.x = doc.page.margins.left;
-    doc.font("Times-Roman").fontSize(12);
-    
-    console.log(`✅ Nueva página ${doc.page.number} en Y=${doc.y}`);
-  }
-  
-  // ----- 3. TU CÓDIGO ORIGINAL COMPLETO (sin cambios en la lógica de formato) -----
+
+  // ========= Normalización de línea =========
   const noIndent = line.startsWith("--");
   let rawLine = noIndent ? line.slice(2).trim() : line;
-
   const trimmedLine = rawLine.trim();
   const centerMatch = trimmedLine.match(/^\[\[(.*?)\]\]$/);
   const isCentered = !!centerMatch;
   const content = isCentered ? centerMatch[1].trim() : rawLine;
 
+  // ========= Parseo de <bold>...</bold> =========
   const boldPattern = /<bold>(.*?)<\/bold>/g;
   let match;
   const parts = [];
   let lastIndex = 0;
-
   while ((match = boldPattern.exec(content)) !== null) {
     if (match.index > lastIndex) {
       parts.push({ text: content.slice(lastIndex, match.index), bold: false });
@@ -224,50 +282,100 @@ function processTemplateLine(doc, line, options = {}) {
     parts.push({ text: match[1], bold: true });
     lastIndex = boldPattern.lastIndex;
   }
-
   if (lastIndex < content.length) {
     parts.push({ text: content.slice(lastIndex), bold: false });
   }
 
+  // ========= Configuración de alineación =========
   const align = isCentered ? "center" : "justify";
-  const textOptions = {
-    align,
-    lineGap: align === "justify" ? 5 : 0,
-  };
+  const lineGap = align === "justify" ? 5 : 0;
+
+  const indentPrefix = (!isCentered && !noIndent) ? sangria : "";
+
+  // ========= 🔥 Medición previa del bloque completo =========
+
+  // Convertimos contenido con tags a texto simple para medir
+  const plainText = indentPrefix + content.replace(/<bold>(.*?)<\/bold>/g, "$1");
+
+  const contentWidth =
+    doc.page.width - doc.page.margins.left - doc.page.margins.right;
+
+  let neededHeight = 20;
+  try {
+    neededHeight = doc.heightOfString(plainText, {
+      width: contentWidth,
+      align,
+      lineGap
+    }) + 6; // margen seguro
+  } catch (e) {}
+
+  // ========= 🧮 Salto de página si no entra =========
+  if (doc.y + neededHeight >= doc.page.height - doc.page.margins.bottom) {
+    doc.addPage();
+
+    // Restaurar estilo base de la nueva página
+    doc.font("Times-Roman").fontSize(12);
+    doc._currentBold = false;
+    doc._baseStyleApplied = true;
+
+    // Reiniciar X por las dudas
+    doc.x = doc.page.margins.left;
+  }
+
+  // ========= ✍ Renderizado final del texto =========
+  doc.fontSize(12);
 
   if (parts.length > 0) {
+    // --- Texto con partes bold mezcladas ---
     parts.forEach((part, index) => {
       const isFirst = index === 0;
       const isLast = index === parts.length - 1;
-      let textToPrint = part.text;
 
+      // Cambiar fuente según estado de negrita
+      if (part.bold && !doc._currentBold) {
+        doc.font("Times-Bold");
+        doc._currentBold = true;
+      } else if (!part.bold && doc._currentBold) {
+        doc.font("Times-Roman");
+        doc._currentBold = false;
+      }
+
+      let textToPrint = part.text;
       if (!isLast && !part.text.endsWith(" ")) {
         textToPrint += " ";
       }
 
-      doc
-        .font(part.bold ? "Times-Bold" : "Times-Roman")
-        .fontSize(12)
-        .text(
-          (isFirst && !isCentered && !noIndent ? sangria : "") + textToPrint,
-          {
-            continued: index < parts.length - 1,
-            ...textOptions,
-          }
-        );
+      doc.text(
+        (isFirst ? indentPrefix : "") + textToPrint,
+        {
+          width: contentWidth,
+          continued: !isLast,
+          align,
+          lineGap
+        }
+      );
     });
+
+    // Finalizar texto continued
     doc.text("", { continued: false });
-    doc.font("Times-Roman").fontSize(12);
+
   } else {
-    doc
-      .font("Times-Roman")
-      .fontSize(12)
-      .text((isCentered ? "" : sangria) + content, { ...textOptions });
+    // --- Texto sin partes bold ---
+    doc.font("Times-Roman");
+    doc._currentBold = false;
+
+    doc.text(indentPrefix + content, {
+      width: contentWidth,
+      align,
+      lineGap
+    });
   }
-  
-  // ----- 4. ESPACIO DESPUÉS -----
+
+  // ====== Espaciado entre líneas ======
   doc.moveDown(0.5);
 }
+
+
 
 module.exports = {
   // Mostrar formulario inicial
@@ -903,8 +1011,8 @@ module.exports = {
       mes_curso: resolucion.mes_curso,
       año_curso: resolucion.año_curso,
       articulo_docente: resolucion.articulo_docente,
-      fecha: resolucion.fecha || "N/A",
-      numero_resolucion: resolucion.numero_resolucion || "BORRADOR",
+      fecha: resolucion.fecha || null,
+      numero_resolucion: resolucion.numero_resolucion || null,
       resolucion_interes_departamental: resolucion.resolucion_interes_departamental,
       titulo_organizador: resolucion.autor.titulo_organizador,
       articulo_organizador: articuloOrganizador
@@ -919,13 +1027,41 @@ module.exports = {
     // 3. CREAR PDF
     // ================================
     const doc = new PDFDocument({
+     
       margins: {
         top: 42.52,
         left: 113,
         right: 42.52,
         bottom: 70.88
-      }
+      },
+      autoFirstPage: false,
+      bufferPages: true
     });
+doc._paginaInicialCreada = false;
+
+    // Capturá los valores en constantes seguras (recomendado)
+const numeroResolucion = campos.numero_resolucion || "BORRADOR";
+const fechaResolucion  = campos.fecha || "N/A";
+
+// Dibujar encabezado de la primera página (inmediatamente)
+
+doc.addPage();
+dibujarEncabezado(doc, numeroResolucion, fechaResolucion);
+// <-- ACA VA
+doc.x = doc.page.margins.left;
+doc.y = 200;
+doc._posicionInicialContenido = doc.y;
+doc._paginaInicialCreada = true;
+
+// Hook para TODAS las páginas nuevas
+doc.on("pageAdded", () => {
+  dibujarEncabezado(doc, numeroResolucion, fechaResolucion);
+  // <-- ACA VA
+doc.x = doc.page.margins.left;
+doc.y = 200;
+doc._posicionInicialContenido = doc.y;
+});
+
 
     // ===== Capturar PDF para enviarlo al navegador =====
     const chunks = [];
@@ -955,26 +1091,26 @@ module.exports = {
       fecha: campos.fecha
     };
 
-    doc.on("pageAdded", () => {
-      console.log("📄 Nueva página:", doc.page.number);
+    // doc.on("pageAdded", () => {
+    //   console.log("📄 Nueva página:", doc.page.number);
 
-      if (doc.page.number > 1) {
-        dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
-        doc.y = doc._posicionInicialContenido || 150;
-        doc.x = doc.page.margins.left;
-        doc.font("Times-Roman").fontSize(12);
-      }
-    });
+    //   if (doc.page.number > 1) {
+    //     // dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+    //     doc.y = doc._posicionInicialContenido || 150;
+    //     doc.x = doc.page.margins.left;
+    //     doc.font("Times-Roman").fontSize(12);
+    //   }
+    // });
 
     // ================================
     // 5. PRIMERA PÁGINA
     // ================================
-    dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+    // dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
 
-    if (doc.y < 100) doc.y = 150;
+    // if (doc.y < 100) doc.y = 150;
 
-    doc._posicionInicialContenido = doc.y;
-    doc.x = doc.page.margins.left;
+    // doc._posicionInicialContenido = doc.y;
+    // doc.x = doc.page.margins.left;
 
     // ================================
     // 6. DIBUJAR TEXTO
@@ -990,6 +1126,7 @@ module.exports = {
       }
 
       processTemplateLine(doc, linea);
+      console.log("Línea procesada:", linea);
     }
 
     console.log("📌 Borrador dibujado correctamente");
