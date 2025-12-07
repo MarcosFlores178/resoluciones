@@ -292,35 +292,34 @@ function processTemplateLine(doc, line, options = {}) {
 
   const indentPrefix = (!isCentered && !noIndent) ? sangria : "";
 
-  // ========= 🔥 Medición previa del bloque completo =========
+  // ======== AQUÍ va el cálculo de altura ========
 
-  // Convertimos contenido con tags a texto simple para medir
-  const plainText = indentPrefix + content.replace(/<bold>(.*?)<\/bold>/g, "$1");
+// ========= MEDICIÓN DE ALTURA ANTES DE DIBUJAR =========
+const plainText = indentPrefix + content.replace(/(.*?)<\/bold>/g, "$1");
+const contentWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
-  const contentWidth =
-    doc.page.width - doc.page.margins.left - doc.page.margins.right;
+const requiredHeight = doc.heightOfString(plainText, {
+width: contentWidth,
+align,
+lineGap
+}) + 4; // pequeño buffer
 
-  let neededHeight = 20;
-  try {
-    neededHeight = doc.heightOfString(plainText, {
-      width: contentWidth,
-      align,
-      lineGap
-    }) + 6; // margen seguro
-  } catch (e) {}
+if (doc.y + requiredHeight > doc.page.height - doc.page.margins.bottom) {
+safeNewPage(doc);
+}
 
-  // ========= 🧮 Salto de página si no entra =========
-  if (doc.y + neededHeight >= doc.page.height - doc.page.margins.bottom) {
-    doc.addPage();
+  // // ========= 🧮 Salto de página si no entra =========
+  // if (doc.y + neededHeight >= doc.page.height - doc.page.margins.bottom) {
+  //   doc.addPage();
 
-    // Restaurar estilo base de la nueva página
-    doc.font("Times-Roman").fontSize(12);
-    doc._currentBold = false;
-    doc._baseStyleApplied = true;
+  //   // Restaurar estilo base de la nueva página
+  //   doc.font("Times-Roman").fontSize(12);
+  //   doc._currentBold = false;
+  //   doc._baseStyleApplied = true;
 
-    // Reiniciar X por las dudas
-    doc.x = doc.page.margins.left;
-  }
+  //   // Reiniciar X por las dudas
+  //   doc.x = doc.page.margins.left;
+  // }
 
   // ========= ✍ Renderizado final del texto =========
   doc.fontSize(12);
@@ -595,8 +594,20 @@ module.exports = {
         right: 42.52,
         bottom: 70.88,
       },
+       autoFirstPage: false,
+      bufferPages: true
     });
 
+    doc._paginaInicialCreada = false;
+// Dibujar encabezado de la primera página (inmediatamente)
+
+doc.addPage();
+dibujarEncabezado(doc, resolucion.numero_resolucion, campos.fecha);
+// <-- ACA VA
+doc.x = doc.page.margins.left;
+doc.y = 200;
+doc._posicionInicialContenido = doc.y;
+doc._paginaInicialCreada = true;
     // ===== CAPTURAR PDF PARA SUBIRLO A CLOUDFLARE =====
     const pdfChunks = [];
 
@@ -618,21 +629,21 @@ module.exports = {
       fecha: campos.fecha || new Date().toLocaleDateString(),
     };
 
-    doc.on("pageAdded", () => {
-      if (doc.page.number > 1) {
-        dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
-        doc.y = doc._posicionInicialContenido || 150;
-        doc.x = doc.page.margins.left;
-      }
-    });
+    // doc.on("pageAdded", () => {
+    //   if (doc.page.number > 1) {
+    //     dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+    //     doc.y = doc._posicionInicialContenido || 150;
+    //     doc.x = doc.page.margins.left;
+    //   }
+    // });
 
-    // Primera página
-    dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
+    // // Primera página
+    // dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
 
-    if (doc.y < 100) doc.y = 150;
+    // if (doc.y < 100) doc.y = 150;
 
-    doc._posicionInicialContenido = doc.y;
-    doc.x = doc.page.margins.left;
+    // doc._posicionInicialContenido = doc.y;
+    // doc.x = doc.page.margins.left;
 
     // ================================
     // 6. DIBUJAR TEXTO
@@ -1053,14 +1064,6 @@ doc.y = 200;
 doc._posicionInicialContenido = doc.y;
 doc._paginaInicialCreada = true;
 
-// Hook para TODAS las páginas nuevas
-doc.on("pageAdded", () => {
-  dibujarEncabezado(doc, numeroResolucion, fechaResolucion);
-  // <-- ACA VA
-doc.x = doc.page.margins.left;
-doc.y = 200;
-doc._posicionInicialContenido = doc.y;
-});
 
 
     // ===== Capturar PDF para enviarlo al navegador =====
@@ -1087,31 +1090,11 @@ doc._posicionInicialContenido = doc.y;
     // 4. CONFIGURACIÓN DE ENCABEZADOS
     // ================================
     doc._headerData = {
-      numero: campos.numero_resolucion,
-      fecha: campos.fecha
+      numero: numeroResolucion,
+      fecha: fechaResolucion
     };
 
-    // doc.on("pageAdded", () => {
-    //   console.log("📄 Nueva página:", doc.page.number);
-
-    //   if (doc.page.number > 1) {
-    //     // dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
-    //     doc.y = doc._posicionInicialContenido || 150;
-    //     doc.x = doc.page.margins.left;
-    //     doc.font("Times-Roman").fontSize(12);
-    //   }
-    // });
-
-    // ================================
-    // 5. PRIMERA PÁGINA
-    // ================================
-    // dibujarEncabezado(doc, doc._headerData.numero, doc._headerData.fecha);
-
-    // if (doc.y < 100) doc.y = 150;
-
-    // doc._posicionInicialContenido = doc.y;
-    // doc.x = doc.page.margins.left;
-
+    
     // ================================
     // 6. DIBUJAR TEXTO
     // ================================
