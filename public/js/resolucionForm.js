@@ -19,15 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //NUEVO ABAJO
 
-  function habilitarCampos() {
-    const elementos = document.querySelectorAll("input, select, textarea");
+function habilitarCampos() {
+    const elementos = document.querySelectorAll("input[disabled], select[disabled], textarea[disabled]");
     elementos.forEach(el => {
-        if (el.disabled) el.disabled = false;
+        el.disabled = false; // ya es seguro
     });
 }
+  //Manejo del submit del formulario
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    habilitarCampos();
 
     // Construimos el objeto `data` desde el formulario
     const formData = new FormData(form);
@@ -277,8 +279,90 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (data.accion === "generar_pdf") {
+   if (data.accion === "generar_pdf") {
+  habilitarCampos();
+  toastr.info("Generando PDF...");
+  console.log(idResolucion);
+
+  try {
+    // Construir payload de forma limpia usando ?? para valores nulos
+    const payload = {
+      fecha: data.fecha,
+      numero_resolucion: data.numero_resolucion,
+      expediente: data.expediente,
+      resolucion_interes_departamental: data.resolucion_interes_departamental,
+      curso: data.curso ?? null,
+      cohorte: data.cohorte ?? null,
+      titulo_docente: data.titulo_docente ?? null,
+      docente: data.docente ?? null,
+      sexo_docente: data.sexo_docente ?? null,
+      alumnos: data.alumnos ?? null,
+      segundos_objetivos: data.segundos_objetivos ?? null,
+      objetivos: data.objetivos ?? null,
+      clases_numero: data.clases_numero ?? null,
+      horas_clase_numero: data.horas_clase_numero ?? null,
+      minimo: data.minimo ?? null,
+      maximo: data.maximo ?? null,
+      mes_curso: data.mes_curso ?? null,
+      año_curso: data.año_curso ?? null,
+    };
+
+    // Primer PATCH: emitir formulario
+    const responseEmitir = await fetch(`/resoluciones/emitir-formulario/${idResolucion}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!responseEmitir.ok) throw new Error(`Error en emitir formulario: ${responseEmitir.status}`);
+
+    const resultEmitir = await responseEmitir.json();
+    console.log(resultEmitir.pdfUrl);
+    toastr.info("Enviando resolución...");
+
+    if (!resultEmitir.success) {
+      throw new Error(resultEmitir.message || "Error al generar resolución");
+    }
+
+    // Segundo PATCH: generar PDF
+    const responsePdf = await fetch(`/resoluciones/${idResolucion}/pdf`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!responsePdf.ok) throw new Error(`Error en generar PDF: ${responsePdf.status}`);
+
+    const dataPdf = await responsePdf.json();
+
+    if (!dataPdf.success || !dataPdf.pdfUrl) {
+      throw new Error(dataPdf.message || "Error al generar PDF");
+    }
+
+    // Abrir PDF en nueva pestaña
+    const nuevaVentana = window.open("", "_blank");
+    nuevaVentana.location.href = dataPdf.pdfUrl;
+
+    // Redirección después de un pequeño delay
+    setTimeout(() => {
+      window.location.href = "/resoluciones/lista-resoluciones";
+    }, 400);
+
+    toastr.success(resultEmitir.message || "¡Tarea realizada con éxito!");
+
+  } catch (err) {
+    console.error(err);
+    toastr.error("Error al enviar la resolución.");
+  }
+
+  return;
+}
+
+
+if (data.accion === "generar_pdf3") {
       habilitarCampos();
+       // 🔥 ESPERAR UN MICRO TICK PARA QUE EL DOM ACTUALICE
+    // await new Promise(r => setTimeout(r, 2000));
       toastr.info("Generando PDF...");
       console.log(idResolucion);
 

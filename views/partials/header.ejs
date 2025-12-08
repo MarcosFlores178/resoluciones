@@ -12,8 +12,8 @@
           <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
           <li><a href="/usuarios/profile"><span class="usuario">👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
           <% } else if (rol === "administrativo") { %>
-            <li><a href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
-            <li><a href="/auth/logout">Cerrar sesión</a></li>
+            <li><a class="menu" href="/resoluciones/lista-resoluciones">Resoluciones</a></li>
+            <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
             <li><a href="/usuarios/profile"><span class="usuario">👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
             <% } else if (rol==="superadmin") {%>
               <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
