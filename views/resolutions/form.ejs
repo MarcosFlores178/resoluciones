@@ -20,7 +20,7 @@
    
 
     <div class="form-group">
-      <label for="cohorte">Número de cohorte:</label>
+      <label for="cohorte">Nº de cohorte:</label>
       <select name="cohorte" id="cohorte" required <%= usuario.rol === "administrativo" ? "disabled" : "" %>>
         <option value="PRIMERA" <%= datos && datos.cohorte === "PRIMERA" ? "selected" : "" %>>PRIMERA</option>
         <option value="SEGUNDA" <%= datos && datos.cohorte === "SEGUNDA" ? "selected" : "" %>>SEGUNDA</option>
@@ -189,7 +189,7 @@
     </div>
 
      <div class="form-group">
-      <label for="expediente">Número de expediente:</label>
+      <label for="expediente">Nº de expediente: <span>(opcional)</span></label>
       <input type="text" id="expediente" name="expediente"
       value="<%= datos ? datos.expediente : '' %>"
       
@@ -200,7 +200,7 @@
     </div>
 
     <div class="form-group">
-      <label for="resolucion_interes_departamental">Número de resolución interés departamental:</label>
+      <label for="resolucion_interes_departamental">Nº de resolución interés departamental: <span>(opcional)</span></label>
       <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
         value="<%= datos ? datos.resolucion_interes_departamental : '' %>"
         

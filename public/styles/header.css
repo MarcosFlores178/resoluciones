@@ -56,7 +56,7 @@ header nav ul li a {
   border-radius: 5px;
 }
 
-header nav ul li a:hover {
+.menu:hover {
   background-color: #0055a5;
 }
 
@@ -68,6 +68,9 @@ header nav ul li span {
   border-radius: 5px;
 }
 
+.usuario:hover {
+  background-color: #0055a5;
+}
 /* Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   header nav ul {
