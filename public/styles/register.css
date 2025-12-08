@@ -62,7 +62,7 @@
 /* Botón igual */
 .button {
     display: inline-block;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     padding: 10px 20px;
     font-size: 1em;
     color: #fff;
@@ -80,6 +80,14 @@
     margin-top: 1.5rem;
 }
 
+.password-rules {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    
+}
+
 .password {
    display: flex;
    justify-content: start;
@@ -87,6 +95,30 @@
    flex-direction: column;
    gap: 10px;
 }
+
+.rule {
+  color: #007bff; /* azul */
+  margin: 3px 0;
+  font-size: 0.9rem;
+  transition: all 0.25s ease; /* animación suave */
+}
+
+.rule.error {
+  color: red;
+  font-weight: bold;
+}
+
+.rule.success {
+  color: green;
+  font-weight: bold;
+}
+
+/* Botón deshabilitado */
+#submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 
 /* RESPONSIVE: en pantallas chicas vuelve a una sola columna y etiquetas a la izquierda */
 @media (max-width: 600px) {

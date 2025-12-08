@@ -224,61 +224,7 @@ function habilitarCampos() {
     }
 
     // Esta acción sólo puede ser disparada por un administrativo que emite la resolución
-    if (data.accion === "generar_pdf2") {
-      toastr.info("Generando PDF...");
-
-      console.log(idResolucion);
-      try {
-        const response = await fetch(
-          `/resoluciones/emitir-formulario/${idResolucion}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fecha: data.fecha,
-              numero_resolucion: data.numero_resolucion,
-              expediente: data.expediente,
-              resolucion_interes_departamental:
-                data.resolucion_interes_departamental,
-            }),
-          }
-        );
-
-        const result = await response.json();
-        toastr.info("Enviando resolución...");
-
-        if (result.success) {
-          toastr.success(result.message || "¡Tarea realizada con éxito!");
-        } else {
-          toastr.error(result.message || "Algo salió mal.");
-        }
-        console.log(`/resoluciones/${idResolucion}/pdf`);
-        const resGenerarPdf = await fetch(`/resoluciones/${idResolucion}/pdf`);
-        const dataGenerarPdf = await resGenerarPdf.json();
-
-        //HACER UN TIME OUT
-        setTimeout(() => {
-          window.open(`/pdfs/${dataGenerarPdf.fileName}`, "_blank");
-        }, 1500);
-
-        setTimeout(() => {
-          console.log("redireccion al listado");
-          window.open("/resoluciones/lista-resoluciones", "_self");
-        }, 1800);
-
-        if (!dataGenerarPdf) {
-          // Cambié esto
-          throw new Error("Error al generar PDF");
-        }
-      } catch (err) {
-        console.error(err);
-        toastr.error("Error al enviar la resolución.");
-      }
-      return;
-    }
-
+    
    if (data.accion === "generar_pdf") {
   habilitarCampos();
   toastr.info("Generando PDF...");
@@ -338,6 +284,7 @@ function habilitarCampos() {
     if (!dataPdf.success || !dataPdf.pdfUrl) {
       throw new Error(dataPdf.message || "Error al generar PDF");
     }
+    // toastr.success("PDF creado correctamente.");
 
     // Abrir PDF en nueva pestaña
     const nuevaVentana = window.open("", "_blank");
@@ -348,7 +295,7 @@ function habilitarCampos() {
       window.location.href = "/resoluciones/lista-resoluciones";
     }, 400);
 
-    toastr.success(resultEmitir.message || "¡Tarea realizada con éxito!");
+    // toastr.success(resultEmitir.message || "¡Tarea realizada con éxito!");
 
   } catch (err) {
     console.error(err);
@@ -358,134 +305,6 @@ function habilitarCampos() {
   return;
 }
 
-
-if (data.accion === "generar_pdf3") {
-      habilitarCampos();
-       // 🔥 ESPERAR UN MICRO TICK PARA QUE EL DOM ACTUALICE
-    // await new Promise(r => setTimeout(r, 2000));
-      toastr.info("Generando PDF...");
-      console.log(idResolucion);
-
-      try {
-        const response = await fetch(
-          `/resoluciones/emitir-formulario/${idResolucion}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fecha: data.fecha,
-              numero_resolucion: data.numero_resolucion,
-              expediente: data.expediente,
-              resolucion_interes_departamental:
-                data.resolucion_interes_departamental,
-
-              curso: data.curso ? data.curso : null,
-              cohorte: data.cohorte ? data.cohorte : null,
-              titulo_docente: data.titulo_docente ? data.titulo_docente : null,
-
-              docente: data.docente ? data.docente : null,
-              sexo_docente: data.sexo_docente ? data.sexo_docente : null,
-              alumnos: data.alumnos ? data.alumnos : null,
-              segundos_objetivos: data.segundos_objetivos
-                ? data.segundos_objetivos
-                : null,
-              objetivos: data.objetivos ? data.objetivos : null,
-              clases_numero: data.clases_numero ? data.clases_numero : null,
-              horas_clase_numero: data.horas_clase_numero
-                ? data.horas_clase_numero
-                : null,
-              minimo: data.minimo ? data.minimo : null,
-              maximo: data.maximo ? data.maximo : null,
-              mes_curso: data.mes_curso ? data.mes_curso : null,
-              año_curso: data.año_curso ? data.año_curso : null,
-            }),
-          }
-        );
-
-        const result = await response.json();
-        console.log(result.pdfUrl);
-        toastr.info("Enviando resolución...");
-
-        if (result.success) {
-          toastr.success(result.message || "¡Tarea realizada con éxito!");
-        } else {
-          toastr.error(result.message || "Algo salió mal.");
-        }
-
-        console.log(`/resoluciones/${idResolucion}/pdf`);
-        const resGenerarPdf = await fetch(`/resoluciones/${idResolucion}/pdf`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fecha: data.fecha,
-            numero_resolucion: data.numero_resolucion,
-            expediente: data.expediente,
-            resolucion_interes_departamental:
-              data.resolucion_interes_departamental,
-
-            curso: data.curso ? data.curso : null,
-            cohorte: data.cohorte ? data.cohorte : null,
-            titulo_docente: data.titulo_docente ? data.titulo_docente : null,
-
-            docente: data.docente ? data.docente : null,
-            sexo_docente: data.sexo_docente ? data.sexo_docente : null,
-            alumnos: data.alumnos ? data.alumnos : null,
-            segundos_objetivos: data.segundos_objetivos
-              ? data.segundos_objetivos
-              : null,
-            objetivos: data.objetivos ? data.objetivos : null,
-            clases_numero: data.clases_numero ? data.clases_numero : null,
-            horas_clase_numero: data.horas_clase_numero
-              ? data.horas_clase_numero
-              : null,
-            minimo: data.minimo ? data.minimo : null,
-            maximo: data.maximo ? data.maximo : null,
-            mes_curso: data.mes_curso ? data.mes_curso : null,
-            año_curso: data.año_curso ? data.año_curso : null,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data.success || !data.pdfUrl) {
-              throw new Error(data.message || "Error al generar PDF");
-            }
-
-            // 👉 Abre la pestaña del PDF **antes** de la redirección
-            const nuevaVentana = window.open("", "_blank");
-            nuevaVentana.location.href = data.pdfUrl;
-
-            // 👉 Redirección después de un pequeño delay óptimo
-            setTimeout(() => {
-              window.location.href = "/resoluciones/lista-resoluciones";
-            }, 400);
-          })
-          .catch((err) => console.error(err));
-        const dataGenerarPdf = await resGenerarPdf.json();
-
-        // ✅ CAMBIO PRINCIPAL: Usar la URL de Cloudflare R2
-        // if (dataGenerarPdf.success && dataGenerarPdf.pdfUrl) {
-        //   setTimeout(() => {
-        //     // Abrir la URL de Cloudflare R2 en nueva pestaña
-        //     window.open(dataGenerarPdf.pdfUrl, "_blank");
-        //   }, 1500);
-
-        //   setTimeout(() => {
-        //     console.log("redireccion al listado");
-        //     window.open("/resoluciones/lista-resoluciones", "_self");
-        //   }, 1800);
-        // } else {
-        //   throw new Error(dataGenerarPdf.message || "Error al generar PDF");
-        // }
-      } catch (err) {
-        console.error(err);
-        toastr.error("Error al enviar la resolución.");
-      }
-      return;
-    }
 
     // Esta acción es generada por el organizador para guardar borrador de formulario
     if (data.accion === "guardar" && !data.id_resoluciones) {

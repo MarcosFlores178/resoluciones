@@ -6,6 +6,7 @@
   <div class="right">
     <nav>
       <ul>
+        <% if (!primerIngreso) { %>
         <% if (rol === "organizador") { %>
           <li><a class="menu" href="/resoluciones/lista-resoluciones">Mis resoluciones</a></li>
           <li><a class="menu" href="/resoluciones/form-resolucion">Nueva resolución</a></li>
@@ -19,7 +20,7 @@
               <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
               <li><a href="/usuarios/profile"><span class="usuario">👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
               <% } %>
-               
+        <% } %>
       </ul>
     </nav>
   </div>

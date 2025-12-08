@@ -62,6 +62,7 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.rol = req.session.user?.rol || null;
+  res.locals.primerIngreso = req.session.user?.primer_ingreso || null;
    res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.warning_msg = req.flash('warning_msg');

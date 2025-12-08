@@ -3,7 +3,7 @@
 
   <form action="/auth/register" id="registerForm" method="POST">
     <div class="grid-datos">
-      
+
       <p>
         <span class="label"><label for="nombre">Nombre:</label></span>
         <input type="text" id="nombre" name="nombre" class="value" required>
@@ -24,12 +24,12 @@
         <span class="value">
           <label style="margin-right: 10px;">
             <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino"
-              <%= usuario?.rol === "administrativo" ? "disabled" : "" %> required>
+              <%=usuario?.rol==="administrativo" ? "disabled" : "" %> required>
             Hombre
           </label>
           <label>
             <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino"
-              <%= usuario?.rol === "administrativo" ? "disabled" : "" %> required>
+              <%=usuario?.rol==="administrativo" ? "disabled" : "" %> required>
             Mujer
           </label>
         </span>
@@ -42,21 +42,120 @@
     </div>
     <div class="password-container">
       <div class="password">
-          <p>
-            <span class="label"><label for="password">Contraseña:</label></span>
-            <input type="password" id="password" name="password" class="value" required>
-          </p>
-    
-          <p>
-            <span class="label"><label for="confirm_password">Confirmar contraseña:</label></span>
-            <input type="password" id="confirm_password" name="confirm_password" class="value" required>
-          </p>
-          </div>
-    </div>
+        <p>
+          <span class="label"><label for="password">Contraseña:</label></span>
+          <input type="password" id="password" name="password" class="value" required>
+        </p>
 
-<div style="grid-column: span 2; text-align: center; margin-top: 1.5rem;">
-    <button type="submit" class="button">Registrarse</button>
+
+
+        <p>
+          <span class="label"><label for="confirm_password">Confirmar contraseña:</label></span>
+          <input type="password" id="confirm_password" name="confirm_password" class="value" required>
+        </p>
+      </div>
+
+    </div>
+    <div class="password-rules">
+      <p id="rule-length" class="rule">Debe tener mínimo 8 caracteres.</p>
+      <p id="rule-letters" class="rule">Debe incluir letras.</p>
+      <p id="rule-number-symbol" class="rule">Debe incluir un número o un símbolo.</p>
+    <p id="confirm-msg" class="rule">Las contraseñas deben coincidir.</p>
+    </div>
+    <div style="grid-column: span 2; text-align: center; margin-top: 1rem;">
+      <button id="submit-btn" type="submit" class="button">Registrarse</button>
     </div>
 
   </form>
 </div>
+<script>
+  const pass1 = document.getElementById("password");
+  const pass2 = document.getElementById("confirm_password");
+  const submitBtn = document.getElementById("submit-btn");
+
+  const ruleLength = document.getElementById("rule-length");
+  const ruleLetters = document.getElementById("rule-letters");
+  const ruleNumSym = document.getElementById("rule-number-symbol");
+  const confirmMsg = document.getElementById("confirm-msg");
+
+  function validarPassword() {
+    const pass = pass1.value;
+
+    // Regla 1: Longitud
+    if (pass.length >= 8) {
+      ruleLength.classList.add("success");
+      ruleLength.classList.remove("error");
+      ruleLength.textContent = "✔ Debe tener mínimo 8 caracteres.";
+    } else {
+      ruleLength.classList.add("error");
+      ruleLength.classList.remove("success");
+      ruleLength.textContent = "❌ Debe tener mínimo 8 caracteres.";
+    }
+
+    // Regla 2: Letras
+    if (/[A-Za-z]/.test(pass)) {
+      ruleLetters.classList.add("success");
+      ruleLetters.classList.remove("error");
+      ruleLetters.textContent = "✔ Debe incluir letras.";
+    } else {
+      ruleLetters.classList.add("error");
+      ruleLetters.classList.remove("success");
+      ruleLetters.textContent = "❌ Debe incluir letras.";
+    }
+
+    // Regla 3: Número o símbolo
+    if (/[\d\W]/.test(pass)) {
+      ruleNumSym.classList.add("success");
+      ruleNumSym.classList.remove("error");
+      ruleNumSym.textContent = "✔ Debe incluir un número o un símbolo.";
+    } else {
+      ruleNumSym.classList.add("error");
+      ruleNumSym.classList.remove("success");
+      ruleNumSym.textContent = "❌ Debe incluir un número o un símbolo.";
+    }
+  }
+
+  function validarConfirmacion() {
+    const p1 = pass1.value;
+    const p2 = pass2.value;
+
+    if (!p2) {
+      confirmMsg.classList.remove("error", "success");
+      confirmMsg.textContent = "Las contraseñas deben coincidir.";
+      return;
+    }
+
+    if (p1 === p2) {
+      confirmMsg.classList.add("success");
+      confirmMsg.classList.remove("error");
+      confirmMsg.textContent = "✔ Las contraseñas coinciden.";
+    } else {
+      confirmMsg.classList.add("error");
+      confirmMsg.classList.remove("success");
+      confirmMsg.textContent = "❌ Las contraseñas no coinciden.";
+    }
+  }
+
+  function actualizarBoton() {
+    const reglasCumplidas =
+      ruleLength.classList.contains("success") &&
+      ruleLetters.classList.contains("success") &&
+      ruleNumSym.classList.contains("success");
+
+    const confirmada = confirmMsg.classList.contains("success");
+
+    submitBtn.disabled = !(reglasCumplidas && confirmada);
+  }
+
+  // Eventos
+  pass1.addEventListener("input", () => {
+    validarPassword();
+    validarConfirmacion();
+    actualizarBoton();
+  });
+
+  pass2.addEventListener("input", () => {
+    validarConfirmacion();
+    actualizarBoton();
+  });
+</script>

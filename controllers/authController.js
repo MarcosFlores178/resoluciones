@@ -4,6 +4,7 @@ const { Usuario } = db;
 const enviarEmailRecuperacion = require("../utils/emailRecuperacion");
 const generarCodigoTemporal = require("../utils/generarCodigoTemporal");
 const { Op } = require("sequelize");
+const validarPassword = require("../utils/validarPassword");
 
 module.exports = {
   showLogin: (req, res) => {
@@ -40,8 +41,9 @@ module.exports = {
         sexo_organizador: usuario.sexo_organizador,
       };
       const rol = req.session.user.rol; // Obtiene el rol del usuario desde la sesión
+      const primerIngreso = req.session.user.primer_ingreso;
       console.log("Rol del usuario:", rol);
-      console.log("Primer ingreso:", req.session.user.primer_ingreso);
+      console.log("Primer ingreso:", primerIngreso);
       console.log("id:", req.session.user.id);
       console.log(usuario.nombre);
       console.log(usuario.apellido);
@@ -89,12 +91,17 @@ module.exports = {
     if (
       !nombre ||
       !apellido ||
-      !password ||
       !titulo ||
       !sexo_organizador ||
       !telefono
     ) {
       req.flash("error_msg", "Por favor, completa todos los campos requeridos");
+      return res.redirect("/auth/register");
+    }
+
+    const errorValidacion = validarPassword(password);
+    if (errorValidacion) {
+      req.flash("error_msg", errorValidacion);
       return res.redirect("/auth/register");
     }
 
@@ -119,6 +126,7 @@ module.exports = {
         req.flash("error_msg", "Usuario no encontrado");
         return res.redirect("/auth/register");
       }
+      req.flash("success_msg", "Usuario registrado con éxito.");
       res.redirect("/resoluciones/form-resolucion"); // Redirige a la ruta de formulario de resolución
     } catch (error) {
       console.error("Error al registrar usuario:", error);
