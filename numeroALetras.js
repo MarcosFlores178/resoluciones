@@ -35,11 +35,7 @@ const unidades = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siet
     return "Número demasiado grande";
 }
 
-// Ejemplos
-console.log(numeroALetras(5));       // "cinco"
-console.log(numeroALetras(23));      // "veintitrés"
-console.log(numeroALetras(105));     // "ciento cinco"
-console.log(numeroALetras(2345));    // "dos mil trescientos cuarenta y cinco"
+
 
 
 module.exports = numeroALetras;

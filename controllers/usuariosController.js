@@ -19,9 +19,7 @@ const usuariosController = {
 showProfile: async (req, res) => {
     try {
         const id_usuarios = req.session.user.id_usuarios;
-        console.log(req.session);
-        console.log(req.session.user.id_usuarios);
-        console.log(id_usuarios);
+      
 
 
         const usuario = await Usuario.findByPk(id_usuarios);
@@ -42,9 +40,7 @@ showProfile: async (req, res) => {
 
         try {
             const id_usuarios = req.session.user.id_usuarios;
-        console.log(req.session);
-        console.log(req.session.user.id_usuarios);
-        console.log(id_usuarios);
+       
 
 
         const usuario = await Usuario.findByPk(id_usuarios);

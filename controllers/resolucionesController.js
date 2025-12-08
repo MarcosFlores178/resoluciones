@@ -84,12 +84,7 @@ function dibujarEncabezado(doc, numeroResolucion, fechaResolucion) {
       }
     }
 
-    // Debug
-    console.log(`✅ dibujarEncabezado en página ${doc.page?.number || "?"}`);
-    console.log(`📌 dibujarEncabezado llamado: 
-    Página ${doc.page?.number || "?"}
-    Hora: ${new Date().toISOString().split('T')[1].split('.')[0]}
-    Stack:`, new Error().stack.split('\n').slice(1, 4).join(' | '));
+   
 
     // ------------------------------
     // 1) LOGO — calcular tamaño real
@@ -189,7 +184,7 @@ function ensureSpace(doc, requiredHeight = 20) {
   // Si aún no hay ninguna página (PDFKit no la creó), no hacer nada.
     // Si la primera página aún NO existe → no hacer nada
   if (!doc._paginaInicialCreada) return false;
-  console.log("Pagina inicial crada:", doc._paginaInicialCreada);
+  // console.log("Pagina inicial crada:", doc._paginaInicialCreada);
   if (!doc.page) return false;
 
 // Si doc.y todavía no fue fijado por primera vez → NO FORZAR SALTO
@@ -207,7 +202,7 @@ function ensureSpace(doc, requiredHeight = 20) {
       // ignore
     }
     // ⛔️ NO dibujes ni muevas Y acá
-    console.log(`📄 Nueva página POR ensureSpace(), doc.page=${doc.page.number}`);
+    // console.log(`📄 Nueva página POR ensureSpace(), doc.page=${doc.page.number}`);
     doc.addPage();
 
     // if (doc._headerData) {
@@ -435,7 +430,7 @@ module.exports = {
 
     const genero_docente = sexo_docente === "femenino" ? "de la" : "del";
 
-    console.log(horasClaseTexto);
+  
 
     try {
       // Crear la resolución en la base de datos
@@ -472,11 +467,11 @@ module.exports = {
         articulo_organizador: articulo_organizador,
         // Asegúrate de que este campo esté en el formulario
       });
-      console.log("procesarFormulario", nueva.fecha);
+      
 
       // Si la acción es 'guardar', responde con JSON
       if (accion === "guardar") {
-        console.log("dentro del guardar", nueva.id_resoluciones);
+        
         return res.json({
           success: true,
           message: "Resolución guardada con éxito",
@@ -497,7 +492,7 @@ module.exports = {
 
   generarPDF: async (req, res) => {
   try {
-    console.log("dentro de generar pdf");
+  
     const id = req.params.id;
 
     // ================================
@@ -583,8 +578,7 @@ module.exports = {
       articulo_organizador: articuloOrganizador,
     };
 
-    console.log("campos: ", campos);
-console.log("fecha resolucion", resolucion.fecha)
+   
     const textoFinal = renderTemplate(plantilla, campos);
 
     // ================================
@@ -664,7 +658,7 @@ doc._paginaInicialCreada = true;
       processTemplateLine(doc, linea);
     }
 
-    console.log("PDF contenido generado.");
+    
 
     // ================================
     // 7. CERRAR PDF (SIEMPRE AL FINAL)
@@ -688,7 +682,7 @@ doc._paginaInicialCreada = true;
           })
         );
 
-        console.log("PDF subido a Cloudflare R2 correctamente");
+        // console.log("PDF subido a Cloudflare R2 correctamente");
 
         const publicUrl = `${process.env.CLOUDFLARE_PUBLIC_URL}/${fileName}`;
 
@@ -810,7 +804,7 @@ doc._paginaInicialCreada = true;
     resolucion.articulo_organizador = articulo_organizador;
 
     if (resolucion.changed()) {
-      console.log("entró al changed");
+     
       await resolucion.save();
     }
     // await resolucion.save();
@@ -925,7 +919,7 @@ doc._paginaInicialCreada = true;
         order: [["fecha_creacion", "DESC"]],
       });
 
-      console.log("esto sale despues del try y antes del res render");
+      
       res.render("resolutions/lista", {
         resoluciones,
         cssFile: "lista.css",
@@ -936,7 +930,7 @@ doc._paginaInicialCreada = true;
         pdf_url: resoluciones.pdf_url,
         pdf_key: resoluciones.pdf_key
       }); //cssFile debe ser igual a lista.css
-      console.log("esto sale despues del res render");
+      
 
       // res.redirect('/resoluciones/lista');
     } catch (error) {
@@ -963,7 +957,7 @@ doc._paginaInicialCreada = true;
   verBorrador: async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("El id es:", id);
+    
 
     // ================================
     // 1. OBTENER RESOLUCIÓN
@@ -1112,10 +1106,10 @@ doc._paginaInicialCreada = true;
       }
 
       processTemplateLine(doc, linea);
-      console.log("Línea procesada:", linea);
+      // console.log("Línea procesada:", linea);
     }
 
-    console.log("📌 Borrador dibujado correctamente");
+    // console.log("📌 Borrador dibujado correctamente");
 
     // ================================
     // 7. CERRAR PDF (AL FINAL)
@@ -1133,11 +1127,10 @@ doc._paginaInicialCreada = true;
 
   enviarResolucion: async (req, res) => {
     // await this.actualizarResolucion(req, res);
-    console.log("en el controller enviarResolucion");
+   
     const { id } = req.params;
     const { estado } = req.body;
-    console.log("id de parametros:id", id);
-    console.log("estado recibido:", estado);
+ 
 
     try {
       const resultado = await Resolucion.update(
@@ -1148,7 +1141,7 @@ doc._paginaInicialCreada = true;
       if (resultado[0] === 0) {
         return res.status(404).json({ message: "Resolución no encontrada" });
       }
-      console.log("Resultado update:", resultado);
+     
 
       res.json({ success: true, message: `Resolución enviada con éxito` });
     } catch (error) {
@@ -1217,13 +1210,7 @@ doc._paginaInicialCreada = true;
     try {
       const { id } = req.params;
   // DEBUG: Ver qué llega al controlador
-    console.log("=== DATOS RECIBIDOS EN CONTROLADOR ===");
-    console.log("Body completo:", req.body);
-    console.log("ID:", id);
-    console.log("Fecha:", req.body.fecha);
-    console.log("Curso:", req.body.curso);
-    console.log("Docente:", req.body.docente);
-    console.log("================================");
+
 
       const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
 
@@ -1259,11 +1246,7 @@ doc._paginaInicialCreada = true;
       );
 
   // DEBUG: Ver los valores que se van a actualizar
-    console.log("=== VALORES A ACTUALIZAR ===");
-    console.log("Curso:", curso);
-    console.log("Docente:", docente);
-    console.log("Objetivos:", objetivos);
-    console.log("=============================");
+
 
       res.json({
         success: true,
@@ -1280,8 +1263,7 @@ doc._paginaInicialCreada = true;
       const { id } = req.params;
       const { estado, motivo } = req.body;
 
-      console.log("id de parametros:id", id);
-      console.log("estado recibido:", estado);
+      
 
       await Resolucion.update(
         {
@@ -1309,7 +1291,7 @@ doc._paginaInicialCreada = true;
       const { id } = req.params;
       const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
 
-      console.log("id de parametros:id", id);
+      
      
 
       await Resolucion.update(

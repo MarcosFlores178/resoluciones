@@ -15,7 +15,7 @@ module.exports = {
   },
   login: async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password);
+
     try {
       const usuario = await Usuario.findOne({ where: { email } });
       if (!usuario) {
@@ -42,11 +42,7 @@ module.exports = {
       };
       const rol = req.session.user.rol; // Obtiene el rol del usuario desde la sesión
       const primerIngreso = req.session.user.primer_ingreso;
-      console.log("Rol del usuario:", rol);
-      console.log("Primer ingreso:", primerIngreso);
-      console.log("id:", req.session.user.id);
-      console.log(usuario.nombre);
-      console.log(usuario.apellido);
+    
 
       res.redirect("/"); // Redirige a la ruta principal (que manejará el rol)
     } catch (error) {

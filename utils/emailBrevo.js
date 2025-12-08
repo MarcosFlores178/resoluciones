@@ -26,10 +26,10 @@ const brevo = require('@getbrevo/brevo');
   // defaultClient.apiKey.apiKey = process.env.BREVO_API_KEY;
   
   async function enviarEmailTemporal(email, passwordTemporal) {
-  console.log("Objeto brevo:", brevo);
-  console.log("Objeto brevo api client:", brevo.ApiClient);
-    console.log("OBJETO TRANSACTIONAL:", TransactionalEmailsApiApiKeys);
-  console.log("Dentro de email temporal");
+  // console.log("Objeto brevo:", brevo);
+  // console.log("Objeto brevo api client:", brevo.ApiClient);
+  //   console.log("OBJETO TRANSACTIONAL:", TransactionalEmailsApiApiKeys);
+  // console.log("Dentro de email temporal");
   // Crea una instancia de la API de correos transaccionales
   const apiInstance = new brevo.TransactionalEmailsApi();
   const sendSmtpEmail = new brevo.SendSmtpEmail(); // Este es el objeto para construir el email
@@ -49,7 +49,7 @@ const brevo = require('@getbrevo/brevo');
   try {
     // Envía el correo usando la API HTTP de Brevo
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log('Correo enviado correctamente. ID: ', data.messageId);
+   
   } catch (error) {
     console.error('Error al enviar el correo: ', error);
   }

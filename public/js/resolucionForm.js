@@ -119,7 +119,7 @@ function habilitarCampos() {
     if (data.accion === "ver_borrador_admin") {
       if (data.id_resoluciones) {
         try {
-          console.log("dentro de ver_borrador_admin");
+        
           const response = await fetch(
             `/resoluciones/borrador/${data.id_resoluciones}`,
             {
@@ -228,7 +228,7 @@ function habilitarCampos() {
    if (data.accion === "generar_pdf") {
   habilitarCampos();
   toastr.info("Generando PDF...");
-  console.log(idResolucion);
+ 
 
   try {
     // Construir payload de forma limpia usando ?? para valores nulos
@@ -263,7 +263,7 @@ function habilitarCampos() {
     if (!responseEmitir.ok) throw new Error(`Error en emitir formulario: ${responseEmitir.status}`);
 
     const resultEmitir = await responseEmitir.json();
-    console.log(resultEmitir.pdfUrl);
+   
     toastr.info("Enviando resolución...");
 
     if (!resultEmitir.success) {
@@ -310,7 +310,7 @@ function habilitarCampos() {
     if (data.accion === "guardar" && !data.id_resoluciones) {
       const guardarNueva = async () => {
         toastr.info("Guardando resolución...");
-        console.log("antes del try en guardar");
+      
         try {
           const response = await fetch("/resoluciones/form-resolucion", {
             method: "POST",
@@ -325,8 +325,7 @@ function habilitarCampos() {
           }
 
           const result = await response.json();
-          console.log("redirectTo", result.redirectTo);
-          console.log("success", result.success);
+       
           if (result.success) {
             toastr.success(result.message || "¡Tarea realizada con éxito!");
 
@@ -353,7 +352,7 @@ function habilitarCampos() {
     //Guarda la resolución cuando ya fue creada (tiene ID)
     if (data.accion === "guardar" && data.id_resoluciones) {
       const guardarExistenteBoton = async () => {
-        console.log("Guardando existente");
+      
         toastr.info("Guardando cambios...");
         try {
           const response = await fetch(
@@ -373,8 +372,7 @@ function habilitarCampos() {
           }
 
           const result = await response.json();
-          console.log("redirectTo", result.redirectTo);
-          console.log("success", result.success);
+      
           if (result.success) {
             toastr.success(result.message || "¡Tarea realizada con éxito!");
 
@@ -398,13 +396,13 @@ function habilitarCampos() {
     .getElementById("ver-borrador-btn-admin")
     .addEventListener("click", async function () {
       habilitarCampos();
-      console.log("dentro de ver borrador btn admin");
+      
 
       const idResolucion = form.dataset.idResolucion;
 
       if (idResolucion) {
         try {
-          console.log("dentro de ver_borrador_admin - haciendo fetch");
+        
 
           // Obtener los datos del formulario
           const formData = new FormData(form);
@@ -477,15 +475,14 @@ function habilitarCampos() {
   const botonRechazar = document.getElementById(idResolucion);
 
   botonRechazar.addEventListener("click", async (e) => {
-    console.log("click rechazar");
+    
 
     if (e.target.classList.contains("btn-reject")) {
-      console.log("click rechazar");
       const idResolucion = e.target.dataset.id;
       const fila = e.target.closest("tr"); // obtenemos la fila de la tabla
       const celdaEstado = fila.querySelector(".estado");
 
-      console.log("Botón rechazar clickeado para id:", idResolucion);
+   
 
       try {
         const response = await fetch(`/resoluciones/${idResolucion}/rechazar`, {

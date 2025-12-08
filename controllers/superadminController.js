@@ -9,7 +9,7 @@ exports.formCrearUsuario = (req, res) => {
 };
 
 exports.crearUsuario = async (req, res) => {
-  console.log("dentro de crear Usuario en superadmincontroller");
+ 
   const { email, rol } = req.body;
 
   //BUscar email ingresado en la base de datos para evitar duplicados
@@ -26,7 +26,7 @@ exports.crearUsuario = async (req, res) => {
 
   const passwordTemporal = crypto.randomBytes(5).toString('hex');
   const hashed = await bcrypt.hash(passwordTemporal, 10);
-  console.log("Contraseña temporal generada:", passwordTemporal);
+  
 
   try {
     const usuario = await Usuario.create({
