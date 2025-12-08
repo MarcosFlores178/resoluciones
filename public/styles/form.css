@@ -184,6 +184,12 @@ legend {
     transition: border-color 0.3s;
   }
 
+  .opcional {
+    font-weight: normal;
+    font-size: 0.9em;
+    color: #1976d2;
+  }
+
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr; /* 1 columna en móviles */

@@ -85,7 +85,7 @@
 
     <div class="form-group full-width">
       <label for="segundos_objetivos">Objetivo general:</label>
-      <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %>><%= datos ? datos.segundos_objetivos : '' %></textarea>
+      <textarea name="segundos_objetivos" id="segundos_objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %> required ><%= datos ? datos.segundos_objetivos : '' %></textarea>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn btn-editar" data-input="segundos_objetivos">Editar</button>
       <% } %>
@@ -93,7 +93,7 @@
     
     <div class="form-group full-width">
       <label for="objetivos">Objetivo específico:</label>
-      <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %>><%= datos ? datos.objetivos : ''%></textarea>
+      <textarea name="objetivos" id="objetivos" style="resize: none;" rows="6" cols="50" <%= usuario.rol === "administrativo" ? "readonly" : "" %> required ><%= datos ? datos.objetivos : ''%></textarea>
      <% if (usuario.rol === "administrativo") { %>
         <button type="button" class="toggle-btn btn-editar" data-input="objetivos">Editar</button>
       <% } %>
@@ -189,7 +189,10 @@
     </div>
 
      <div class="form-group">
-      <label for="expediente">Nº de expediente: <span>(opcional)</span></label>
+
+      <label for="expediente">Nº de expediente:  
+        <%- usuario.rol === "organizador" ? '<span class="opcional">(opcional)</span>' : '' %>
+      </label>
       <input type="text" id="expediente" name="expediente"
       value="<%= datos ? datos.expediente : '' %>"
       
@@ -200,7 +203,9 @@
     </div>
 
     <div class="form-group">
-      <label for="resolucion_interes_departamental">Nº de resolución interés departamental: <span>(opcional)</span></label>
+      <label for="resolucion_interes_departamental">Nº de resolución interés departamental:
+         <%- usuario.rol === "organizador" ? '<span class="opcional">(opcional)</span>' : '' %>
+      </label>
       <input type="text" id="resolucion_interes_departamental" name="resolucion_interes_departamental"
         value="<%= datos ? datos.resolucion_interes_departamental : '' %>"
         
