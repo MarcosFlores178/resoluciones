@@ -37,7 +37,13 @@
                       <%= res.autor.apellido%>
                   </td>
                   <td>
-                    <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
+           <%= res.fecha 
+        ? (() => {
+            const [anio, mes, dia] = res.fecha.split("-"); // números como strings
+            return `${dia.padStart(2,'0')}/${mes.padStart(2,'0')}/${anio}`;
+          })()
+        : "—" 
+  %>
                   </td>
                   <td>
                     <%= res.numero_resolucion || '—' %>
@@ -143,7 +149,13 @@
                               </a>
                         </td>
                         <td>
-                          <%= res.fecha ? new Date(res.fecha).toLocaleDateString('es-AR') : "—" %>
+                                 <%= res.fecha 
+        ? (() => {
+            const [anio, mes, dia] = res.fecha.split("-"); // números como strings
+            return `${dia.padStart(2,'0')}/${mes.padStart(2,'0')}/${anio}`;
+          })()
+        : "—" 
+  %>
                         </td>
                         <td>
                           <%= res.numero_resolucion || '—' %>

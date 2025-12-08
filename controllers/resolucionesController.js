@@ -4,8 +4,9 @@ const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
 const { PassThrough } = require("stream");
-const { format } = require("date-fns");
+const { format, parse } = require("date-fns");
 const { es } = require("date-fns/locale");
+
 const numeroALetras = require("../numeroALetras");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { imageSize } = require("image-size");
@@ -26,10 +27,12 @@ function formatNumber(num) {
 }
 
 function formatearConDateFns(fechaOriginal) {
-  return format(new Date(fechaOriginal), "dd-MMM-yyyy", {
-    locale: es,
-  }).toUpperCase();
+  const [anio, mes, dia] = fechaOriginal.split("-").map(Number);
+  // Creamos la fecha en local
+  const fecha = new Date(anio, mes - 1, dia);
+  return format(fecha, "dd-MMM-yyyy", { locale: es }).toUpperCase();
 }
+
 // Reemplaza los {{campos}} de la plantilla
 // ----------------- RENDER TEMPLATE (igual que antes) -----------------
 function renderTemplate(templateText, campos) {
@@ -581,7 +584,7 @@ module.exports = {
     };
 
     console.log("campos: ", campos);
-
+console.log("fecha resolucion", resolucion.fecha)
     const textoFinal = renderTemplate(plantilla, campos);
 
     // ================================
