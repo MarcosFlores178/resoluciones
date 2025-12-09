@@ -14,9 +14,11 @@
         <input type="text" id="apellido" name="apellido" class="value" required>
       </p>
 
-      <p>
-        <span class="label"><label for="titulo">Título:</label></span>
-        <input type="text" id="titulo" name="titulo" class="value" required>
+      
+
+        <p>
+        <span class="label"><label for="telefono">Teléfono:</label></span>
+        <input type="tel" id="telefono" name="telefono" class="value" required>
       </p>
 
       <% if (usuario?.rol !== "administrativo") { %>
@@ -35,11 +37,11 @@
           </label>
         </span>
       </p>
-      
       <p>
-        <span class="label"><label for="telefono">Teléfono:</label></span>
-        <input type="tel" id="telefono" name="telefono" class="value" required>
+        <span class="label"><label for="titulo">Título:</label></span>
+        <input type="text" id="titulo" name="titulo" class="value" required>
       </p>
+    
       <% } %>
     </div>
     <div class="password-container">
