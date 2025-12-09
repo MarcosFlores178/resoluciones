@@ -19,7 +19,7 @@ module.exports = {
     // database: process.env.DB_NAME || process.env.MYSQLDATABASE,
     // host: process.env.DB_HOST || process.env.MYSQLHOST,
     // port: process.env.DB_PORT || process.env.MYSQLPORT,
-    // dialect: "mysql",
+    dialect: "mysql",
 
     // Railway sometimes needs this
     // dialectOptions: {
