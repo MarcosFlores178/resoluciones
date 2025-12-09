@@ -84,6 +84,7 @@ module.exports = {
       return res.redirect("/auth/register");
     }
 
+    if (req.session.user.rol === "organizador") {
     if (
       !nombre ||
       !apellido ||
@@ -94,6 +95,18 @@ module.exports = {
       req.flash("error_msg", "Por favor, completa todos los campos requeridos");
       return res.redirect("/auth/register");
     }
+  }
+
+  if (req.session.user.rol === "administrativo") {
+    if (
+      !nombre ||
+      !apellido ||
+      !telefono
+    ) {
+      req.flash("error_msg", "Por favor, completa todos los campos requeridos");
+      return res.redirect("/auth/register");
+    }
+  }
 
     const errorValidacion = validarPassword(password);
     if (errorValidacion) {
