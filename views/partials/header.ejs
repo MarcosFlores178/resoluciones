@@ -17,10 +17,10 @@
             <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
             <li><a href="/usuarios/profile"><span class="usuario">👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
             <% } else if (rol==="superadmin") {%>
-              <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
               <li><a href="/usuarios/profile"><span class="usuario">👤 <%= user.nombre %> <%= user.apellido %></span></a></li>
               <% } %>
-        <% } %>
+              <% } %>
+              <li><a class="menu" href="/auth/logout">Cerrar sesión</a></li>
       </ul>
     </nav>
   </div>

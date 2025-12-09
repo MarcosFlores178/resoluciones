@@ -104,6 +104,7 @@ module.exports = {
     const hashedPassword = await bcrypt.hash(password, 10);
     req.session.user.nombre = nombre;
     req.session.user.apellido = apellido;
+    req.session.user.primer_ingreso = false;
     try {
       const [actualizados] = await Usuario.update(
         {
