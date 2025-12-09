@@ -53,11 +53,11 @@ module.exports = (sequelize, dataTypes) => {
       allowNull: false,
     },
     objetivos: {
-      type: dataTypes.STRING,
+      type: dataTypes.TEXT,
       allowNull: false,
     },
     segundos_objetivos: {
-      type: dataTypes.STRING,
+      type: dataTypes.TEXT,
       allowNull: false,
     },
     horas_totales_numero: {
