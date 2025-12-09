@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt');
 const { Usuario } = require('./db/models'); // Ajustá la ruta si es necesario
 
+console.log('DB Host:', process.env.MYSQLHOST);
+console.log('DB User:', process.env.MYSQLUSER);
+
+
 (async () => {
   const email = 'marcosfabianflores@gmail.com';
   const passwordPlano = 'admin12331591248';
