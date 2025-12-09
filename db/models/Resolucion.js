@@ -6,6 +6,7 @@ module.exports = (sequelize, dataTypes) => {
       type: dataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
     },
     fecha: {
       type: dataTypes.DATE,
@@ -102,6 +103,8 @@ module.exports = (sequelize, dataTypes) => {
         model: "usuarios", // Nombre de la tabla en la BD
         key: "id_usuarios", // Campo referenciado
       },
+      onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
     },
     estado: {
       type: dataTypes.ENUM("nuevo","guardado","pendiente","emitido","rechazado"),

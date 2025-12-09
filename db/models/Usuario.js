@@ -15,9 +15,10 @@ module.exports = (sequelize, dataTypes) => {
       allowNull: false,
     },
     id_usuarios: {
-      type: dataTypes.INTEGER(11),
+      type: dataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
     },
     password: {
       type: dataTypes.STRING(100),
@@ -39,8 +40,7 @@ module.exports = (sequelize, dataTypes) => {
     telefono: {
       type: dataTypes.STRING(100),
       allowNull: true,
-      
-    },
+      },
      primer_ingreso: {
       type: dataTypes.BOOLEAN,
       defaultValue: true

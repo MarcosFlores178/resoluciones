@@ -34,10 +34,18 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      denominacion_docente: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+    genero_docente: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    sexo_docente: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    titulo_docente: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
       docente: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -54,18 +62,30 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      horas_totales: {
+      horas_totales_texto: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      clases: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      horas_clase: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+       horas_totales_numero: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+  clases_numero: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    horas_clase_numero: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+      clases_texto: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    horas_clase_texto: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
       minimo: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -109,7 +129,23 @@ module.exports = {
       motivo_rechazo: {
         type: Sequelize.STRING,
         allowNull: true,
-      }
+      },
+    articulo_docente: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    año_curso: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+    },
+    pdf_url: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    pdf_key: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    }
     });
   },
 
