@@ -19,21 +19,23 @@
         <input type="text" id="titulo" name="titulo" class="value" required>
       </p>
 
+      <% if (usuario?.rol !== "administrativo") { %>
       <p>
         <span class="label">Sexo:</span>
         <span class="value">
           <label style="margin-right: 10px;">
             <input type="radio" name="sexo_organizador" id="sexo_organizador_masculino" value="masculino"
-              <%=usuario?.rol==="administrativo" ? "disabled" : "" %> required>
+              required>
             Hombre
           </label>
           <label>
             <input type="radio" name="sexo_organizador" id="sexo_organizador_femenino" value="femenino"
-              <%=usuario?.rol==="administrativo" ? "disabled" : "" %> required>
+              required>
             Mujer
           </label>
         </span>
       </p>
+      <% } %>
 
       <p>
         <span class="label"><label for="telefono">Teléfono:</label></span>
