@@ -90,7 +90,7 @@ app.use(session({
 }));
 
 // 2. Importar y usar el middleware de resoluciones (DESPUÉS de session)
-const cargarResolucionesParaVista = require('./middlewares/resolucionesMiddleware');
+const {cargarResolucionesParaVista} = require('./middlewares/resolucionesMiddleware');
 app.use(cargarResolucionesParaVista); // ← AQUÍ SE EJECUTA EN TODAS LAS RUTAS
 
 app.use(flash());

@@ -43,4 +43,5 @@ const cargarResolucionesParaVista = async (req, res, next) => {
   next();
 };
 
-module.exports = cargarResolucionesParaVista;
+//Se usa llaves porque se puede exportar mas de una cosa
+module.exports = {cargarResolucionesParaVista};
