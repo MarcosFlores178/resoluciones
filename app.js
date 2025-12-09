@@ -89,7 +89,9 @@ app.use(session({
   rolling: true // ⭐ RENUEVA con cada interacción
 }));
 
-
+// 2. Importar y usar el middleware de resoluciones (DESPUÉS de session)
+const cargarResolucionesParaVista = require('./middlewares/resolucionesMiddleware');
+app.use(cargarResolucionesParaVista); // ← AQUÍ SE EJECUTA EN TODAS LAS RUTAS
 
 app.use(flash());
 
@@ -104,7 +106,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
+app.use
 
 app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
 
