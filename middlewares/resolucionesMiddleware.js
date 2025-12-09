@@ -1,5 +1,5 @@
 // middlewares/resolucionesMiddleware.js
-const { Resolucion, Usuario, sequelize } = require('../models');
+const { Resolucion, Usuario, sequelize } = require('../db/models');
 
 const cargarResolucionesParaVista = async (req, res, next) => {
   res.locals.tieneResoluciones = false;
