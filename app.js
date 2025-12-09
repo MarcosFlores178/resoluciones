@@ -6,8 +6,6 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 const { isAuthenticated } = require('./middlewares/authMiddleware');
 const { checkRole } = require('./middlewares/roleMiddleware');
-
-
 // import toastr from 'toastr';
 // import 'toastr/build/toastr.min.css';
 const toastr = require('toastr');
@@ -15,6 +13,8 @@ let session = require('express-session');
 const bcrypt = require('bcrypt');
 const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
+const { sequelize } = require('./db/models');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 //LIVERELOAD:
 const livereload = require("livereload");
@@ -52,11 +52,45 @@ app.set('layout', 'layouts/main'); // ruta al layout principal
 //   }, 100);
 // });
 
+// 1. Configurar store de sesiones
+const sessionStore = new SequelizeStore({
+  db: sequelize,
+  tableName: 'sessions',
+  expiration: 8 * 60 * 60 * 1000, // 1 día
+  checkExpirationInterval: 15 * 60 * 1000
+});
+
+// Crear tabla de sesiones (solo una vez)
+sessionStore.sync();
+
+// app.use(session({
+//   secret: 'MH354G486H46G',
+//   resave: false,
+//   saveUninitialized: true,
+//    cookie: {
+//     maxAge: 15 * 60 * 1000, // ⏳ ¡AL MENOS EXPIRAN!
+//     httpOnly: true
+//   }
+// }));
+
+// 2. Middleware de sesión
 app.use(session({
-  secret: 'MH354G486H46G',
+  secret: process.env.SESSION_SECRET || 'fallback-secret-para-desarrollo',
+  store: sessionStore,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  proxy: true, // ← IMPORTANTE para Railway
+  cookie: {
+    maxAge: 8 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  },
+  rolling: true // ⭐ RENUEVA con cada interacción
 }));
+
+
+
 app.use(flash());
 
 app.use((req, res, next) => {
