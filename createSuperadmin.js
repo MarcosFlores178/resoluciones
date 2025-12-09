@@ -3,7 +3,7 @@ const { Usuario } = require('./db/models'); // Ajustá la ruta si es necesario
 
 (async () => {
   const email = 'marcosfabianflores@gmail.com';
-  const passwordPlano = 'admin123';
+  const passwordPlano = 'admin12331591248';
   const hashedPassword = await bcrypt.hash(passwordPlano, 10);
 
   try {
