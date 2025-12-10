@@ -9,7 +9,7 @@ const cargarResolucionesParaVista = async (req, res, next) => {
   
   if (req.session.user && req.session.user.id_usuarios) {
     try {
-      const esAdministrador = req.session.user.rol === 'administrador';
+      const esAdministrador = req.session.user.rol === 'administrativo';
       const usuarioId = req.session.user.id_usuarios;
       console.log('Usuario ID en middleware:', usuarioId);
       console.log('Es administrador:', esAdministrador);
