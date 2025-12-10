@@ -37,11 +37,11 @@
         <!-- <option value="Otro" <%= usuario.sexo_organizador === 'Otro' ? 'selected' : '' %>>Otro</option> -->
       </select>
     </p>
-<% } %>
     <p>
       <label class="label" for="titulo_organizador">Título:</label>
       <input class="value" type="text" id="titulo_organizador" name="titulo_organizador" value="<%= usuario.titulo_organizador %>">
     </p>
+    <% } %>
 
     <div style="grid-column: span 2; text-align: center; margin-top: 1.5rem;">
       <button type="submit" class="button">Guardar cambios</button>
