@@ -285,11 +285,12 @@ function habilitarCampos() {
       throw new Error(dataPdf.message || "Error al generar PDF");
     }
     // toastr.success("PDF creado correctamente.");
+    console.log("antes del window open");
 
     // Abrir PDF en nueva pestaña
     const nuevaVentana = window.open("", "_blank");
     nuevaVentana.location.href = dataPdf.pdfUrl;
-
+    console.log("Antes del set timeout");
     // Redirección después de un pequeño delay
     setTimeout(() => {
       window.location.href = "/resoluciones/lista-resoluciones";
