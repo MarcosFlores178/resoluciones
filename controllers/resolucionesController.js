@@ -1291,14 +1291,14 @@ doc._paginaInicialCreada = true;
       const { id } = req.params;
       const { fecha, numero_resolucion, expediente, resolucion_interes_departamental, curso, cohorte, titulo_docente, docente, sexo_docente, alumnos, segundos_objetivos, objetivos, clases_numero, horas_clase_numero, minimo, maximo, mes_curso, año_curso  } = req.body;
 
-      
+      const fecha_sanitizada = fecha || null;
      
 
       await Resolucion.update(
         {
           expediente,
           resolucion_interes_departamental,
-          fecha, 
+          fecha: fecha_sanitizada, 
           numero_resolucion,
           curso, 
           cohorte,
