@@ -228,8 +228,81 @@ function habilitarCampos() {
    if (data.accion === "generar_pdf") {
   habilitarCampos();
   toastr.info("Generando PDF...");
- 
-
+ // 1. Abrir ventana INMEDIATAMENTE al clic (antes del fetch)
+    const pdfWindow = window.open('', '_blank');
+    // 2. Verificar si el navegador la bloqueó
+    if (!pdfWindow || pdfWindow.closed) {
+        toastr.warning("El navegador bloqueó la ventana emergente. Permite los pop-ups para este sitio para ver el PDF automáticamente.");
+        // OPCIONAL: Ofrecer un enlace de descarga directa como fallback
+        // mostrarEnlaceDescargaManual();
+    } else {
+        // 3. Mostrar mensaje de carga ATRACTIVO en la nueva ventana
+        pdfWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Generando PDF</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            min-height: 100vh;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            text-align: center;
+                        }
+                        .loading-container {
+                            max-width: 500px;
+                            padding: 40px;
+                            background: rgba(255, 255, 255, 0.1);
+                            backdrop-filter: blur(10px);
+                            border-radius: 20px;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                        }
+                        .spinner {
+                            width: 60px;
+                            height: 60px;
+                            border: 5px solid rgba(255, 255, 255, 0.3);
+                            border-radius: 50%;
+                            border-top-color: white;
+                            margin: 0 auto 30px;
+                            animation: spin 1s ease-in-out infinite;
+                        }
+                        @keyframes spin {
+                            to { transform: rotate(360deg); }
+                        }
+                        h2 {
+                            margin-bottom: 15px;
+                            font-size: 28px;
+                        }
+                        p {
+                            font-size: 16px;
+                            line-height: 1.6;
+                            opacity: 0.9;
+                        }
+                        .subtext {
+                            margin-top: 25px;
+                            font-size: 14px;
+                            opacity: 0.7;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="loading-container">
+                        <div class="spinner"></div>
+                        <h2>🔄 Generando tu PDF</h2>
+                        <p>Por favor espera unos segundos mientras procesamos tu resolución.</p>
+                        <p class="subtext">Este proceso puede tardar unos 3-5 segundos.</p>
+                        <p class="subtext">No cierres esta ventana.</p>
+                    </div>
+                </body>
+            </html>
+        `);
+ }
   try {
     // Construir payload de forma limpia usando ?? para valores nulos
     const payload = {
@@ -288,10 +361,20 @@ function habilitarCampos() {
     // console.log("antes del window open");
 
     // Abrir PDF en nueva pestaña
-    const nuevaVentana = window.open("", "_blank");
-    nuevaVentana.location.href = dataPdf.pdfUrl;
+    // const nuevaVentana = window.open("", "_blank");
+    // nuevaVentana.location.href = dataPdf.pdfUrl;
     // console.log("Antes del set timeout");
     // Redirección después de un pequeño delay
+    
+     // 5. Redirigir la ventana ABIERTA (si no se bloqueó) al PDF real
+        if (pdfWindow) {
+            pdfWindow.location.href = dataPdf.pdfUrl;
+        } else {
+            // Si se bloqueó, mostrar la URL para que el usuario haga clic manualmente
+            toastr.info(`<a href="${dataPdf.pdfUrl}" target="_blank">Haz clic aquí para abrir el PDF</a>`, null, {escapeHtml: false});
+        }
+
+    
     setTimeout(() => {
       window.location.href = "/resoluciones/lista-resoluciones";
     }, 400);
@@ -299,8 +382,12 @@ function habilitarCampos() {
     // toastr.success(resultEmitir.message || "¡Tarea realizada con éxito!");
 
   } catch (err) {
-    console.error(err);
-    toastr.error("Error al enviar la resolución.");
+     console.error(err);
+        // Si la ventana está abierta pero hay error, mostrar el error allí
+        if (pdfWindow && !pdfWindow.closed) {
+            pdfWindow.document.body.innerHTML = `<h1>Error</h1><p>${err.message}</p>`;
+        }
+        toastr.error("Error al enviar la resolución.");
   }
 
   return;
