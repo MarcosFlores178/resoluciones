@@ -137,7 +137,7 @@ module.exports = {
         return res.redirect("/auth/register");
       }
       req.flash("success_msg", "Usuario registrado con éxito.");
-      res.redirect("/resoluciones/form-resolucion"); // Redirige a la ruta de formulario de resolución
+      res.redirect("/"); // Redirige a la ruta de formulario de resolución?
     } catch (error) {
       console.error("Error al registrar usuario:", error);
       req.flash("error_msg", "Error interno del servidor");
