@@ -247,7 +247,7 @@ function habilitarCampos() {
                             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                             margin: 0;
                             padding: 20px;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            background: linear-gradient(135deg, #0055a5 0%, #003366 100%);
                             color: white;
                             min-height: 100vh;
                             display: flex;
