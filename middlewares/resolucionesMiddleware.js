@@ -6,6 +6,7 @@ const cargarResolucionesParaVista = async (req, res, next) => {
   res.locals.tieneResolucionesSistema = false;
 //   res.locals.conteoResoluciones = 0;
 //   res.locals.conteoResolucionesSistema = 0;
+const usuarioId = req.session.user?.id_usuarios;
   
   if (req.session.user && req.session.user.id_usuarios) {
     try {
