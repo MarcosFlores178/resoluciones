@@ -1,6 +1,14 @@
 <main>
+    <% if (usuario.rol==="administrativo" ) { %>
+          <% if (tieneResolucionesSistema) { %>
   <h1>Resoluciones guardadas</h1>
   <button class="btn-actualizar" onclick="location.reload()">🔄 Actualizar listado</button>
+  <% } %>
+    <% } %>
+
+      <% if (usuario.rol==="organizador" ) { %>
+        <h1>Mis resoluciones guardadas</h1>
+        <button class="btn-actualizar" onclick="location.reload()">🔄 Actualizar listado</button>
   <% if (usuario.rol==="organizador" ) { %>
     <table id="tabla-resoluciones">
       <thead>
