@@ -416,6 +416,8 @@ module.exports = {
 
     const usuario = req.session.user;
 
+    console.log(usuario);
+
     const horas_totales_numero =
       parseInt(clases_numero) * parseInt(horas_clase_numero); //se usa parseInt porque
     const horasTotalesTexto = formatNumber(horas_totales_numero);
