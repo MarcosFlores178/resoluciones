@@ -13,13 +13,13 @@ const nodemailer = require('nodemailer');
 });
 
 // 2. Verificar conexión (opcional pero recomendado)
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('Error al verificar el transportador:', error);
-  } else {
-    console.log('Servidor de correo listo para enviar mensajes');
-  }
-});
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.error('Error al verificar el transportador:', error);
+//   } else {
+//     console.log('Servidor de correo listo para enviar mensajes');
+//   }
+// });
 
 // 3. Función para enviar email
 async function enviarEmailTemporal(email, passwordTemporal) {
