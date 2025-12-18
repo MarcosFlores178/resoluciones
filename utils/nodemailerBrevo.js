@@ -4,8 +4,8 @@ const nodemailer = require('nodemailer');
  // 1. Crear el transportador con las credenciales SMTP de Brevo
     const transporter = nodemailer.createTransport({
         host: 'smtp-relay.brevo.com',
-        port: 587,
-        secure: false, // Usar 'true' para el puerto 465
+        port: 465,
+        secure: true, // Usar 'true' para el puerto 465
         auth: {
             user: process.env.BREVO_USER_ID, // Tu email con el que te registraste en Brevo
             pass: process.env.BREVO_SMTP_KEY // Tu clave SMTP (no la clave API v3)
