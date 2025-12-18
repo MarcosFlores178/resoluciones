@@ -70,83 +70,90 @@ module.exports = {
     });
   },
   register: async (req, res) => {
-    const {
-      nombre,
-      apellido,
-      password,
-      titulo_organizador,
-      sexo_organizador,
-      telefono,
-      confirm_password,
-    } = req.body;
-    if (password !== confirm_password) {
-      req.flash("error_msg", "Las contraseñas no coinciden");
-      return res.redirect("/auth/register");
-    }
+  const {
+    nombre,
+    apellido,
+    password,
+    titulo_organizador,
+    sexo_organizador,
+    telefono,
+    confirm_password,
+  } = req.body;
+  
+  if (password !== confirm_password) {
+    req.flash("error_msg", "Las contraseñas no coinciden");
+    return res.redirect("/auth/register");
+  }
 
-    if (req.session.user.rol === "organizador") {
-    if (
-      !nombre ||
-      !apellido ||
-      !titulo_organizador ||
-      !sexo_organizador ||
-      !telefono
-    ) {
+  // Verificar campos según rol
+  if (req.session.user.rol === "organizador") {
+    if (!nombre || !apellido || !titulo_organizador || !sexo_organizador || !telefono) {
       req.flash("error_msg", "Por favor, completa todos los campos requeridos");
       return res.redirect("/auth/register");
     }
   }
 
   if (req.session.user.rol === "administrativo") {
-    if (
-      !nombre ||
-      !apellido ||
-      !telefono
-    ) {
+    if (!nombre || !apellido || !telefono) {
       req.flash("error_msg", "Por favor, completa todos los campos requeridos");
       return res.redirect("/auth/register");
     }
   }
 
-    const errorValidacion = validarPassword(password);
-    if (errorValidacion) {
-      req.flash("error_msg", errorValidacion);
-      return res.redirect("/auth/register");
+  const errorValidacion = validarPassword(password);
+  if (errorValidacion) {
+    req.flash("error_msg", errorValidacion);
+    return res.redirect("/auth/register");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  
+  // Actualizar session según rol
+  req.session.user.nombre = nombre;
+  req.session.user.apellido = apellido;
+  req.session.user.primer_ingreso = false;
+  req.session.user.telefono = telefono;
+  
+  // Solo actualizar campos específicos de organizador si es organizador
+  if (req.session.user.rol === "organizador") {
+    req.session.user.titulo_organizador = titulo_organizador;
+    req.session.user.sexo_organizador = sexo_organizador;
+  }
+
+  try {
+    // Crear objeto de actualización dinámico según rol
+    const datosActualizacion = {
+      nombre,
+      apellido,
+      password: hashedPassword,
+      primer_ingreso: false,
+      telefono,
+    };
+    
+    // Solo agregar campos de organizador si es organizador
+    if (req.session.user.rol === "organizador") {
+      datosActualizacion.titulo_organizador = titulo_organizador;
+      datosActualizacion.sexo_organizador = sexo_organizador;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    req.session.user.titulo_organizador = titulo_organizador;
-    req.session.user.nombre = nombre;
-    req.session.user.apellido = apellido;
-    req.session.user.primer_ingreso = false;
-    req.session.user.sexo_organizador = sexo_organizador;
-    req.session.user.telefono = telefono;
-    try {
-      const [actualizados] = await Usuario.update(
-        {
-          nombre,
-          apellido,
-          password: hashedPassword,
-          primer_ingreso: false,
-          titulo_organizador,
-          sexo_organizador,
-          telefono,
-        },
-        { where: { id_usuarios: req.session.user.id_usuarios } }
-      );
-      // req.session.user = nuevoUsuario;
-      if (actualizados === 0) {
-        req.flash("error_msg", "Usuario no encontrado");
-        return res.redirect("/auth/register");
-      }
-      req.flash("success_msg", "Usuario registrado con éxito.");
-      res.redirect("/"); // Redirige a la ruta de formulario de resolución?
-    } catch (error) {
-      console.error("Error al registrar usuario:", error);
-      req.flash("error_msg", "Error interno del servidor");
-      res.redirect("/auth/register");
+    const [actualizados] = await Usuario.update(
+      datosActualizacion,
+      { where: { id_usuarios: req.session.user.id_usuarios } }
+    );
+    
+    if (actualizados === 0) {
+      req.flash("error_msg", "Usuario no encontrado");
+      return res.redirect("/auth/register");
     }
-  },
+    
+    req.flash("success_msg", "Usuario registrado con éxito.");
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    req.flash("error_msg", "Error interno del servidor");
+    res.redirect("/auth/register");
+  }
+},
   mostrarCambiarPassword: async (req, res) => {
     try {
       res.render("auth/cambiar-password", {
