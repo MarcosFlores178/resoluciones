@@ -74,7 +74,7 @@ module.exports = {
       nombre,
       apellido,
       password,
-      titulo,
+      titulo_organizador,
       sexo_organizador,
       telefono,
       confirm_password,
@@ -88,7 +88,7 @@ module.exports = {
     if (
       !nombre ||
       !apellido ||
-      !titulo ||
+      !titulo_organizador ||
       !sexo_organizador ||
       !telefono
     ) {
@@ -118,6 +118,9 @@ module.exports = {
     req.session.user.nombre = nombre;
     req.session.user.apellido = apellido;
     req.session.user.primer_ingreso = false;
+    req.session.user.titulo_organizador = titulo_organizador;
+    req.session.user.sexo_organizador = sexo_organizador;
+    req.session.user.telefono = telefono;
     try {
       const [actualizados] = await Usuario.update(
         {
