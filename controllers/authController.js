@@ -115,10 +115,10 @@ module.exports = {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    req.session.user.titulo_organizador = titulo_organizador;
     req.session.user.nombre = nombre;
     req.session.user.apellido = apellido;
     req.session.user.primer_ingreso = false;
-    req.session.user.titulo_organizador = titulo_organizador;
     req.session.user.sexo_organizador = sexo_organizador;
     req.session.user.telefono = telefono;
     try {
