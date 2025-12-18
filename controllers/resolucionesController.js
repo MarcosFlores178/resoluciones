@@ -435,6 +435,9 @@ module.exports = {
   
 
     try {
+    console.log("OBJETO USUARIO DESDE EL REQ SESSION dentro del try", usuario);
+
+      
       // Crear la resolución en la base de datos
       const nueva = await Resolucion.create({
         id_usuarios: req.session.user.id_usuarios, // Asegúrate de que el ID del usuario esté en la sesión
