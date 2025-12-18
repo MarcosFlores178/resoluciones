@@ -1,6 +1,6 @@
 require('dotenv').config();
-// const nodemailer = require('nodemailer');
-const brevo = require('@getbrevo/brevo');
+const nodemailer = require('nodemailer');
+// const brevo = require('@getbrevo/brevo');
 
 async function enviarEmailTemporal(email, passwordTemporal) {
   await transporter.sendMail({

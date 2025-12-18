@@ -1,7 +1,7 @@
 const { Usuario } = require('../db/models');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const enviarEmailTemporal = require('../utils/email'); // tu función para enviar email
+const enviarEmailTemporal = require('../utils/nodemailer'); // tu función para enviar email
 // import enviarEmailTemporal from '../utils/email.js';
 
 exports.formCrearUsuario = (req, res) => {
