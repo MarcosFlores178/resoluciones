@@ -9,34 +9,43 @@ exports.formCrearUsuario = (req, res) => {
 };
 
 exports.crearUsuario = async (req, res) => {
- 
   const { email, rol } = req.body;
-
-  //BUscar email ingresado en la base de datos para evitar duplicados
-  const usuarioExistente = await Usuario.findOne({ where: { email } });
-  if (usuarioExistente) {
-    return res.render('dashboard', {
-      mensaje: null,
-      error: 'El email ya está registrado',
-      cssFile: "dashboard.css",
-      usuario: req.session.user,
-      passwordTemporal: null
-    });
-  }
-
-  const passwordTemporal = crypto.randomBytes(5).toString('hex');
-  const hashed = await bcrypt.hash(passwordTemporal, 10);
-  
+  const transaction = await sequelize.transaction(); // 1. Iniciamos transacción
 
   try {
+    // 2. Buscar email (dentro de la transacción)
+    const usuarioExistente = await Usuario.findOne({ 
+      where: { email },
+      transaction // ← Importante: pasar la transacción
+    });
+    
+    if (usuarioExistente) {
+      await transaction.rollback(); // 3. Si existe, revertimos
+      return res.render('dashboard', {
+        mensaje: null,
+        error: 'El email ya está registrado',
+        cssFile: "dashboard.css",
+        usuario: req.session.user,
+        passwordTemporal: null
+      });
+    }
+
+    const passwordTemporal = crypto.randomBytes(5).toString('hex');
+    const hashed = await bcrypt.hash(passwordTemporal, 10);
+
+    // 4. Crear usuario (dentro de la transacción)
     const usuario = await Usuario.create({
       email,
       rol,
       password: hashed,
       primerIngreso: true
-    });
+    }, { transaction }); // ← Pasar la transacción aquí también
 
+    // 5. Intentar enviar email
     await enviarEmailTemporal(email, passwordTemporal);
+
+    // 6. Si TODO sale bien, confirmamos
+    await transaction.commit();
 
     res.render('dashboard', {
       usuario,
@@ -45,10 +54,25 @@ exports.crearUsuario = async (req, res) => {
       error: null,
       passwordTemporal
     });
+
   } catch (err) {
-    console.error(err);
-    res.render('dashboard', { mensaje: 'Error al crear usuario', 
-      cssFile: null, 
-      error: err.message  });
+    // 7. Si CUALQUIER cosa falla, revertimos TODO
+    await transaction.rollback();
+    
+    console.error('Error en creación de usuario:', err);
+    
+    // 8. Mensaje amigable según el tipo de error
+    let mensajeError = 'Error al crear usuario';
+    if (err.message.includes('trial account unique recipients limit')) {
+      mensajeError = 'Límite de destinatarios alcanzado. No se creó el usuario.';
+    }
+    
+    res.render('dashboard', { 
+      mensaje: null, 
+      cssFile: "dashboard.css", 
+      error: mensajeError,
+      usuario: req.session.user,
+      passwordTemporal: null
+    });
   }
 };
