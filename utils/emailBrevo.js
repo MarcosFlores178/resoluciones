@@ -5,11 +5,12 @@
 require('dotenv').config();
 // const {SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys} = require('@getbrevo/brevo');
 
+// ----Configurar la clave API globalmente (la obtienes de tu panel de Brevo)----
 const brevo = require('@getbrevo/brevo');
-// let defaultClient = brevo.ApiClient.instance;
+const defaultClient = brevo.ApiClient.instance;
 
-// let apiKey = defaultClient.authentications['api-key'];
-// apiKey.apiKey = process.env.BREVO_API_KEY;
+const apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
 // let apiInstance = new brevo.TransactionalEmailsApi();
 // let sendSmtpEmail = new brevo.SendSmtpEmail();
@@ -30,8 +31,11 @@ const brevo = require('@getbrevo/brevo');
   // console.log("Objeto brevo api client:", brevo.ApiClient);
   //   console.log("OBJETO TRANSACTIONAL:", TransactionalEmailsApiApiKeys);
   // console.log("Dentro de email temporal");
-  // Crea una instancia de la API de correos transaccionales
+
+  // ----Crea una instancia de la API de correos transaccionales----
   const apiInstance = new brevo.TransactionalEmailsApi();
+
+  // 2. Crear el objeto del correo electrónico
   const sendSmtpEmail = new brevo.SendSmtpEmail(); // Este es el objeto para construir el email
 
   // Configura el contenido del correo
@@ -49,9 +53,12 @@ const brevo = require('@getbrevo/brevo');
   try {
     // Envía el correo usando la API HTTP de Brevo
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+     console.log('Correo enviado con éxito. ID del mensaje: ', data.messageId);
+    return { success: true, messageId: data.messageId };
    
   } catch (error) {
     console.error('Error al enviar el correo: ', error);
+    throw new Error(`Error al enviar el correo: ${error.message}`);
   }
 }
 
