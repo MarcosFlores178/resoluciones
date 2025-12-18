@@ -1,7 +1,9 @@
 const { Usuario } = require('../db/models');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const enviarEmailTemporal = require('../utils/apiBrevo'); // tu función para enviar email
+//apiBrevo funciona pero se debe autorizar la IP que puede cambiar en railway
+
+const enviarEmailTemporal = require('../utils/nodemailerBrevo'); // tu función para enviar email
 const { sequelize } = require('../db/models');
 // import enviarEmailTemporal from '../utils/email.js';
 
