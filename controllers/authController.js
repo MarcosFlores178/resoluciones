@@ -128,7 +128,7 @@ module.exports = {
           apellido,
           password: hashedPassword,
           primer_ingreso: false,
-          titulo_organizador: titulo,
+          titulo_organizador,
           sexo_organizador,
           telefono,
         },
